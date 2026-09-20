@@ -1,24 +1,21 @@
 <?php
 /* ============================================================
-   JOMA — فایل تشخیص موقت (مشکل ۵۰۰ صفحهٔ کنسول مدیر)
-   این فایل را در ریشهٔ سایت اصلی آپلود کنید و آدرسش را باز کنید:
-       آدرس-سایت/diag-admin.php
-   نتیجه را برای پشتیبانی بفرستید و سپس این فایل را پاک کنید.
-   هیچ رمزی را نمایش نمی‌دهد؛ فقط وضعیت هر بخش را چاپ می‌کند.
+   JOMA — فایل تشخیص (نسخه ۲)
+   آدرس: آدرس-سایت/diag-admin.php
+   نتیجه را بفرستید و سپس این فایل را پاک کنید.
    ============================================================ */
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
-ob_start(); // اجازه می‌دهد بوت‌استرپ نشست را بدون تداخل با خروجی شروع کند
+ob_start();
 header('Content-Type: text/plain; charset=utf-8');
 
 function diag_out($s) { echo $s, "\n"; }
 
-diag_out('== JOMA DIAG admin_console ==');
+diag_out('== JOMA DIAG v2 ==');
 diag_out('PHP ' . PHP_VERSION);
 
 $root = __DIR__;
 
-/* ۱) بارگذاری بوت‌استرپ (کانفیگ + همهٔ فایل‌های توابع) */
 try {
     require $root . '/includes/bootstrap.php';
     diag_out('bootstrap: OK');
@@ -29,7 +26,10 @@ try {
 
 diag_out('storage: ' . (function_exists('store_mode') ? store_mode() : '?'));
 
-/* ۲) اگر حالت دیتابیس است، اتصال و تک‌تک کوئری‌های صفحهٔ کنسول مدیر */
+/* آیا فایل اصلاح‌شدهٔ کنسول مدیر نصب شده؟ */
+$ac = @file_get_contents($root . '/pages/admin_console.php');
+diag_out('admin_console-fix(FIX-AC1): ' . (is_string($ac) && strpos($ac, 'FIX-AC1') !== false ? 'INSTALLED' : 'NOT INSTALLED'));
+
 if (function_exists('store_mode') && store_mode() === 'mysql') {
     $c = isset($GLOBALS['JOMA_CONFIG']) ? $GLOBALS['JOMA_CONFIG'] : array();
     $m = @mysqli_connect(
@@ -44,6 +44,7 @@ if (function_exists('store_mode') && store_mode() === 'mysql') {
     }
     diag_out('db-connect: OK');
     @mysqli_set_charset($m, 'utf8mb4');
+    @mysqli_report(MYSQLI_REPORT_OFF);
 
     $queries = array(
         'users-list'   => 'SELECT id, first_name, last_name, username, email, phone, job, role_key, access_level, created_at FROM joma_users ORDER BY id',
@@ -51,7 +52,7 @@ if (function_exists('store_mode') && store_mode() === 'mysql') {
         'count-moods'  => 'SELECT COUNT(*) AS c FROM joma_mood_records',
         'count-notes'  => "SELECT COUNT(*) AS c FROM joma_mood_records WHERE note IS NOT NULL AND note <> ''",
         'count-plans'  => 'SELECT COUNT(*) AS c FROM joma_plans',
-        'top-acts'     => 'SELECT activity_code, COUNT(*) AS c FROM joma_performance_events GROUP BY activity_code ORDER BY c DESC LIMIT 8',
+        'top-acts-NEW' => "SELECT COALESCE(pa.activity_code, '-') AS activity_code, COUNT(*) AS c FROM joma_performance_events ev LEFT JOIN joma_plan_activities pa ON pa.id = ev.plan_activity_id GROUP BY COALESCE(pa.activity_code, '-') ORDER BY c DESC LIMIT 8",
         'settings'     => 'SELECT setting_key FROM joma_settings LIMIT 1',
     );
     foreach ($queries as $name => $sql) {
@@ -63,24 +64,21 @@ if (function_exists('store_mode') && store_mode() === 'mysql') {
             diag_out('query[' . $name . ']: FAIL -> ' . mysqli_error($m));
         }
     }
+
+    /* جدول‌های هم‌مسیر — اگر نبودند باید فایل‌های مرحلهٔ ۸ اجرا شوند */
+    $htables = array('joma_hammasir_providers','joma_hammasir_links','joma_hammasir_messages','joma_hammasir_permissions','joma_hammasir_permission_history','joma_hammasir_system_events','joma_hammasir_user_flags','joma_hammasir_invite_codes');
+    foreach ($htables as $t) {
+        $r = @mysqli_query($m, "SELECT 1 FROM `$t` LIMIT 1");
+        if ($r) {
+            diag_out('table[' . $t . ']: OK');
+            @mysqli_free_result($r);
+        } else {
+            diag_out('table[' . $t . ']: MISSING');
+        }
+    }
     @mysqli_close($m);
 } else {
     diag_out('db-queries: SKIP (storage is not mysql)');
-}
-
-/* ۳) وجود تابع‌هایی که صفحهٔ کنسول مدیر استفاده می‌کند */
-$fns = array('fa_num', 'joma_header', 'joma_footer', 'joma_v2_pagehead', 'role_label', 'jalali_format', 'official_library', 'joma_kv_get_json', 'require_perm', 'has_perm');
-foreach ($fns as $f) {
-    diag_out('fn[' . $f . ']: ' . (function_exists($f) ? 'OK' : 'MISSING'));
-}
-
-/* ۴) بررسی نحوی خودِ فایل صفحه */
-$src = @file_get_contents($root . '/pages/admin_console.php');
-if ($src === false) {
-    diag_out('page-file: MISSING');
-} else {
-    $tok = @token_get_all($src);
-    diag_out('page-file: ' . (is_array($tok) ? 'parse OK (' . count($tok) . ' tokens)' : 'PARSE FAIL'));
 }
 
 diag_out('== END ==');
