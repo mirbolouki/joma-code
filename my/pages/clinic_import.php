@@ -65,7 +65,7 @@ if ($role === 'admin' || $role === 'head_secretary') {
     foreach (clinic_doctors_list() as $d) $dmap[$d['id']] = clinic_user_display($d);
     echo clinic_field_select('doctor_id', 'دکتر معالج این دسته *', $dmap, '', '— انتخاب —');
 } else {
-    $d = get_user(clinic_my_doctor_id());
+    $d = clinic_get_user(clinic_my_doctor_id());
     echo '<p>دکتر: <strong>' . clinic_h($d ? clinic_user_display($d) : '—') . '</strong></p>';
 }
 echo '<label>فایل اکسل/CSV *</label><input type="file" name="imp_file" accept=".xlsx,.csv">';

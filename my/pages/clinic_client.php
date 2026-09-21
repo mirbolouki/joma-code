@@ -180,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clinic_action'])) {
 
 // تازه‌سازی پرونده بعد از عملیات
 $c = clinic_get_client($cid);
-$doc = get_user((int) $c['doctor_id']);
+$doc = clinic_get_user((int) $c['doctor_id']);
 $opt = clinic_intake_options();
 $tot = clinic_client_totals($cid);
 $fl = clinic_client_flags($c);
@@ -378,11 +378,8 @@ if ($tab === 'sessions') {
     // فرم ویرایش خلاصه
     $note_edit = (int) (isset($_GET['note_edit']) ? $_GET['note_edit'] : 0);
     if ($note_edit > 0 && $can_clin) {
-        $data = store_load();
-        $ne = null;
-        foreach ($data['clinic_notes'] as $n) {
-            if ((int) $n['id'] === $note_edit && (int) $n['client_id'] === $cid) $ne = $n;
-        }
+        $ne = clinic_get_note($note_edit);
+        if ($ne && (int) $ne['client_id'] !== $cid) $ne = null;
         if ($ne) {
             echo '<div class="card"><h2>ویرایش خلاصه</h2>';
             echo '<form method="post" action="' . e(joma_url('index.php?p=clinic_client&id=' . $cid . '&tab=sessions')) . '">';
@@ -528,7 +525,7 @@ if ($tab === 'log') {
     } else {
         echo '<div class="table-wrap"><table class="clinic-table"><tr><th>زمان</th><th>کاربر</th><th>رویداد</th></tr>';
         foreach ($audit as $a) {
-            $au = get_user($a['user_id']);
+            $au = clinic_get_user($a['user_id']);
             echo '<tr><td>' . clinic_h(clinic_fa_datetime($a['at'])) . '</td><td>' . clinic_h($au ? clinic_user_display($au) : 'سیستم') . '</td><td>' . clinic_h($a['action'] . ($a['detail'] !== '' ? ' — ' . $a['detail'] : '')) . '</td></tr>';
         }
         echo '</table></div>';

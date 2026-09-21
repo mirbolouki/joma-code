@@ -1,67 +1,48 @@
 <?php
 require dirname(__FILE__) . '/includes/bootstrap.php';
-$p = isset($_GET['p']) ? $_GET['p'] : 'home';
+
+// CLINIC-DEDICATED (v2.0): این ساب‌دامین فقط «مدیریت مطب» است.
+// فایل‌ها و داده‌های قدیمی جوما/هم‌مسیر روی دیسک دست‌نخورده می‌مانند ولی هیچ
+// routeای به آن‌ها باز نیست (dormant) — هیچ includeای به hammasir.php نمی‌شود.
+$p = isset($_GET['p']) ? $_GET['p'] : 'clinic_dashboard';
 $allowed = array(
-    'home', 'login', 'register', 'forgot', 'logout',
-    'mood', 'dashboard', 'plan', 'today', 'library',
-    'periods', 'period', 'reports', 'profile', 'settings', 'about', 'support', 'learn',
+    'clinic_login', 'logout',
+    'clinic_dashboard', 'clinic_clients', 'clinic_client', 'clinic_intake',
+    'clinic_appointments', 'clinic_finance', 'clinic_receipt',
+    'clinic_settings', 'clinic_import', 'clinic_users',
 );
-// CLINIC (مدیریت مطب) — ADD-ONLY: فقط همین ۱۰ route اضافه شده است.
-$allowed[] = 'clinic_dashboard';
-$allowed[] = 'clinic_clients';
-$allowed[] = 'clinic_client';
-$allowed[] = 'clinic_intake';
-$allowed[] = 'clinic_appointments';
-$allowed[] = 'clinic_finance';
-$allowed[] = 'clinic_receipt';
-$allowed[] = 'clinic_settings';
-$allowed[] = 'clinic_import';
-$allowed[] = 'clinic_users';
-// CLINIC: لود تنبل توابع مطب — فقط وقتی صفحه مطب درخواست شود (الگوی هم‌مسیر)؛
-// صفحات قبلی هیچ فایل/تابعی از مطب لود نمی‌کنند، پس خطای احتمالی مطب به آن‌ها سرایت نمی‌کند.
-if (strpos($p, 'clinic_') === 0) {
-    $__clinic_lib = dirname(__FILE__) . '/functions/clinic.php';
-    if (is_file($__clinic_lib)) require_once $__clinic_lib;
-    unset($__clinic_lib);
+// نگاشت لینک‌های قدیمی ذخیره‌شده در مرورگر/بوکمارک کاربران
+$legacy_map = array(
+    'login' => 'clinic_login', 'register' => 'clinic_login', 'forgot' => 'clinic_login',
+    'home' => 'clinic_dashboard', 'dashboard' => 'clinic_dashboard',
+);
+if (isset($legacy_map[$p])) {
+    joma_redirect('index.php?p=' . $legacy_map[$p]);
 }
-// JOMA-HAMMASIR-BEGIN
-// اتصال حداقلی ماژول «هم‌مسیر» (Phase 1B — D26/D28/D29؛ fail-closed)
-// با Flag خاموش: فقط همین فایل کانفیگ کوچک خوانده می‌شود؛ هیچ query،
-// include توابع هم‌مسیر، صفحه یا تغییر رفتاری رخ نمی‌دهد و $allowed همان مقدار قبلی می‌ماند.
-// اگر کانفیگ/توابع موجود نباشند یا خطایی رخ دهد، این بلوک کاملاً بی‌اثر می‌ماند (fail-closed؛ PC-4).
-// لود توابع هم‌مسیر فقط برای route خود هم‌مسیر انجام می‌شود (نه همه‌ی صفحات).
-try {
-    $__hammasir_cfg_file = dirname(__FILE__) . '/config/hammasir_config.php';
-    if (is_file($__hammasir_cfg_file)) {
-        $HAMMASIR_CONFIG = array();
-        include $__hammasir_cfg_file;
-        if (isset($HAMMASIR_CONFIG['hammasir_enabled']) && $HAMMASIR_CONFIG['hammasir_enabled'] === true) {
-            // صفحات ماژول (حکم PO — بخش دو): صفحه‌ی مرکزی + دو صفحه‌ی مستقل مدیریت
-            $__hammasir_pages = array('hammasir', 'hammasir_providers', 'hammasir_admins');
-            if (in_array($p, $__hammasir_pages, true) && !defined('JOMA_IN_APP')) {
-                define('JOMA_IN_APP', true);
-            }
-            if (in_array($p, $__hammasir_pages, true)) {
-                $__hammasir_functions = dirname(__FILE__) . '/functions/hammasir.php';
-                if (is_file($__hammasir_functions)) {
-                    include_once $__hammasir_functions;
-                }
-            }
-            foreach ($__hammasir_pages as $__hammasir_page) {
-                $allowed[] = $__hammasir_page;
-            }
-            unset($__hammasir_page, $__hammasir_pages);
-        }
-        unset($HAMMASIR_CONFIG);
+if (!in_array($p, $allowed, true)) $p = 'clinic_dashboard';
+// لایه دیتابیس (سبک، بدون وابستگی)
+require_once dirname(__FILE__) . '/functions/clinic_db.php';
+// گیت نصب: تا نصب انجام نشده، همه‌چیز به install.php می‌رود
+if (!clinic_db_is_installed()) {
+    header('Location: install.php');
+    exit;
+}
+// توابع مطب
+require_once dirname(__FILE__) . '/functions/clinic.php';
+// نشست قدیمی (نقش ناآشنا برای مطب) معتبر نیست — خروج تمیز و هدایت به ورود مطب
+$__cu = current_user();
+if ($__cu) {
+    $__cr = isset($__cu['role_key']) ? $__cu['role_key'] : '';
+    if (!isset(clinic_roles()[$__cr])) {
+        unset($_SESSION['user']);
+        joma_redirect('index.php?p=clinic_login');
     }
-    unset($__hammasir_cfg_file);
-} catch (Throwable $e) {
-    // fail-closed: هیچ خروجی؛ route باز نمی‌شود؛ فقط لاگ امن با پیام ثابت (PC-4)
-    error_log('hammasir module kept disabled: safe load of hammasir config/functions failed.');
 }
-// JOMA-HAMMASIR-END
-if (!in_array($p, $allowed, true)) $p = 'home';
-maybe_mood_gate($p);
+unset($__cu, $__cr);
+// گیت ورود سراسری (به‌جز صفحه ورود و فرم عمومی اینتیک)
+if ($p !== 'clinic_login' && $p !== 'clinic_intake') {
+    require_login();
+}
 $file = dirname(__FILE__) . '/pages/' . $p . '.php';
-if (!file_exists($file)) $p = 'home';
+if (!file_exists($file)) $p = 'clinic_dashboard';
 require dirname(__FILE__) . '/pages/' . $p . '.php';

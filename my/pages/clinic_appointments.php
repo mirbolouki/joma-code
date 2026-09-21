@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clinic_action'])) {
             $set = clinic_get_settings();
             if ($set['reminder_mode'] === 'auto' && trim($set['sms_api_url']) !== '') {
                 $nc = clinic_get_client($na['client_id']);
-                $nd = get_user($na['doctor_id']);
+                $nd = clinic_get_user($na['doctor_id']);
                 $txt = clinic_reminder_text($na, $nc, $nd ? clinic_user_display($nd) : '');
                 $sr = clinic_send_sms($nc['mobile'], $txt);
                 if ($sr['ok']) {
@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clinic_action'])) {
         $a = clinic_get_appointment($aid);
         if ($a) {
             $ac = clinic_get_client($a['client_id']);
-            $ad = get_user($a['doctor_id']);
+            $ad = clinic_get_user($a['doctor_id']);
             $sr = clinic_send_sms($ac['mobile'], clinic_reminder_text($a, $ac, $ad ? clinic_user_display($ad) : ''));
             if ($sr['ok']) {
                 clinic_mark_reminded($aid, clinic_my_id());
@@ -229,7 +229,7 @@ if (!$list) {
     echo '<div class="table-wrap"><table class="clinic-table"><tr><th>ساعت</th><th>مراجع</th><th>دکتر</th><th>نوع</th><th>مبلغ</th><th>وضعیت</th><th>یادآوری</th><th>عملیات</th></tr>';
     foreach ($list as $a) {
         $ac = clinic_get_client($a['client_id']);
-        $ad = get_user((int) $a['doctor_id']);
+        $ad = clinic_get_user((int) $a['doctor_id']);
         echo '<tr><td>' . clinic_h(fa_num($a['start'] . '–' . $a['end'])) . '</td>';
         echo '<td><a href="' . e(joma_url('index.php?p=clinic_client&id=' . (int) $a['client_id'])) . '">' . clinic_h($ac ? clinic_client_display_name($ac) : '—') . '</a></td>';
         echo '<td>' . clinic_h($ad ? clinic_user_display($ad) : '—') . '</td>';
@@ -274,7 +274,7 @@ if ($remind_id > 0) {
     $ra = clinic_get_appointment($remind_id);
     $rc = $ra ? clinic_get_client($ra['client_id']) : null;
     if ($ra && $rc && clinic_can_access_client($rc)) {
-        $rd = get_user((int) $ra['doctor_id']);
+        $rd = clinic_get_user((int) $ra['doctor_id']);
         $txt = clinic_reminder_text($ra, $rc, $rd ? clinic_user_display($rd) : '');
         $set = clinic_get_settings();
         echo '<div class="card"><h2>🔔 یادآوری نوبت</h2>';

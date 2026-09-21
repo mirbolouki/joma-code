@@ -141,7 +141,7 @@ echo '<p class="hint">اولویت: استثنای مراجع ← استثنای
 if ($overrides) {
     echo '<div class="table-wrap"><table class="clinic-table"><tr><th>دکتر</th><th>مراجع</th><th>نوع</th><th>مبلغ</th><th></th></tr>';
     foreach ($overrides as $o) {
-        $od = (int) $o['doctor_id'] > 0 ? get_user((int) $o['doctor_id']) : null;
+        $od = (int) $o['doctor_id'] > 0 ? clinic_get_user((int) $o['doctor_id']) : null;
         $oc = (int) $o['client_id'] > 0 ? clinic_get_client((int) $o['client_id']) : null;
         echo '<tr><td>' . clinic_h($od ? clinic_user_display($od) : '—') . '</td>';
         echo '<td>' . clinic_h($oc ? clinic_client_display_name($oc) . ' (' . $oc['file_no'] . ')' : '—') . '</td>';

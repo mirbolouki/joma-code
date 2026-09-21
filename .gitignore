@@ -11,3 +11,5 @@ Thumbs.db
 *.swp
 *~
 my/data/hammasir/store.json
+my/config/clinic_db.php
+my/data/clinic_installed.lock

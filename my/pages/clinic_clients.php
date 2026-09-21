@@ -185,7 +185,7 @@ if ($show_invite) {
 echo '<div class="card"><div class="table-wrap"><table class="clinic-table">';
 echo '<tr><th>شماره</th><th>نام</th><th>موبایل</th><th>دکتر</th><th>فرم</th><th>نوبت بعدی</th><th>مانده</th><th></th></tr>';
 foreach (array_slice($clients, 0, 300) as $c) {
-    $doc = get_user((int) $c['doctor_id']);
+    $doc = clinic_get_user((int) $c['doctor_id']);
     $next = clinic_client_next_appointment((int) $c['id']);
     $tot = clinic_client_totals((int) $c['id']);
     echo '<tr>';

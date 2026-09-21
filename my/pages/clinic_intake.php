@@ -64,7 +64,7 @@ if ($mode === 'mine' && $client['intake_status'] === 'reviewed') {
     return;
 }
 
-$doc = get_user($doctor_id);
+$doc = clinic_get_user($doctor_id);
 $set = clinic_get_settings();
 
 // پیش‌پر کردن

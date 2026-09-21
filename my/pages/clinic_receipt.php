@@ -3,21 +3,15 @@
 clinic_require_login();
 $role = clinic_role();
 $id = (int) (isset($_GET['id']) ? $_GET['id'] : 0);
-$data = store_load();
-$t = null;
-if (isset($data['clinic_transactions'])) {
-    foreach ($data['clinic_transactions'] as $row) {
-        if ((int) $row['id'] === $id) $t = $row;
-    }
-}
+$t = clinic_get_transaction($id);
 if (!$t) clinic_deny('رسید پیدا نشد.');
 $c = clinic_get_client($t['client_id']);
 if (!$c || !clinic_can_access_client($c)) clinic_deny('دسترسی ندارید.');
 $kinds = clinic_txn_kinds();
 $methods = clinic_pay_methods();
-$doc = get_user((int) $t['doctor_id']);
+$doc = clinic_get_user((int) $t['doctor_id']);
 $set = clinic_get_settings();
-$by = get_user((int) $t['created_by']);
+$by = clinic_get_user((int) $t['created_by']);
 
 joma_header('رسید پرداخت', array(array('label' => 'مالی', 'href' => joma_url('index.php?p=clinic_finance')), array('label' => 'رسید')));
 echo '<div class="card no-print"><p><button class="btn" onclick="window.print()">🖨️ چاپ رسید</button> ';

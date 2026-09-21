@@ -23,7 +23,7 @@ if ($role === 'client') {
     }
     $tot = clinic_client_totals((int) $c['id']);
     $next = clinic_client_next_appointment((int) $c['id']);
-    $doc = get_user((int) $c['doctor_id']);
+    $doc = clinic_get_user((int) $c['doctor_id']);
     echo '<div class="card"><h2>🗂️ پرونده من</h2>';
     echo '<div class="clinic-grid">';
     echo '<div class="clinic-stat"><small>شماره پرونده</small><b>' . clinic_h(fa_num($c['file_no'])) . '</b></div>';
@@ -173,7 +173,7 @@ if ($role === 'admin') {
     if ($audit) {
         echo '<h3>آخرین رویدادها</h3><div class="table-wrap"><table class="clinic-table">';
         foreach ($audit as $a) {
-            $au = get_user($a['user_id']);
+            $au = clinic_get_user($a['user_id']);
             echo '<tr><td>' . clinic_h(clinic_fa_datetime($a['at'])) . '</td><td>' . clinic_h($au ? clinic_user_display($au) : 'سیستم') . '</td><td>' . clinic_h($a['action'] . ($a['detail'] !== '' ? ' — ' . $a['detail'] : '')) . '</td></tr>';
         }
         echo '</table></div>';

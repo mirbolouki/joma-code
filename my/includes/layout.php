@@ -28,6 +28,7 @@ function joma_header($title, $crumbs = array(), $opts = array()) {
         echo '<nav class="side-nav">';
         // CLINIC: منوی «مدیریت مطب» برای نقش‌های مطب (قبل از آیتم‌های جوما)
         $__clinic_role = isset($u['role_key']) ? $u['role_key'] : '';
+        $__clinic_dedicated = true; // CLINIC-DEDICATED: ساب‌دامین فقط مطب است؛ منوهای جوما/هم‌مسیر مخفی
         $__is_clinic = in_array($__clinic_role, array('admin', 'doctor', 'head_secretary', 'secretary', 'client'), true);
         $__clinic_menu = array();
         if ($__is_clinic) {
@@ -62,7 +63,7 @@ function joma_header($title, $crumbs = array(), $opts = array()) {
             }
             echo '<div class="clinic-menu-sep"></div>';
         }
-        if ($__clinic_role !== 'client') {
+        if (($__clinic_role !== 'client' && empty($__clinic_dedicated))) {
         foreach (nav_items() as $k => $item) {
             $cls = $page === $k ? 'nav-link active' : 'nav-link';
             echo '<a class="' . $cls . '" href="' . e(joma_url('index.php?p=' . $k)) . '"><span>' . $item[1] . '</span>' . e($item[0]) . '</a>';
@@ -75,7 +76,7 @@ function joma_header($title, $crumbs = array(), $opts = array()) {
             if (is_file($__hcfg)) {
                 $HAMMASIR_CONFIG = array();
                 include $__hcfg;
-                if (!empty($HAMMASIR_CONFIG['hammasir_enabled']) && $u && $__clinic_role !== 'client') { // CLINIC: مخفی برای مراجع مطب
+                if (!empty($HAMMASIR_CONFIG['hammasir_enabled']) && $u && ($__clinic_role !== 'client' && empty($__clinic_dedicated))) { // CLINIC: مخفی برای مراجع مطب
                     $__hfn = dirname(__FILE__) . '/../functions/hammasir.php';
                     if (is_file($__hfn)) {
                         include_once $__hfn;
@@ -192,7 +193,7 @@ function joma_header($title, $crumbs = array(), $opts = array()) {
                 echo '<a href="' . e(joma_url('index.php?p=' . $__cm[0])) . '"><span>' . $__cm[2] . '</span><span>' . e($__cm[1]) . '</span></a>';
             }
         }
-        if ($__clinic_role !== 'client') {
+        if (($__clinic_role !== 'client' && empty($__clinic_dedicated))) {
         // آیتم‌های اصلی (برچسب‌های موجود نوار پایین JOMA) + آیکون خطی
         $__mmain = array(
             array('dashboard', 'خانه', 'home'),
@@ -219,7 +220,7 @@ function joma_header($title, $crumbs = array(), $opts = array()) {
             if (is_file($__hcfg2)) {
                 $HAMMASIR_CONFIG = array();
                 include $__hcfg2;
-                if (!empty($HAMMASIR_CONFIG['hammasir_enabled']) && $__clinic_role !== 'client') { // CLINIC: مخفی برای مراجع مطب
+                if (!empty($HAMMASIR_CONFIG['hammasir_enabled']) && ($__clinic_role !== 'client' && empty($__clinic_dedicated))) { // CLINIC: مخفی برای مراجع مطب
                     $__hfn2 = dirname(__FILE__) . '/../functions/hammasir.php';
                     if (is_file($__hfn2)) {
                         include_once $__hfn2;

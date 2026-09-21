@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clinic_action'])) {
         $roles = clinic_roles();
         if ($username === '' || !preg_match('/^[a-z0-9_\.]{3,30}$/', $username)) {
             $msg = 'نام کاربری لاتین معتبر (حداقل ۳ حرف) وارد کنید.';
-        } elseif (username_taken($username)) {
+        } elseif (clinic_username_taken($username)) {
             $msg = 'این نام کاربری قبلاً گرفته شده است.';
         } elseif (strlen($pass) < 6) {
             $msg = 'رمز عبور حداقل ۶ نویسه باشد.';
@@ -24,60 +24,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['clinic_action'])) {
         } else {
             $email = strtolower(trim(isset($_POST['email']) ? $_POST['email'] : ''));
             if ($email === '') $email = $username . '@clinic.local';
-            if (email_taken($email)) $email = $username . '+' . time() . '@clinic.local';
+            if (clinic_email_taken($email)) $email = $username . '+' . time() . '@clinic.local';
             $doctor_id = (int) (isset($_POST['doctor_id']) ? $_POST['doctor_id'] : 0);
             if ($r === 'secretary' && $doctor_id <= 0) {
                 $msg = 'برای منشی دکتر، دکتر منتسب را انتخاب کنید.';
             } else {
-                $data = store_load();
-                $uid = store_next_id($data);
-                $data['users'][] = array(
-                    'id' => $uid,
+                $uid = clinic_create_user(array(
                     'first_name' => trim(isset($_POST['first_name']) ? $_POST['first_name'] : ''),
                     'last_name' => trim(isset($_POST['last_name']) ? $_POST['last_name'] : ''),
                     'username' => $username, 'email' => $email, 'phone' => $phone,
                     'job' => $roles[$r], 'password_hash' => password_hash($pass, PASSWORD_DEFAULT),
-                    'role_key' => $r, 'access_level' => 1, 'doctor_id' => $r === 'secretary' ? $doctor_id : 0,
-                    'mobile_verified' => 0, 'active' => 1, 'created_at' => joma_now(),
-                );
-                $data['preferences'][] = array('user_id' => $uid, 'compact_cards' => 0, 'notifications_enabled' => 0);
-                store_save($data);
-                clinic_audit('ساخت کاربر مطب', 0, $username . ' — ' . $roles[$r]);
-                $msg = 'کاربر ساخته شد: ' . $username;
-                $msg_ok = true;
+                    'role_key' => $r, 'doctor_id' => $r === 'secretary' ? $doctor_id : 0,
+                ));
+                if (!$uid) {
+                    $msg = 'خطا در ساخت کاربر. دوباره تلاش کنید.';
+                } else {
+                    clinic_audit('ساخت کاربر مطب', 0, $username . ' — ' . $roles[$r]);
+                    $msg = 'کاربر ساخته شد: ' . $username;
+                    $msg_ok = true;
+                }
             }
         }
     }
     if ($act === 'user_update') {
         $uid = (int) (isset($_POST['user_id']) ? $_POST['user_id'] : 0);
-        $target = get_user($uid);
+        $target = clinic_get_user($uid);
         if (!$target) {
             $msg = 'کاربر پیدا نشد.';
         } else {
-            $data = store_load();
-            foreach ($data['users'] as $i => $row) {
-                if ((int) $row['id'] === $uid) {
-                    $data['users'][$i]['first_name'] = trim(isset($_POST['first_name']) ? $_POST['first_name'] : $row['first_name']);
-                    $data['users'][$i]['last_name'] = trim(isset($_POST['last_name']) ? $_POST['last_name'] : $row['last_name']);
-                    $ph = clinic_norm_mobile(isset($_POST['phone']) ? $_POST['phone'] : '');
-                    if ($ph !== '') $data['users'][$i]['phone'] = $ph;
-                    if ($row['role_key'] === 'secretary' && isset($_POST['doctor_id'])) {
-                        $data['users'][$i]['doctor_id'] = (int) $_POST['doctor_id'];
-                    }
-                    $data['users'][$i]['active'] = !empty($_POST['active']) ? 1 : 0;
-                    $np = isset($_POST['new_password']) ? (string) $_POST['new_password'] : '';
-                    if ($np !== '') {
-                        if (strlen($np) < 6) {
-                            $msg = 'رمز جدید حداقل ۶ نویسه باشد.';
-                        } else {
-                            $data['users'][$i]['password_hash'] = password_hash($np, PASSWORD_DEFAULT);
-                        }
-                    }
-                    break;
+            $patch = array(
+                'first_name' => trim(isset($_POST['first_name']) ? $_POST['first_name'] : $target['first_name']),
+                'last_name' => trim(isset($_POST['last_name']) ? $_POST['last_name'] : $target['last_name']),
+                'active' => !empty($_POST['active']) ? 1 : 0,
+            );
+            $ph = clinic_norm_mobile(isset($_POST['phone']) ? $_POST['phone'] : '');
+            if ($ph !== '') $patch['phone'] = $ph;
+            if ($target['role_key'] === 'secretary' && isset($_POST['doctor_id'])) {
+                $patch['doctor_id'] = (int) $_POST['doctor_id'];
+            }
+            $np = isset($_POST['new_password']) ? (string) $_POST['new_password'] : '';
+            if ($np !== '') {
+                if (strlen($np) < 6) {
+                    $msg = 'رمز جدید حداقل ۶ نویسه باشد.';
+                } else {
+                    $patch['password_hash'] = password_hash($np, PASSWORD_DEFAULT);
                 }
             }
             if ($msg === '') {
-                store_save($data);
+                clinic_update_user($uid, $patch);
                 clinic_audit('ویرایش کاربر مطب', 0, $target['username']);
                 $msg = 'کاربر به‌روز شد.';
                 $msg_ok = true;
@@ -99,7 +93,7 @@ echo '<div class="table-wrap"><table class="clinic-table"><tr><th>نام</th><th
 foreach ($staff as $s) {
     $assign = '';
     if ($s['role_key'] === 'secretary' && !empty($s['doctor_id'])) {
-        $dd = get_user((int) $s['doctor_id']);
+        $dd = clinic_get_user((int) $s['doctor_id']);
         $assign = $dd ? clinic_user_display($dd) : '';
     }
     $active = !isset($s['active']) || (int) $s['active'] === 1;
@@ -113,7 +107,7 @@ echo '</table></div></div>';
 
 $edit_id = (int) (isset($_GET['edit']) ? $_GET['edit'] : 0);
 if ($edit_id > 0) {
-    $eu = get_user($edit_id);
+    $eu = clinic_get_user($edit_id);
     if ($eu) {
         $eu_active = !isset($eu['active']) || (int) $eu['active'] === 1;
         echo '<div class="card"><h2>ویرایش — ' . clinic_h(clinic_user_display($eu)) . '</h2>';

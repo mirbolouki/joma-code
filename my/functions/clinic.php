@@ -1,12 +1,14 @@
 <?php
 // ============================================================================
 // CLINIC — ماژول «مدیریت مطب» (my.mirbolouki.com)
-// نسخه ۱.۰ — فاز اول: پرونده + فرم جلسه اول + نوبت + مالی + یادآوری + ورود گروهی
-// ذخیره‌سازی: file-mode (سازگار با config فعلی)؛ در حالت mysql پیغام راهنما می‌دهد.
+// نسخه ۲.۰ — ذخیره‌سازی MySQL با mysqli (بدون PDO)، سازگار PHP 7.0، تابع‌محور
+// امضای توابع نسبت به ۱.۰ ثابت مانده؛ فقط لایه ذخیره‌سازی عوض شده است.
 // ============================================================================
 
 if (defined('CLINIC_PHP_LOADED')) return;
 define('CLINIC_PHP_LOADED', true);
+
+require_once dirname(__FILE__) . '/clinic_db.php';
 
 // ---------------------------------------------------------------- نقش‌ها ---
 function clinic_roles() {
@@ -43,7 +45,7 @@ function clinic_my_doctor_id() {
     if (!$u) return 0;
     if ($u['role_key'] === 'doctor') return (int) $u['id'];
     if ($u['role_key'] === 'secretary') {
-        $full = get_user((int) $u['id']);
+        $full = clinic_get_user((int) $u['id']);
         return $full && isset($full['doctor_id']) ? (int) $full['doctor_id'] : 0;
     }
     return 0;
@@ -132,41 +134,109 @@ function clinic_user_display($u) {
     return $n;
 }
 
-function clinic_doctors_list() {
-    $data = store_load();
-    $out = array();
-    if (!isset($data['users'])) return $out;
-    foreach ($data['users'] as $u) {
-        if (isset($u['role_key']) && $u['role_key'] === 'doctor' && (!isset($u['active']) || (int) $u['active'] === 1)) {
-            $out[] = $u;
-        }
-    }
-    return $out;
+// ------------------------------------------------------------- کاربران ---
+function clinic_user_row($u) {
+    if (!$u) return null;
+    $u['id'] = (int) $u['id'];
+    $u['access_level'] = (int) (isset($u['access_level']) ? $u['access_level'] : 1);
+    $u['doctor_id'] = (int) (isset($u['doctor_id']) ? $u['doctor_id'] : 0);
+    $u['active'] = (int) (isset($u['active']) ? $u['active'] : 1);
+    return $u;
 }
 
-function clinic_staff_list() {
-    $data = store_load();
-    $out = array();
-    if (!isset($data['users'])) return $out;
-    foreach ($data['users'] as $u) {
-        if (isset($u['role_key']) && in_array($u['role_key'], array('admin', 'doctor', 'head_secretary', 'secretary'), true)) {
-            $out[] = $u;
-        }
-    }
-    return $out;
+function clinic_get_user($id) {
+    $row = clinic_db_one('SELECT * FROM `clinic_users` WHERE `id`=? LIMIT 1', 'i', array((int) $id));
+    return $row ? clinic_user_row($row) : null;
 }
 
 function clinic_user_by_phone($mobile) {
     $m = clinic_norm_mobile($mobile);
     if ($m === '') return null;
-    $data = store_load();
-    if (!isset($data['users'])) return null;
-    foreach ($data['users'] as $u) {
-        $up = isset($u['phone']) ? clinic_norm_mobile($u['phone']) : '';
-        $un = isset($u['username']) ? clinic_norm_mobile($u['username']) : '';
-        if (($up !== '' && $up === $m) || ($un !== '' && $un === $m)) return $u;
+    $row = clinic_db_one('SELECT * FROM `clinic_users` WHERE `phone`=? OR `username`=? LIMIT 1', 'ss', array($m, $m));
+    return $row ? clinic_user_row($row) : null;
+}
+
+// ورود با نام‌کاربری یا موبایل
+function clinic_user_by_login($identifier) {
+    $idn = strtolower(trim((string) $identifier));
+    if ($idn === '') return null;
+    $m = clinic_norm_mobile($idn);
+    if ($m !== '') {
+        $u = clinic_user_by_phone($m);
+        if ($u) return $u;
     }
-    return null;
+    $row = clinic_db_one('SELECT * FROM `clinic_users` WHERE `username`=? LIMIT 1', 's', array($idn));
+    return $row ? clinic_user_row($row) : null;
+}
+
+function clinic_username_taken($username, $except = 0) {
+    $username = strtolower(trim((string) $username));
+    $row = clinic_db_one('SELECT `id` FROM `clinic_users` WHERE `username`=? AND `id`<>? LIMIT 1', 'si', array($username, (int) $except));
+    return (bool) $row;
+}
+
+function clinic_email_taken($email, $except = 0) {
+    $email = strtolower(trim((string) $email));
+    $row = clinic_db_one('SELECT `id` FROM `clinic_users` WHERE `email`=? AND `id`<>? LIMIT 1', 'si', array($email, (int) $except));
+    return (bool) $row;
+}
+
+function clinic_create_user($in) {
+    $ok = clinic_db_exec(
+        'INSERT INTO `clinic_users` (`first_name`,`last_name`,`username`,`email`,`phone`,`job`,`password_hash`,`role_key`,`access_level`,`doctor_id`,`active`,`created_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+        'ssssssssiiis',
+        array(
+            isset($in['first_name']) ? $in['first_name'] : '',
+            isset($in['last_name']) ? $in['last_name'] : '',
+            isset($in['username']) ? $in['username'] : '',
+            isset($in['email']) ? $in['email'] : '',
+            isset($in['phone']) ? $in['phone'] : '',
+            isset($in['job']) ? $in['job'] : '',
+            isset($in['password_hash']) ? $in['password_hash'] : '',
+            isset($in['role_key']) ? $in['role_key'] : 'client',
+            1,
+            (int) (isset($in['doctor_id']) ? $in['doctor_id'] : 0),
+            1,
+            joma_now(),
+        )
+    );
+    return $ok ? clinic_db_insert_id() : 0;
+}
+
+function clinic_update_user($id, $patch) {
+    $allow = array('first_name', 'last_name', 'phone', 'job', 'password_hash', 'role_key', 'doctor_id', 'active', 'email');
+    $sets = array();
+    $types = '';
+    $vals = array();
+    foreach ($allow as $k) {
+        if (!isset($patch[$k])) continue;
+        $sets[] = '`' . $k . '`=?';
+        if ($k === 'doctor_id' || $k === 'active') {
+            $types .= 'i';
+            $vals[] = (int) $patch[$k];
+        } else {
+            $types .= 's';
+            $vals[] = (string) $patch[$k];
+        }
+    }
+    if (!$sets) return true;
+    $types .= 'i';
+    $vals[] = (int) $id;
+    return clinic_db_exec('UPDATE `clinic_users` SET ' . implode(',', $sets) . ' WHERE `id`=?', $types, $vals);
+}
+
+function clinic_doctors_list() {
+    $rows = clinic_db_q("SELECT * FROM `clinic_users` WHERE `role_key`='doctor' AND `active`=1 ORDER BY `first_name`,`last_name`", '', array());
+    $out = array();
+    foreach ($rows as $r) $out[] = clinic_user_row($r);
+    return $out;
+}
+
+function clinic_staff_list() {
+    $rows = clinic_db_q("SELECT * FROM `clinic_users` WHERE `role_key` IN ('admin','doctor','head_secretary','secretary') ORDER BY `role_key`,`username`", '', array());
+    $out = array();
+    foreach ($rows as $r) $out[] = clinic_user_row($r);
+    return $out;
 }
 
 // ------------------------------------------------------------- ابزارها ---
@@ -182,7 +252,7 @@ function clinic_norm_mobile($m) {
     $m = preg_replace('/[^0-9]/', '', $m);
     if (strlen($m) === 10 && substr($m, 0, 1) === '9') $m = '0' . $m;
     if (substr($m, 0, 3) === '980' && strlen($m) === 12) $m = substr($m, 2);
-    if (substr($m, 0, 4) === '+980' ) $m = substr($m, 3);
+    if (substr($m, 0, 4) === '+980') $m = substr($m, 3);
     if (!preg_match('/^09[0-9]{9}$/', $m)) return '';
     return $m;
 }
@@ -270,6 +340,14 @@ function clinic_age_from_birth($birth) {
     return $age >= 0 ? $age : '';
 }
 
+// ساخت لیست IN امن از شناسه‌ها (عدد)
+function clinic_sql_in($ids) {
+    $clean = array();
+    foreach ((array) $ids as $v) $clean[] = (int) $v;
+    if (!$clean) $clean[] = -1;
+    return implode(',', $clean);
+}
+
 // ------------------------------------------------------------- پرونده‌ها ---
 function clinic_client_statuses() {
     return array('active' => 'فعال', 'archived' => 'بایگانی‌شده');
@@ -283,114 +361,127 @@ function clinic_intake_statuses() {
     );
 }
 
-function clinic_next_file_no(&$data) {
+function clinic_client_row($c) {
+    if (!$c) return null;
+    $c['id'] = (int) $c['id'];
+    $c['user_id'] = (int) $c['user_id'];
+    $c['doctor_id'] = (int) $c['doctor_id'];
+    $c['created_by'] = (int) $c['created_by'];
+    $c['private_updated_at'] = clinic_db_n(isset($c['private_updated_at']) ? $c['private_updated_at'] : '');
+    $c['archived_at'] = clinic_db_n(isset($c['archived_at']) ? $c['archived_at'] : '');
+    $raw = isset($c['intake']) ? $c['intake'] : '';
+    if ($raw === null || $raw === '') {
+        $c['intake'] = array();
+    } else {
+        $d = json_decode($raw, true);
+        $c['intake'] = is_array($d) ? $d : array();
+    }
+    return $c;
+}
+
+function clinic_next_file_no() {
     $year = substr(jalali_today(), 0, 4);
-    if (!isset($data['clinic_file_seq']) || !is_array($data['clinic_file_seq'])) $data['clinic_file_seq'] = array();
-    $n = isset($data['clinic_file_seq'][$year]) ? (int) $data['clinic_file_seq'][$year] : 0;
-    $n++;
-    $data['clinic_file_seq'][$year] = $n;
+    $row = clinic_db_one('SELECT `seq` FROM `clinic_file_seq` WHERE `yy`=? LIMIT 1', 's', array($year));
+    if ($row) {
+        $n = (int) $row['seq'] + 1;
+        clinic_db_exec('UPDATE `clinic_file_seq` SET `seq`=? WHERE `yy`=?', 'is', array($n, $year));
+    } else {
+        $n = 1;
+        clinic_db_exec('INSERT IGNORE INTO `clinic_file_seq` (`yy`,`seq`) VALUES (?,1)', 's', array($year));
+    }
     return $year . '-' . str_pad((string) $n, 4, '0', STR_PAD_LEFT);
 }
 
-function clinic_empty_client() {
-    return array(
-        'id' => 0, 'file_no' => '', 'user_id' => 0, 'doctor_id' => 0,
-        'first_name' => '', 'last_name' => '', 'birth_date' => '', 'job' => '', 'education' => '',
-        'marital' => '', 'mobile' => '', 'emergency_contact' => '', 'referrer' => '', 'referrer_other' => '',
-        'first_visit_date' => '', 'status' => 'active',
-        'intake_status' => 'none', 'intake' => array(),
-        'private_note' => '', 'private_updated_at' => '',
-        'created_at' => '', 'created_by' => 0, 'updated_at' => '', 'archived_at' => '',
-    );
-}
-
 function clinic_create_client($in, $by_user_id) {
-    $data = store_load();
     $mobile = clinic_norm_mobile(isset($in['mobile']) ? $in['mobile'] : '');
     if ($mobile === '') return array('error' => 'شماره موبایل معتبر وارد کنید (مثل 09123456789).');
-    foreach ($data['clinic_clients'] as $c) {
-        if (clinic_norm_mobile($c['mobile']) === $mobile) {
-            return array('error' => 'این شماره موبایل قبلاً پرونده دارد (' . $c['file_no'] . ').', 'dup_id' => $c['id']);
-        }
+    $dup = clinic_db_one('SELECT `id`,`file_no` FROM `clinic_clients` WHERE `mobile`=? LIMIT 1', 's', array($mobile));
+    if ($dup) {
+        return array('error' => 'این شماره موبایل قبلاً پرونده دارد (' . $dup['file_no'] . ').', 'dup_id' => (int) $dup['id']);
     }
-    $id = store_next_id($data);
-    $c = clinic_empty_client();
-    $c['id'] = $id;
-    $c['file_no'] = clinic_next_file_no($data);
-    $c['first_name'] = trim(isset($in['first_name']) ? $in['first_name'] : '');
-    $c['last_name'] = trim(isset($in['last_name']) ? $in['last_name'] : '');
-    $c['birth_date'] = clinic_valid_jdate(isset($in['birth_date']) ? $in['birth_date'] : '');
-    $c['job'] = trim(isset($in['job']) ? $in['job'] : '');
-    $c['education'] = trim(isset($in['education']) ? $in['education'] : '');
-    $c['marital'] = trim(isset($in['marital']) ? $in['marital'] : '');
-    $c['mobile'] = $mobile;
-    $c['emergency_contact'] = trim(isset($in['emergency_contact']) ? $in['emergency_contact'] : '');
-    $c['referrer'] = trim(isset($in['referrer']) ? $in['referrer'] : '');
-    $c['referrer_other'] = trim(isset($in['referrer_other']) ? $in['referrer_other'] : '');
-    $c['doctor_id'] = (int) (isset($in['doctor_id']) ? $in['doctor_id'] : 0);
-    $c['first_visit_date'] = clinic_valid_jdate(isset($in['first_visit_date']) ? $in['first_visit_date'] : '');
-    if ($c['first_name'] === '' && $c['last_name'] === '') return array('error' => 'نام و نام خانوادگی را وارد کنید.');
-    if ($c['doctor_id'] <= 0) return array('error' => 'دکتر معالج را انتخاب کنید.');
-    $c['created_at'] = joma_now();
-    $c['created_by'] = (int) $by_user_id;
-    $c['updated_at'] = joma_now();
-    $data['clinic_clients'][] = $c;
-    store_save($data);
-    return array('id' => $id, 'file_no' => $c['file_no']);
+    $first = trim(isset($in['first_name']) ? $in['first_name'] : '');
+    $last = trim(isset($in['last_name']) ? $in['last_name'] : '');
+    if ($first === '' && $last === '') return array('error' => 'نام و نام خانوادگی را وارد کنید.');
+    $doctor_id = (int) (isset($in['doctor_id']) ? $in['doctor_id'] : 0);
+    if ($doctor_id <= 0) return array('error' => 'دکتر معالج را انتخاب کنید.');
+    $file_no = clinic_next_file_no();
+    $now = joma_now();
+    $ok = clinic_db_exec(
+        'INSERT INTO `clinic_clients` (`file_no`,`doctor_id`,`first_name`,`last_name`,`birth_date`,`job`,`education`,`marital`,`mobile`,`emergency_contact`,`referrer`,`referrer_other`,`first_visit_date`,`status`,`intake_status`,`created_at`,`created_by`,`updated_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        'sissssssssssssssis',
+        array(
+            $file_no, $doctor_id, $first, $last,
+            clinic_valid_jdate(isset($in['birth_date']) ? $in['birth_date'] : ''),
+            trim(isset($in['job']) ? $in['job'] : ''),
+            trim(isset($in['education']) ? $in['education'] : ''),
+            trim(isset($in['marital']) ? $in['marital'] : ''),
+            $mobile,
+            trim(isset($in['emergency_contact']) ? $in['emergency_contact'] : ''),
+            trim(isset($in['referrer']) ? $in['referrer'] : ''),
+            trim(isset($in['referrer_other']) ? $in['referrer_other'] : ''),
+            clinic_valid_jdate(isset($in['first_visit_date']) ? $in['first_visit_date'] : ''),
+            'active', 'none', $now, (int) $by_user_id, $now,
+        )
+    );
+    if (!$ok) return array('error' => 'خطا در ساخت پرونده. دوباره تلاش کنید.');
+    return array('id' => clinic_db_insert_id(), 'file_no' => $file_no);
 }
 
 function clinic_get_client($id) {
-    $data = store_load();
-    foreach ($data['clinic_clients'] as $c) {
-        if ((int) $c['id'] === (int) $id) return $c;
-    }
-    return null;
+    $row = clinic_db_one('SELECT * FROM `clinic_clients` WHERE `id`=? LIMIT 1', 'i', array((int) $id));
+    return $row ? clinic_client_row($row) : null;
 }
 
 function clinic_get_client_by_mobile($mobile) {
     $m = clinic_norm_mobile($mobile);
     if ($m === '') return null;
-    $data = store_load();
-    foreach ($data['clinic_clients'] as $c) {
-        if (clinic_norm_mobile($c['mobile']) === $m) return $c;
-    }
-    return null;
+    $row = clinic_db_one('SELECT * FROM `clinic_clients` WHERE `mobile`=? LIMIT 1', 's', array($m));
+    return $row ? clinic_client_row($row) : null;
 }
 
 function clinic_get_client_by_user($user_id) {
-    $data = store_load();
-    foreach ($data['clinic_clients'] as $c) {
-        if (isset($c['user_id']) && (int) $c['user_id'] === (int) $user_id) return $c;
-    }
-    return null;
+    $row = clinic_db_one('SELECT * FROM `clinic_clients` WHERE `user_id`=? LIMIT 1', 'i', array((int) $user_id));
+    return $row ? clinic_client_row($row) : null;
 }
 
 function clinic_update_client($id, $patch, $by_user_id) {
-    $data = store_load();
-    foreach ($data['clinic_clients'] as $i => $c) {
-        if ((int) $c['id'] === (int) $id) {
-            // جلوگیری از موبایل تکراری
-            if (isset($patch['mobile'])) {
-                $nm = clinic_norm_mobile($patch['mobile']);
-                if ($nm === '') return array('error' => 'شماره موبایل معتبر نیست.');
-                foreach ($data['clinic_clients'] as $o) {
-                    if ((int) $o['id'] !== (int) $id && clinic_norm_mobile($o['mobile']) === $nm) {
-                        return array('error' => 'این شماره موبایل متعلق به پرونده دیگری است (' . $o['file_no'] . ').');
-                    }
-                }
-                $patch['mobile'] = $nm;
-            }
-            foreach ($patch as $k => $v) {
-                if ($k === 'id' || $k === 'file_no') continue;
-                $c[$k] = $v;
-            }
-            $c['updated_at'] = joma_now();
-            $data['clinic_clients'][$i] = $c;
-            store_save($data);
-            return array('ok' => true);
-        }
+    $id = (int) $id;
+    if (isset($patch['mobile'])) {
+        $nm = clinic_norm_mobile($patch['mobile']);
+        if ($nm === '') return array('error' => 'شماره موبایل معتبر نیست.');
+        $dup = clinic_db_one('SELECT `id`,`file_no` FROM `clinic_clients` WHERE `mobile`=? AND `id`<>? LIMIT 1', 'si', array($nm, $id));
+        if ($dup) return array('error' => 'این شماره موبایل متعلق به پرونده دیگری است (' . $dup['file_no'] . ').');
+        $patch['mobile'] = $nm;
     }
-    return array('error' => 'پرونده پیدا نشد.');
+    $str_keys = array('first_name', 'last_name', 'birth_date', 'job', 'education', 'marital', 'mobile', 'emergency_contact', 'referrer', 'referrer_other', 'first_visit_date', 'status', 'intake_status', 'intake', 'private_note', 'private_updated_at', 'archived_at');
+    $int_keys = array('user_id', 'doctor_id');
+    $sets = array();
+    $types = '';
+    $vals = array();
+    foreach ($str_keys as $k) {
+        if (!isset($patch[$k])) continue;
+        // در strict mode مقدار '' برای DATETIME خطاست؛ NULL می‌گذاریم
+        if (($k === 'archived_at' || $k === 'private_updated_at') && $patch[$k] === '') {
+            $sets[] = '`' . $k . '`=NULL';
+            continue;
+        }
+        $sets[] = '`' . $k . '`=?';
+        $types .= 's';
+        $vals[] = (string) $patch[$k];
+    }
+    foreach ($int_keys as $k) {
+        if (!isset($patch[$k])) continue;
+        $sets[] = '`' . $k . '`=?';
+        $types .= 'i';
+        $vals[] = (int) $patch[$k];
+    }
+    $sets[] = '`updated_at`=?';
+    $types .= 's';
+    $vals[] = joma_now();
+    $types .= 'i';
+    $vals[] = $id;
+    $ok = clinic_db_exec('UPDATE `clinic_clients` SET ' . implode(',', $sets) . ' WHERE `id`=?', $types, $vals);
+    return $ok ? array('ok' => true) : array('error' => 'پرونده پیدا نشد یا به‌روزرسانی ناموفق بود.');
 }
 
 function clinic_client_display_name($c) {
@@ -400,87 +491,88 @@ function clinic_client_display_name($c) {
 
 // فهرست پرونده‌ها با فیلتر و رعایت محدوده دسترسی نقش جاری
 function clinic_list_clients($filters) {
-    $data = store_load();
     $scope = clinic_scope_doctor_ids();
     $q = clinic_norm_digits(trim(isset($filters['q']) ? $filters['q'] : ''));
     $status = isset($filters['status']) ? $filters['status'] : 'active';
     $doctor_id = (int) (isset($filters['doctor_id']) ? $filters['doctor_id'] : 0);
     $flag = isset($filters['flag']) ? $filters['flag'] : '';
+    $where = array();
+    $types = '';
+    $vals = array();
+    if ($scope !== null) $where[] = '`doctor_id` IN (' . clinic_sql_in($scope) . ')';
+    if (clinic_role() === 'client') {
+        $where[] = '`user_id`=?';
+        $types .= 'i';
+        $vals[] = clinic_my_id();
+    }
+    if ($status !== '' && $status !== 'all') {
+        $where[] = '`status`=?';
+        $types .= 's';
+        $vals[] = $status;
+    }
+    if ($doctor_id > 0) {
+        $where[] = '`doctor_id`=?';
+        $types .= 'i';
+        $vals[] = $doctor_id;
+    }
+    if ($q !== '') {
+        $qn = str_replace(' ', '', $q);
+        $qn = str_replace(array('%', '_'), array('\\%', '\\_'), $qn);
+        $where[] = "REPLACE(CONCAT(`first_name`,`last_name`,`mobile`,`file_no`),' ','') LIKE ?";
+        $types .= 's';
+        $vals[] = '%' . $qn . '%';
+    }
+    if ($flag === 'nointake') $where[] = "`intake_status`='none'";
+    if ($flag === 'unreviewed') $where[] = "`intake_status`='self'";
+    $sql = 'SELECT * FROM `clinic_clients`';
+    if ($where) $sql .= ' WHERE ' . implode(' AND ', $where);
+    $sql .= ' ORDER BY `file_no` DESC LIMIT 500';
+    $rows = clinic_db_q($sql, $types, $vals);
     $out = array();
-    foreach ($data['clinic_clients'] as $c) {
-        if ($scope !== null && !in_array((int) $c['doctor_id'], $scope, true)) continue;
-        if (clinic_role() === 'client') {
-            if (!isset($c['user_id']) || (int) $c['user_id'] !== clinic_my_id()) continue;
-        }
-        if ($status !== '' && $status !== 'all' && $c['status'] !== $status) continue;
-        if ($doctor_id > 0 && (int) $c['doctor_id'] !== $doctor_id) continue;
-        if ($q !== '') {
-            $qn = str_replace(' ', '', $q);
-            $hay = str_replace(' ', '', clinic_norm_digits($c['first_name'] . $c['last_name'] . $c['mobile'] . $c['file_no']));
-            if (strpos($hay, $qn) === false) continue;
-        }
+    foreach ($rows as $r) {
+        $c = clinic_client_row($r);
         if ($flag === 'risk') {
             $fl = isset($c['intake']['flags']) ? $c['intake']['flags'] : array();
             $has = (!empty($fl['violence']) || !empty($fl['risks']));
             if (!$has) continue;
         }
-        if ($flag === 'nointake') {
-            if ($c['intake_status'] !== 'none') continue;
-        }
-        if ($flag === 'unreviewed') {
-            if ($c['intake_status'] !== 'self') continue;
-        }
         $out[] = $c;
     }
-    usort($out, function ($a, $b) { return strcmp($b['file_no'], $a['file_no']); });
     return $out;
 }
 
 // ------------------------------------------------------------- دعوت‌نامه ---
 function clinic_create_invite($doctor_id, $client_id, $mobile, $by_user_id) {
-    $data = store_load();
     $token = '';
     if (function_exists('openssl_random_pseudo_bytes')) {
         $rnd = openssl_random_pseudo_bytes(16);
         if ($rnd !== false) $token = bin2hex($rnd);
     }
     if ($token === '') $token = md5(uniqid((string) mt_rand(), true) . microtime(true));
-    $id = store_next_id($data);
-    $data['clinic_invites'][] = array(
-        'id' => $id, 'token' => $token,
-        'doctor_id' => (int) $doctor_id, 'client_id' => (int) $client_id,
-        'mobile' => clinic_norm_mobile($mobile),
-        'created_by' => (int) $by_user_id, 'created_at' => joma_now(),
-        'used_at' => '', 'expires_at' => date('Y-m-d H:i:s', time() + 7 * 86400),
+    clinic_db_exec(
+        'INSERT INTO `clinic_invites` (`token`,`doctor_id`,`client_id`,`mobile`,`created_by`,`created_at`,`expires_at`) VALUES (?,?,?,?,?,?,?)',
+        'siisiss',
+        array($token, (int) $doctor_id, (int) $client_id, clinic_norm_mobile($mobile), (int) $by_user_id, joma_now(), date('Y-m-d H:i:s', time() + 7 * 86400))
     );
-    store_save($data);
     return $token;
 }
 
 function clinic_get_invite_by_token($t) {
     $t = trim((string) $t);
     if ($t === '' || !preg_match('/^[a-f0-9]{16,64}$/', $t)) return null;
-    $data = store_load();
-    foreach ($data['clinic_invites'] as $inv) {
-        if ($inv['token'] === $t) {
-            if ($inv['used_at'] !== '') return null;
-            if ($inv['expires_at'] !== '' && $inv['expires_at'] < joma_now()) return null;
-            return $inv;
-        }
-    }
-    return null;
+    $inv = clinic_db_one('SELECT * FROM `clinic_invites` WHERE `token`=? LIMIT 1', 's', array($t));
+    if (!$inv) return null;
+    if ($inv['used_at'] !== null && $inv['used_at'] !== '') return null;
+    if ($inv['expires_at'] !== '' && $inv['expires_at'] < joma_now()) return null;
+    $inv['id'] = (int) $inv['id'];
+    $inv['doctor_id'] = (int) $inv['doctor_id'];
+    $inv['client_id'] = (int) $inv['client_id'];
+    $inv['created_by'] = (int) $inv['created_by'];
+    return $inv;
 }
 
 function clinic_burn_invite($id) {
-    $data = store_load();
-    foreach ($data['clinic_invites'] as $i => $inv) {
-        if ((int) $inv['id'] === (int) $id) {
-            $data['clinic_invites'][$i]['used_at'] = joma_now();
-            store_save($data);
-            return true;
-        }
-    }
-    return false;
+    return clinic_db_exec('UPDATE `clinic_invites` SET `used_at`=? WHERE `id`=?', 'si', array(joma_now(), (int) $id));
 }
 
 function clinic_invite_url($token) {
@@ -642,57 +734,47 @@ function clinic_intake_validate_final($in) {
 
 // ذخیره اینتیک روی پرونده + همگام‌سازی فیلدهای پایه + وضعیت
 function clinic_intake_save($client_id, $in, $as_role) {
-    $data = store_load();
-    foreach ($data['clinic_clients'] as $i => $c) {
-        if ((int) $c['id'] === (int) $client_id) {
-            $old = isset($c['intake']) && is_array($c['intake']) ? $c['intake'] : array();
-            // حفظ مهرهای قبلی
-            if (isset($old['submitted_at'])) $in['submitted_at'] = $old['submitted_at'];
-            if (isset($old['reviewed_at'])) $in['reviewed_at'] = $old['reviewed_at'];
-            if (isset($old['reviewed_by'])) $in['reviewed_by'] = $old['reviewed_by'];
-            if ($as_role === 'client' && $in['submitted_at'] === '') $in['submitted_at'] = joma_now();
-            $c['intake'] = $in;
-            // همگام‌سازی بخش ۱ با فیلدهای پایه پرونده
-            $s1 = $in['s1'];
-            if ($s1['first_name'] !== '') $c['first_name'] = $s1['first_name'];
-            if ($s1['last_name'] !== '') $c['last_name'] = $s1['last_name'];
-            if ($s1['birth_date'] !== '') $c['birth_date'] = $s1['birth_date'];
-            if ($s1['job'] !== '') $c['job'] = $s1['job'];
-            if ($s1['education'] !== '') $c['education'] = $s1['education'];
-            if ($s1['marital'] !== '') $c['marital'] = $s1['marital'];
-            if ($s1['emergency_contact'] !== '') $c['emergency_contact'] = $s1['emergency_contact'];
-            if ($s1['referrer'] !== '') $c['referrer'] = $s1['referrer'];
-            if ($s1['referrer_other'] !== '') $c['referrer_other'] = $s1['referrer_other'];
-            if ($c['first_visit_date'] === '' && $in['submitted_at'] !== '') {
-                $c['first_visit_date'] = substr(jalali_today(), 0, 10);
-            }
-            if ($as_role === 'client') {
-                if ($c['intake_status'] === 'none') $c['intake_status'] = 'self';
-            }
-            $c['updated_at'] = joma_now();
-            $data['clinic_clients'][$i] = $c;
-            store_save($data);
-            return true;
-        }
+    $client_id = (int) $client_id;
+    $c = clinic_get_client($client_id);
+    if (!$c) return false;
+    $old = isset($c['intake']) && is_array($c['intake']) ? $c['intake'] : array();
+    // حفظ مهرهای قبلی
+    if (isset($old['submitted_at'])) $in['submitted_at'] = $old['submitted_at'];
+    if (isset($old['reviewed_at'])) $in['reviewed_at'] = $old['reviewed_at'];
+    if (isset($old['reviewed_by'])) $in['reviewed_by'] = $old['reviewed_by'];
+    if ($as_role === 'client' && $in['submitted_at'] === '') $in['submitted_at'] = joma_now();
+    $s1 = $in['s1'];
+    $patch = array('intake' => json_encode($in, JSON_UNESCAPED_UNICODE));
+    // همگام‌سازی بخش ۱ با فیلدهای پایه پرونده
+    if ($s1['first_name'] !== '') $patch['first_name'] = $s1['first_name'];
+    if ($s1['last_name'] !== '') $patch['last_name'] = $s1['last_name'];
+    if ($s1['birth_date'] !== '') $patch['birth_date'] = $s1['birth_date'];
+    if ($s1['job'] !== '') $patch['job'] = $s1['job'];
+    if ($s1['education'] !== '') $patch['education'] = $s1['education'];
+    if ($s1['marital'] !== '') $patch['marital'] = $s1['marital'];
+    if ($s1['emergency_contact'] !== '') $patch['emergency_contact'] = $s1['emergency_contact'];
+    if ($s1['referrer'] !== '') $patch['referrer'] = $s1['referrer'];
+    if ($s1['referrer_other'] !== '') $patch['referrer_other'] = $s1['referrer_other'];
+    if ($c['first_visit_date'] === '' && $in['submitted_at'] !== '') {
+        $patch['first_visit_date'] = substr(jalali_today(), 0, 10);
     }
-    return false;
+    if ($as_role === 'client' && $c['intake_status'] === 'none') $patch['intake_status'] = 'self';
+    $res = clinic_update_client($client_id, $patch, clinic_my_id());
+    return isset($res['ok']);
 }
 
 function clinic_mark_reviewed($client_id, $doctor_id) {
-    $data = store_load();
-    foreach ($data['clinic_clients'] as $i => $c) {
-        if ((int) $c['id'] === (int) $client_id) {
-            if (!isset($c['intake']) || !is_array($c['intake'])) $c['intake'] = clinic_intake_empty();
-            $c['intake']['reviewed_at'] = joma_now();
-            $c['intake']['reviewed_by'] = (int) $doctor_id;
-            $c['intake_status'] = 'reviewed';
-            $c['updated_at'] = joma_now();
-            $data['clinic_clients'][$i] = $c;
-            store_save($data);
-            return true;
-        }
-    }
-    return false;
+    $client_id = (int) $client_id;
+    $c = clinic_get_client($client_id);
+    if (!$c) return false;
+    $in = isset($c['intake']) && is_array($c['intake']) && $c['intake'] ? $c['intake'] : clinic_intake_empty();
+    $in['reviewed_at'] = joma_now();
+    $in['reviewed_by'] = (int) $doctor_id;
+    $res = clinic_update_client($client_id, array(
+        'intake' => json_encode($in, JSON_UNESCAPED_UNICODE),
+        'intake_status' => 'reviewed',
+    ), (int) $doctor_id);
+    return isset($res['ok']);
 }
 
 function clinic_client_flags($client) {
@@ -717,37 +799,19 @@ function clinic_client_user_ensure($client_id, $password) {
     if ($mobile === '') return array('error' => 'موبایل پرونده معتبر نیست.');
     $u = clinic_user_by_phone($mobile);
     $hash = password_hash($password, PASSWORD_DEFAULT);
-    $data = store_load();
     if ($u) {
-        foreach ($data['users'] as $i => $row) {
-            if ((int) $row['id'] === (int) $u['id']) {
-                $data['users'][$i]['password_hash'] = $hash;
-                $data['users'][$i]['role_key'] = 'client';
-                $data['users'][$i]['phone'] = $mobile;
-                $data['users'][$i]['doctor_id'] = (int) $c['doctor_id'];
-                $uid = (int) $u['id'];
-                break;
-            }
-        }
+        $uid = (int) $u['id'];
+        clinic_update_user($uid, array('password_hash' => $hash, 'role_key' => 'client', 'phone' => $mobile, 'doctor_id' => (int) $c['doctor_id']));
     } else {
-        $uid = store_next_id($data);
-        $data['users'][] = array(
-            'id' => $uid,
+        $uid = clinic_create_user(array(
             'first_name' => $c['first_name'], 'last_name' => $c['last_name'],
             'username' => $mobile, 'email' => $mobile . '@clinic.local', 'phone' => $mobile,
             'job' => 'مراجع', 'password_hash' => $hash,
-            'role_key' => 'client', 'access_level' => 1, 'doctor_id' => (int) $c['doctor_id'],
-            'mobile_verified' => 0, 'active' => 1, 'created_at' => joma_now(),
-        );
-        $data['preferences'][] = array('user_id' => $uid, 'compact_cards' => 0, 'notifications_enabled' => 0);
+            'role_key' => 'client', 'doctor_id' => (int) $c['doctor_id'],
+        ));
+        if (!$uid) return array('error' => 'خطا در ساخت حساب ورود.');
     }
-    foreach ($data['clinic_clients'] as $i => $row) {
-        if ((int) $row['id'] === (int) $client_id) {
-            $data['clinic_clients'][$i]['user_id'] = $uid;
-            $data['clinic_clients'][$i]['updated_at'] = joma_now();
-        }
-    }
-    store_save($data);
+    clinic_update_client((int) $client_id, array('user_id' => $uid), clinic_my_id());
     return array('user_id' => $uid);
 }
 
@@ -767,16 +831,26 @@ function clinic_appt_active_statuses() {
     return array('reserved', 'confirmed');
 }
 
+function clinic_appt_row($a) {
+    if (!$a) return null;
+    $a['id'] = (int) $a['id'];
+    $a['client_id'] = (int) $a['client_id'];
+    $a['doctor_id'] = (int) $a['doctor_id'];
+    $a['fee'] = (int) $a['fee'];
+    $a['fee_manual'] = (int) $a['fee_manual'];
+    $a['late_cancel'] = (int) $a['late_cancel'];
+    $a['created_by'] = (int) $a['created_by'];
+    $a['remind_sent_at'] = clinic_db_n(isset($a['remind_sent_at']) ? $a['remind_sent_at'] : '');
+    return $a;
+}
+
 function clinic_check_overlap($doctor_id, $date, $start, $end, $except_id) {
-    $data = store_load();
-    foreach ($data['clinic_appointments'] as $a) {
-        if ((int) $a['doctor_id'] !== (int) $doctor_id) continue;
-        if ($a['date'] !== $date) continue;
-        if ((int) $a['id'] === (int) $except_id) continue;
-        if (!in_array($a['status'], clinic_appt_active_statuses(), true)) continue;
-        if ($start < $a['end'] && $a['start'] < $end) return $a;
-    }
-    return null;
+    $row = clinic_db_one(
+        "SELECT * FROM `clinic_appointments` WHERE `doctor_id`=? AND `date`=? AND `id`<>? AND `status` IN ('reserved','confirmed') AND `start`<? AND `end`>? LIMIT 1",
+        'issss',
+        array((int) $doctor_id, $date, (int) $except_id, $end, $start)
+    );
+    return $row ? clinic_appt_row($row) : null;
 }
 
 function clinic_create_appointment($in, $by_user_id) {
@@ -798,30 +872,24 @@ function clinic_create_appointment($in, $by_user_id) {
         $who = $oc ? clinic_client_display_name($oc) : '';
         return array('error' => 'تداخل ساعت با نوبت ' . $who . ' (' . fa_num($ov['start']) . ' تا ' . fa_num($ov['end']) . ').');
     }
-    $data = store_load();
-    $id = store_next_id($data);
     $fee = clinic_fee_for($doctor_id, $type, (int) $client['id']);
-    $data['clinic_appointments'][] = array(
-        'id' => $id, 'client_id' => (int) $client['id'], 'doctor_id' => $doctor_id,
-        'date' => $date, 'start' => $start, 'end' => $end, 'type' => $type,
-        'status' => 'reserved', 'fee' => $fee,
-        'note' => trim(isset($in['note']) ? $in['note'] : ''),
-        'remind_sent_at' => '', 'cancel_reason' => '', 'late_cancel' => 0,
-        'created_by' => (int) $by_user_id, 'created_at' => joma_now(), 'updated_at' => joma_now(),
+    $now = joma_now();
+    $ok = clinic_db_exec(
+        'INSERT INTO `clinic_appointments` (`client_id`,`doctor_id`,`date`,`start`,`end`,`type`,`status`,`fee`,`note`,`created_by`,`created_at`,`updated_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+        'iissssssisss',
+        array((int) $client['id'], $doctor_id, $date, $start, $end, $type, 'reserved', $fee, trim(isset($in['note']) ? $in['note'] : ''), (int) $by_user_id, $now, $now)
     );
-    store_save($data);
-    return array('id' => $id);
+    if (!$ok) return array('error' => 'خطا در ثبت نوبت.');
+    return array('id' => clinic_db_insert_id());
 }
 
 function clinic_get_appointment($id) {
-    $data = store_load();
-    foreach ($data['clinic_appointments'] as $a) {
-        if ((int) $a['id'] === (int) $id) return $a;
-    }
-    return null;
+    $row = clinic_db_one('SELECT * FROM `clinic_appointments` WHERE `id`=? LIMIT 1', 'i', array((int) $id));
+    return $row ? clinic_appt_row($row) : null;
 }
 
 function clinic_update_appointment($id, $patch, $by_user_id) {
+    $id = (int) $id;
     $a = clinic_get_appointment($id);
     if (!$a) return array('error' => 'نوبت پیدا نشد.');
     $client = clinic_get_client($a['client_id']);
@@ -832,38 +900,33 @@ function clinic_update_appointment($id, $patch, $by_user_id) {
     if ($date === '' || $start === '' || $end === '' || $end <= $start) return array('error' => 'تاریخ/ساعت معتبر نیست.');
     $ov = clinic_check_overlap((int) $a['doctor_id'], $date, $start, $end, $id);
     if ($ov) return array('error' => 'تداخل ساعت با نوبت دیگری از همین دکتر.');
-    $data = store_load();
-    foreach ($data['clinic_appointments'] as $i => $row) {
-        if ((int) $row['id'] === (int) $id) {
-            $data['clinic_appointments'][$i]['date'] = $date;
-            $data['clinic_appointments'][$i]['start'] = $start;
-            $data['clinic_appointments'][$i]['end'] = $end;
-            if (isset($patch['type']) && isset(clinic_appt_types()[$patch['type']])) {
-                $data['clinic_appointments'][$i]['type'] = $patch['type'];
-                // به‌روزرسانی مبلغ طبق تعرفه نوع جدید (فقط اگر دستی تغییر نکرده باشد)
-                if (empty($row['fee_manual'])) {
-                    $data['clinic_appointments'][$i]['fee'] = clinic_fee_for((int) $row['doctor_id'], $patch['type'], (int) $row['client_id']);
-                }
-            }
-            if (isset($patch['note'])) $data['clinic_appointments'][$i]['note'] = trim($patch['note']);
-            if (isset($patch['fee']) && clinic_can_manage_finance()) {
-                $fee = clinic_norm_money($patch['fee']);
-                if ($fee !== null) {
-                    $data['clinic_appointments'][$i]['fee'] = $fee;
-                    $data['clinic_appointments'][$i]['fee_manual'] = 1;
-                }
-            }
-            $data['clinic_appointments'][$i]['updated_at'] = joma_now();
-            store_save($data);
-            return array('ok' => true);
+    $type = $a['type'];
+    if (isset($patch['type']) && isset(clinic_appt_types()[$patch['type']])) $type = $patch['type'];
+    $fee = (int) $a['fee'];
+    $fee_manual = (int) $a['fee_manual'];
+    if ($type !== $a['type'] && empty($a['fee_manual'])) {
+        $fee = clinic_fee_for((int) $a['doctor_id'], $type, (int) $a['client_id']);
+    }
+    if (isset($patch['fee']) && $patch['fee'] !== null && clinic_can_manage_finance()) {
+        $f = clinic_norm_money($patch['fee']);
+        if ($f !== null) {
+            $fee = $f;
+            $fee_manual = 1;
         }
     }
-    return array('error' => 'نوبت پیدا نشد.');
+    $note = isset($patch['note']) ? trim($patch['note']) : $a['note'];
+    $ok = clinic_db_exec(
+        'UPDATE `clinic_appointments` SET `date`=?,`start`=?,`end`=?,`type`=?,`fee`=?,`fee_manual`=?,`note`=?,`updated_at`=? WHERE `id`=?',
+        'ssssiiisi',
+        array($date, $start, $end, $type, $fee, $fee_manual, $note, joma_now(), $id)
+    );
+    return $ok ? array('ok' => true) : array('error' => 'به‌روزرسانی ناموفق بود.');
 }
 
 function clinic_set_appointment_status($id, $status, $by_user_id, $reason) {
     $sts = clinic_appt_statuses();
     if (!isset($sts[$status])) return array('error' => 'وضعیت نامعتبر است.');
+    $id = (int) $id;
     $a = clinic_get_appointment($id);
     if (!$a) return array('error' => 'نوبت پیدا نشد.');
     $client = clinic_get_client($a['client_id']);
@@ -878,22 +941,16 @@ function clinic_set_appointment_status($id, $status, $by_user_id, $reason) {
             $late = 1; // لغو دیرهنگام (کمتر از ۲۴ ساعت مانده)
         }
     }
-    $data = store_load();
-    foreach ($data['clinic_appointments'] as $i => $row) {
-        if ((int) $row['id'] === (int) $id) {
-            $data['clinic_appointments'][$i]['status'] = $status;
-            $data['clinic_appointments'][$i]['cancel_reason'] = trim((string) $reason);
-            $data['clinic_appointments'][$i]['late_cancel'] = $late;
-            $data['clinic_appointments'][$i]['updated_at'] = joma_now();
-            store_save($data);
-            return array('ok' => true, 'late' => $late);
-        }
-    }
-    return array('error' => 'نوبت پیدا نشد.');
+    $ok = clinic_db_exec(
+        'UPDATE `clinic_appointments` SET `status`=?,`cancel_reason`=?,`late_cancel`=?,`updated_at`=? WHERE `id`=?',
+        'ssisi',
+        array($status, trim((string) $reason), $late, joma_now(), $id)
+    );
+    if (!$ok) return array('error' => 'به‌روزرسانی ناموفق بود.');
+    return array('ok' => true, 'late' => $late);
 }
 
 function clinic_list_appointments($filters) {
-    $data = store_load();
     $scope = clinic_scope_doctor_ids();
     $date = isset($filters['date']) ? $filters['date'] : '';
     $from = isset($filters['from']) ? $filters['from'] : '';
@@ -903,26 +960,57 @@ function clinic_list_appointments($filters) {
     $status = isset($filters['status']) ? $filters['status'] : '';
     $upcoming = !empty($filters['upcoming']);
     $today = clinic_today();
-    $out = array();
-    foreach ($data['clinic_appointments'] as $a) {
-        if ($scope !== null && !in_array((int) $a['doctor_id'], $scope, true)) continue;
-        if (clinic_role() === 'client') {
-            $c = clinic_get_client($a['client_id']);
-            if (!$c || !isset($c['user_id']) || (int) $c['user_id'] !== clinic_my_id()) continue;
-        }
-        if ($date !== '' && $a['date'] !== $date) continue;
-        if ($from !== '' && $a['date'] < $from) continue;
-        if ($to !== '' && $a['date'] > $to) continue;
-        if ($doctor_id > 0 && (int) $a['doctor_id'] !== $doctor_id) continue;
-        if ($client_id > 0 && (int) $a['client_id'] !== $client_id) continue;
-        if ($status !== '' && $a['status'] !== $status) continue;
-        if ($upcoming && ($a['date'] < $today || !in_array($a['status'], clinic_appt_active_statuses(), true))) continue;
-        $out[] = $a;
+    $where = array();
+    $types = '';
+    $vals = array();
+    if ($scope !== null) $where[] = '`doctor_id` IN (' . clinic_sql_in($scope) . ')';
+    if (clinic_role() === 'client') {
+        $mine = clinic_get_client_by_user(clinic_my_id());
+        $where[] = '`client_id`=?';
+        $types .= 'i';
+        $vals[] = $mine ? (int) $mine['id'] : -1;
     }
-    usort($out, function ($x, $y) {
-        if ($x['date'] === $y['date']) return strcmp($x['start'], $y['start']);
-        return strcmp($x['date'], $y['date']);
-    });
+    if ($date !== '') {
+        $where[] = '`date`=?';
+        $types .= 's';
+        $vals[] = $date;
+    }
+    if ($from !== '') {
+        $where[] = '`date`>=?';
+        $types .= 's';
+        $vals[] = $from;
+    }
+    if ($to !== '') {
+        $where[] = '`date`<=?';
+        $types .= 's';
+        $vals[] = $to;
+    }
+    if ($doctor_id > 0) {
+        $where[] = '`doctor_id`=?';
+        $types .= 'i';
+        $vals[] = $doctor_id;
+    }
+    if ($client_id > 0) {
+        $where[] = '`client_id`=?';
+        $types .= 'i';
+        $vals[] = $client_id;
+    }
+    if ($status !== '') {
+        $where[] = '`status`=?';
+        $types .= 's';
+        $vals[] = $status;
+    }
+    if ($upcoming) {
+        $where[] = "`date`>=? AND `status` IN ('reserved','confirmed')";
+        $types .= 's';
+        $vals[] = $today;
+    }
+    $sql = 'SELECT * FROM `clinic_appointments`';
+    if ($where) $sql .= ' WHERE ' . implode(' AND ', $where);
+    $sql .= ' ORDER BY `date`,`start` LIMIT 1000';
+    $rows = clinic_db_q($sql, $types, $vals);
+    $out = array();
+    foreach ($rows as $r) $out[] = clinic_appt_row($r);
     return $out;
 }
 
@@ -932,36 +1020,44 @@ function clinic_client_next_appointment($client_id) {
 }
 
 function clinic_client_done_count($client_id) {
-    $n = 0;
-    $data = store_load();
-    foreach ($data['clinic_appointments'] as $a) {
-        if ((int) $a['client_id'] === (int) $client_id && $a['status'] === 'done') $n++;
-    }
-    return $n;
+    $row = clinic_db_one("SELECT COUNT(*) AS c FROM `clinic_appointments` WHERE `client_id`=? AND `status`='done'", 'i', array((int) $client_id));
+    return $row ? (int) $row['c'] : 0;
 }
 
-// شماره جلسه برای یک نوبت (ترتیب زمانی بین جلسات برگزار/فعال)
+// شماره جلسه برای یک نوبت (ترتیب زمانی بین جلسات)
 function clinic_session_no_for($appt) {
-    $data = store_load();
-    $list = array();
-    foreach ($data['clinic_appointments'] as $a) {
-        if ((int) $a['client_id'] !== (int) $appt['client_id']) continue;
-        if (in_array($a['status'], array('cancel_client', 'cancel_clinic'), true)) continue;
-        $list[] = $a;
-    }
-    usort($list, function ($x, $y) {
-        if ($x['date'] === $y['date']) return strcmp($x['start'], $y['start']);
-        return strcmp($x['date'], $y['date']);
-    });
+    $rows = clinic_db_q(
+        "SELECT `id` FROM `clinic_appointments` WHERE `client_id`=? AND `status` NOT IN ('cancel_client','cancel_clinic') ORDER BY `date`,`start`,`id`",
+        'i',
+        array((int) $appt['client_id'])
+    );
     $n = 0;
-    foreach ($list as $a) {
+    foreach ($rows as $r) {
         $n++;
-        if ((int) $a['id'] === (int) $appt['id']) return $n;
+        if ((int) $r['id'] === (int) $appt['id']) return $n;
     }
     return $n;
 }
 
 // ------------------------------------------------------------- خلاصه‌ها ---
+function clinic_note_row($n) {
+    if (!$n) return null;
+    $n['id'] = (int) $n['id'];
+    $n['client_id'] = (int) $n['client_id'];
+    $n['doctor_id'] = (int) $n['doctor_id'];
+    $n['appointment_id'] = (int) $n['appointment_id'];
+    $n['session_no'] = (int) $n['session_no'];
+    $n['duration'] = (int) $n['duration'];
+    $n['progress'] = (int) $n['progress'];
+    $t = isset($n['tags']) ? $n['tags'] : '';
+    if ($t === null || $t === '') $n['tags'] = array();
+    else {
+        $d = json_decode($t, true);
+        $n['tags'] = is_array($d) ? $d : array();
+    }
+    return $n;
+}
+
 function clinic_create_note($in, $by_user_id) {
     $client = clinic_get_client(isset($in['client_id']) ? $in['client_id'] : 0);
     if (!$client || !clinic_can_edit_clinical($client)) return array('error' => 'فقط درمانگرِ پرونده می‌تواند خلاصه ثبت کند.');
@@ -982,107 +1078,80 @@ function clinic_create_note($in, $by_user_id) {
     }
     $progress = (int) (isset($in['progress']) ? $in['progress'] : 0);
     if ($progress < 0 || $progress > 5) $progress = 0;
-    $data = store_load();
-    $id = store_next_id($data);
     $session_no = 0;
     if ($appt_id > 0) {
         $appt = clinic_get_appointment($appt_id);
         if ($appt) $session_no = clinic_session_no_for($appt);
     }
-    $data['clinic_notes'][] = array(
-        'id' => $id, 'client_id' => (int) $client['id'], 'doctor_id' => clinic_my_id(),
-        'appointment_id' => $appt_id, 'kind' => 'session', 'session_no' => $session_no,
-        'date' => clinic_today(), 'duration' => (int) (isset($in['duration']) ? $in['duration'] : 0),
-        'text' => $text, 'tags' => $tags, 'progress' => $progress,
-        'next_plan' => trim(isset($in['next_plan']) ? $in['next_plan'] : ''),
-        'created_at' => joma_now(), 'updated_at' => joma_now(),
+    $now = joma_now();
+    $ok = clinic_db_exec(
+        'INSERT INTO `clinic_notes` (`client_id`,`doctor_id`,`appointment_id`,`kind`,`session_no`,`date`,`duration`,`text`,`tags`,`progress`,`next_plan`,`created_at`,`updated_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        'iiiisisssisss',
+        array((int) $client['id'], clinic_my_id(), $appt_id, 'session', $session_no, clinic_today(), (int) (isset($in['duration']) ? $in['duration'] : 0), $text, json_encode($tags, JSON_UNESCAPED_UNICODE), $progress, trim(isset($in['next_plan']) ? $in['next_plan'] : ''), $now, $now)
     );
-    store_save($data);
-    return array('id' => $id);
+    if (!$ok) return array('error' => 'خطا در ثبت خلاصه.');
+    return array('id' => clinic_db_insert_id());
 }
 
 function clinic_update_note($id, $patch, $by_user_id) {
-    $data = store_load();
-    foreach ($data['clinic_notes'] as $i => $n) {
-        if ((int) $n['id'] === (int) $id) {
-            $client = clinic_get_client($n['client_id']);
-            if (!$client || !clinic_can_edit_clinical($client)) return array('error' => 'دسترسی ندارید.');
-            if (isset($patch['text'])) {
-                $t = trim($patch['text']);
-                if ($t === '') return array('error' => 'متن خلاصه خالی است.');
-                $data['clinic_notes'][$i]['text'] = $t;
-            }
-            if (isset($patch['next_plan'])) $data['clinic_notes'][$i]['next_plan'] = trim($patch['next_plan']);
-            if (isset($patch['duration'])) $data['clinic_notes'][$i]['duration'] = max(0, (int) $patch['duration']);
-            if (isset($patch['progress'])) {
-                $p = (int) $patch['progress'];
-                $data['clinic_notes'][$i]['progress'] = ($p >= 0 && $p <= 5) ? $p : 0;
-            }
-            if (isset($patch['tags'])) {
-                $tags = array();
-                foreach (explode(',', str_replace('،', ',', (string) $patch['tags'])) as $t) {
-                    $t = trim($t);
-                    if ($t !== '') $tags[] = $t;
-                }
-                $data['clinic_notes'][$i]['tags'] = $tags;
-            }
-            $data['clinic_notes'][$i]['updated_at'] = joma_now();
-            store_save($data);
-            return array('ok' => true);
+    $id = (int) $id;
+    $n = clinic_get_note($id);
+    if (!$n) return array('error' => 'خلاصه پیدا نشد.');
+    $client = clinic_get_client($n['client_id']);
+    if (!$client || !clinic_can_edit_clinical($client)) return array('error' => 'دسترسی ندارید.');
+    $text = isset($patch['text']) ? trim($patch['text']) : $n['text'];
+    if ($text === '') return array('error' => 'متن خلاصه خالی است.');
+    $tags = $n['tags'];
+    if (isset($patch['tags'])) {
+        $tags = array();
+        foreach (explode(',', str_replace('،', ',', (string) $patch['tags'])) as $t) {
+            $t = trim($t);
+            if ($t !== '') $tags[] = $t;
         }
     }
-    return array('error' => 'خلاصه پیدا نشد.');
+    $progress = isset($patch['progress']) ? (int) $patch['progress'] : (int) $n['progress'];
+    if ($progress < 0 || $progress > 5) $progress = 0;
+    $ok = clinic_db_exec(
+        'UPDATE `clinic_notes` SET `text`=?,`next_plan`=?,`duration`=?,`progress`=?,`tags`=?,`updated_at`=? WHERE `id`=?',
+        'ssiissi',
+        array($text, isset($patch['next_plan']) ? trim($patch['next_plan']) : $n['next_plan'], isset($patch['duration']) ? max(0, (int) $patch['duration']) : (int) $n['duration'], $progress, json_encode($tags, JSON_UNESCAPED_UNICODE), joma_now(), $id)
+    );
+    return $ok ? array('ok' => true) : array('error' => 'به‌روزرسانی ناموفق بود.');
+}
+
+function clinic_get_note($id) {
+    $row = clinic_db_one('SELECT * FROM `clinic_notes` WHERE `id`=? LIMIT 1', 'i', array((int) $id));
+    return $row ? clinic_note_row($row) : null;
 }
 
 function clinic_note_for_appointment($appt_id) {
-    $data = store_load();
-    foreach ($data['clinic_notes'] as $n) {
-        if ((int) $n['appointment_id'] === (int) $appt_id) return $n;
-    }
-    return null;
+    $row = clinic_db_one('SELECT * FROM `clinic_notes` WHERE `appointment_id`=? LIMIT 1', 'i', array((int) $appt_id));
+    return $row ? clinic_note_row($row) : null;
 }
 
 function clinic_list_notes($client_id) {
-    $data = store_load();
+    $rows = clinic_db_q('SELECT * FROM `clinic_notes` WHERE `client_id`=? ORDER BY `date` DESC, `id` DESC', 'i', array((int) $client_id));
     $out = array();
-    foreach ($data['clinic_notes'] as $n) {
-        if ((int) $n['client_id'] === (int) $client_id) $out[] = $n;
-    }
-    usort($out, function ($x, $y) { return strcmp($y['date'] . $y['id'], $x['date'] . $x['id']); });
+    foreach ($rows as $r) $out[] = clinic_note_row($r);
     return $out;
 }
 
 function clinic_done_without_note($doctor_id) {
-    $data = store_load();
-    $noted = array();
-    foreach ($data['clinic_notes'] as $n) {
-        if ((int) $n['appointment_id'] > 0) $noted[(int) $n['appointment_id']] = true;
-    }
+    $rows = clinic_db_q(
+        "SELECT a.* FROM `clinic_appointments` a LEFT JOIN `clinic_notes` n ON n.`appointment_id`=a.`id` WHERE a.`doctor_id`=? AND a.`status`='done' AND n.`id` IS NULL ORDER BY a.`date` DESC LIMIT 100",
+        'i',
+        array((int) $doctor_id)
+    );
     $out = array();
-    foreach ($data['clinic_appointments'] as $a) {
-        if ((int) $a['doctor_id'] !== (int) $doctor_id) continue;
-        if ($a['status'] !== 'done') continue;
-        if (isset($noted[(int) $a['id']])) continue;
-        $out[] = $a;
-    }
-    usort($out, function ($x, $y) { return strcmp($y['date'], $x['date']); });
+    foreach ($rows as $r) $out[] = clinic_appt_row($r);
     return $out;
 }
 
 function clinic_save_private_note($client_id, $text, $by_user_id) {
     $client = clinic_get_client($client_id);
     if (!$client || !clinic_can_edit_clinical($client)) return array('error' => 'دسترسی ندارید.');
-    $data = store_load();
-    foreach ($data['clinic_clients'] as $i => $c) {
-        if ((int) $c['id'] === (int) $client_id) {
-            $data['clinic_clients'][$i]['private_note'] = trim((string) $text);
-            $data['clinic_clients'][$i]['private_updated_at'] = joma_now();
-            $data['clinic_clients'][$i]['updated_at'] = joma_now();
-            store_save($data);
-            return array('ok' => true);
-        }
-    }
-    return array('error' => 'پرونده پیدا نشد.');
+    $res = clinic_update_client((int) $client_id, array('private_note' => trim((string) $text), 'private_updated_at' => joma_now()), (int) $by_user_id);
+    return isset($res['ok']) ? array('ok' => true) : $res;
 }
 
 // ------------------------------------------------------------- مالی ---
@@ -1108,98 +1177,107 @@ function clinic_tariff_defaults() {
 }
 
 function clinic_ensure_tariffs() {
-    $data = store_load();
-    if (!empty($data['clinic_tariffs'])) return;
+    $row = clinic_db_one('SELECT COUNT(*) AS c FROM `clinic_tariffs`', '', array());
+    if ($row && (int) $row['c'] > 0) return;
     foreach (clinic_tariff_defaults() as $t) {
-        $t['id'] = store_next_id($data);
-        $t['active'] = 1;
-        $data['clinic_tariffs'][] = $t;
+        clinic_db_exec(
+            'INSERT IGNORE INTO `clinic_tariffs` (`tkey`,`title`,`session_type`,`amount`,`active`) VALUES (?,?,?,?,1)',
+            'sssi',
+            array($t['key'], $t['title'], $t['session_type'], (int) $t['amount'])
+        );
     }
-    store_save($data);
 }
 
 function clinic_list_tariffs() {
     clinic_ensure_tariffs();
-    $data = store_load();
-    return $data['clinic_tariffs'];
+    $rows = clinic_db_q('SELECT * FROM `clinic_tariffs` ORDER BY `id`', '', array());
+    foreach ($rows as $i => $r) {
+        $rows[$i]['id'] = (int) $r['id'];
+        $rows[$i]['amount'] = (int) $r['amount'];
+        $rows[$i]['active'] = (int) $r['active'];
+    }
+    return $rows;
 }
 
 function clinic_save_tariff($id, $title, $amount, $active) {
-    $data = store_load();
-    foreach ($data['clinic_tariffs'] as $i => $t) {
-        if ((int) $t['id'] === (int) $id) {
-            if ($title !== '') $data['clinic_tariffs'][$i]['title'] = $title;
-            if ($amount !== null) $data['clinic_tariffs'][$i]['amount'] = $amount;
-            $data['clinic_tariffs'][$i]['active'] = $active ? 1 : 0;
-            store_save($data);
-            return true;
-        }
+    if ($title !== '') {
+        clinic_db_exec('UPDATE `clinic_tariffs` SET `title`=? WHERE `id`=?', 'si', array($title, (int) $id));
     }
-    return false;
+    if ($amount !== null) {
+        clinic_db_exec('UPDATE `clinic_tariffs` SET `amount`=? WHERE `id`=?', 'ii', array((int) $amount, (int) $id));
+    }
+    clinic_db_exec('UPDATE `clinic_tariffs` SET `active`=? WHERE `id`=?', 'ii', array($active ? 1 : 0, (int) $id));
+    return true;
 }
 
 // حل تعرفه: استثنای مراجع > استثنای دکتر > پایه نوع جلسه
 function clinic_fee_for($doctor_id, $session_type, $client_id) {
-    $data = store_load();
+    $tariffs = clinic_db_q('SELECT * FROM `clinic_tariffs` WHERE `session_type`=? AND `active`=1', 's', array($session_type));
     $base = 0;
-    if (isset($data['clinic_tariffs'])) {
-        foreach ($data['clinic_tariffs'] as $t) {
-            if ($t['session_type'] === $session_type && !empty($t['active'])) {
-                // ویزیت اول جداست؛ مبلغ پایه = ردیف هم‌نام نوع جلسه
-                if ($t['key'] === $session_type) $base = (int) $t['amount'];
-            }
-        }
+    foreach ($tariffs as $t) {
+        if ($t['tkey'] === $session_type) $base = (int) $t['amount'];
     }
     $fee = $base;
-    if (isset($data['clinic_overrides'])) {
-        foreach ($data['clinic_overrides'] as $o) {
-            if ($o['session_type'] !== $session_type) continue;
-            if ((int) $o['client_id'] === (int) $client_id && (int) $client_id > 0) return (int) $o['amount'];
-        }
-        foreach ($data['clinic_overrides'] as $o) {
-            if ($o['session_type'] !== $session_type) continue;
-            if ((int) $o['client_id'] === 0 && (int) $o['doctor_id'] === (int) $doctor_id) $fee = (int) $o['amount'];
-        }
+    $ov = clinic_db_q('SELECT * FROM `clinic_overrides` WHERE `session_type`=?', 's', array($session_type));
+    foreach ($ov as $o) {
+        if ((int) $o['client_id'] === (int) $client_id && (int) $client_id > 0) return (int) $o['amount'];
+    }
+    foreach ($ov as $o) {
+        if ((int) $o['client_id'] === 0 && (int) $o['doctor_id'] === (int) $doctor_id) $fee = (int) $o['amount'];
     }
     return $fee;
 }
 
 function clinic_list_overrides() {
-    $data = store_load();
-    return isset($data['clinic_overrides']) ? $data['clinic_overrides'] : array();
+    $rows = clinic_db_q('SELECT * FROM `clinic_overrides` ORDER BY `id` DESC LIMIT 500', '', array());
+    foreach ($rows as $i => $r) {
+        $rows[$i]['id'] = (int) $r['id'];
+        $rows[$i]['doctor_id'] = (int) $r['doctor_id'];
+        $rows[$i]['client_id'] = (int) $r['client_id'];
+        $rows[$i]['amount'] = (int) $r['amount'];
+    }
+    return $rows;
 }
 
 function clinic_save_override($doctor_id, $client_id, $session_type, $amount) {
     $types = clinic_appt_types();
     if (!isset($types[$session_type])) return array('error' => 'نوع جلسه نامعتبر است.');
     if ($amount === null || $amount < 0) return array('error' => 'مبلغ نامعتبر است.');
-    $data = store_load();
-    // اگر مشابه بود به‌روزرسانی
-    foreach ($data['clinic_overrides'] as $i => $o) {
-        if ((int) $o['doctor_id'] === (int) $doctor_id && (int) $o['client_id'] === (int) $client_id && $o['session_type'] === $session_type) {
-            $data['clinic_overrides'][$i]['amount'] = $amount;
-            store_save($data);
-            return array('ok' => true);
-        }
-    }
-    $data['clinic_overrides'][] = array(
-        'id' => store_next_id($data), 'doctor_id' => (int) $doctor_id, 'client_id' => (int) $client_id,
-        'session_type' => $session_type, 'amount' => $amount,
+    $ex = clinic_db_one(
+        'SELECT `id` FROM `clinic_overrides` WHERE `doctor_id`=? AND `client_id`=? AND `session_type`=? LIMIT 1',
+        'iis',
+        array((int) $doctor_id, (int) $client_id, $session_type)
     );
-    store_save($data);
+    if ($ex) {
+        clinic_db_exec('UPDATE `clinic_overrides` SET `amount`=? WHERE `id`=?', 'ii', array((int) $amount, (int) $ex['id']));
+    } else {
+        clinic_db_exec(
+            'INSERT INTO `clinic_overrides` (`doctor_id`,`client_id`,`session_type`,`amount`) VALUES (?,?,?,?)',
+            'iisi',
+            array((int) $doctor_id, (int) $client_id, $session_type, (int) $amount)
+        );
+    }
     return array('ok' => true);
 }
 
 function clinic_delete_override($id) {
-    $data = store_load();
-    foreach ($data['clinic_overrides'] as $i => $o) {
-        if ((int) $o['id'] === (int) $id) {
-            array_splice($data['clinic_overrides'], $i, 1);
-            store_save($data);
-            return true;
-        }
-    }
-    return false;
+    return clinic_db_exec('DELETE FROM `clinic_overrides` WHERE `id`=?', 'i', array((int) $id));
+}
+
+function clinic_txn_row($t) {
+    if (!$t) return null;
+    $t['id'] = (int) $t['id'];
+    $t['client_id'] = (int) $t['client_id'];
+    $t['doctor_id'] = (int) $t['doctor_id'];
+    $t['appointment_id'] = (int) $t['appointment_id'];
+    $t['amount'] = (int) $t['amount'];
+    $t['created_by'] = (int) $t['created_by'];
+    return $t;
+}
+
+function clinic_get_transaction($id) {
+    $row = clinic_db_one('SELECT * FROM `clinic_transactions` WHERE `id`=? LIMIT 1', 'i', array((int) $id));
+    return $row ? clinic_txn_row($row) : null;
 }
 
 function clinic_create_transaction($in, $by_user_id) {
@@ -1218,95 +1296,94 @@ function clinic_create_transaction($in, $by_user_id) {
     $date = clinic_valid_jdate(isset($in['date']) ? $in['date'] : '');
     if ($date === '') $date = clinic_today();
     $appt_id = (int) (isset($in['appointment_id']) ? $in['appointment_id'] : 0);
-    $data = store_load();
-    $id = store_next_id($data);
-    $data['clinic_transactions'][] = array(
-        'id' => $id, 'client_id' => (int) $client['id'], 'doctor_id' => (int) $client['doctor_id'],
-        'appointment_id' => $appt_id, 'kind' => $kind, 'amount' => $amount, 'method' => $method,
-        'ref_no' => trim(isset($in['ref_no']) ? $in['ref_no'] : ''),
-        'date' => $date, 'note' => trim(isset($in['note']) ? $in['note'] : ''),
-        'created_by' => (int) $by_user_id, 'created_at' => joma_now(),
+    $ok = clinic_db_exec(
+        'INSERT INTO `clinic_transactions` (`client_id`,`doctor_id`,`appointment_id`,`kind`,`amount`,`method`,`ref_no`,`date`,`note`,`created_by`,`created_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+        'iiisissssis',
+        array((int) $client['id'], (int) $client['doctor_id'], $appt_id, $kind, $amount, $method, trim(isset($in['ref_no']) ? $in['ref_no'] : ''), $date, trim(isset($in['note']) ? $in['note'] : ''), (int) $by_user_id, joma_now())
     );
-    store_save($data);
-    return array('id' => $id);
+    if (!$ok) return array('error' => 'خطا در ثبت تراکنش.');
+    return array('id' => clinic_db_insert_id());
 }
 
 function clinic_delete_transaction($id, $by_user_id) {
     if (!in_array(clinic_role(), array('admin', 'head_secretary'), true)) {
         return array('error' => 'فقط مدیر و منشی ارشد می‌توانند تراکنش را حذف کنند.');
     }
-    $data = store_load();
-    foreach ($data['clinic_transactions'] as $i => $t) {
-        if ((int) $t['id'] === (int) $id) {
-            $client = clinic_get_client($t['client_id']);
-            if ($client && !clinic_can_access_client($client)) return array('error' => 'دسترسی ندارید.');
-            array_splice($data['clinic_transactions'], $i, 1);
-            store_save($data);
-            clinic_audit('حذف تراکنش مالی', (int) $t['client_id'], 'مبلغ ' . clinic_money($t['amount']) . ' — ' . $t['kind']);
-            return array('ok' => true);
-        }
-    }
-    return array('error' => 'تراکنش پیدا نشد.');
+    $id = (int) $id;
+    $t = clinic_get_transaction($id);
+    if (!$t) return array('error' => 'تراکنش پیدا نشد.');
+    $client = clinic_get_client($t['client_id']);
+    if ($client && !clinic_can_access_client($client)) return array('error' => 'دسترسی ندارید.');
+    clinic_db_exec('DELETE FROM `clinic_transactions` WHERE `id`=?', 'i', array($id));
+    clinic_audit('حذف تراکنش مالی', (int) $t['client_id'], 'مبلغ ' . clinic_money($t['amount']) . ' — ' . $t['kind']);
+    return array('ok' => true);
 }
 
 function clinic_list_transactions($filters) {
-    $data = store_load();
     $scope = clinic_scope_doctor_ids();
     $client_id = (int) (isset($filters['client_id']) ? $filters['client_id'] : 0);
     $doctor_id = (int) (isset($filters['doctor_id']) ? $filters['doctor_id'] : 0);
     $from = isset($filters['from']) ? $filters['from'] : '';
     $to = isset($filters['to']) ? $filters['to'] : '';
-    $out = array();
-    if (!isset($data['clinic_transactions'])) return $out;
-    foreach ($data['clinic_transactions'] as $t) {
-        if ($scope !== null && !in_array((int) $t['doctor_id'], $scope, true)) continue;
-        if (clinic_role() === 'client') {
-            $c = clinic_get_client($t['client_id']);
-            if (!$c || !isset($c['user_id']) || (int) $c['user_id'] !== clinic_my_id()) continue;
-        }
-        if ($client_id > 0 && (int) $t['client_id'] !== $client_id) continue;
-        if ($doctor_id > 0 && (int) $t['doctor_id'] !== $doctor_id) continue;
-        if ($from !== '' && $t['date'] < $from) continue;
-        if ($to !== '' && $t['date'] > $to) continue;
-        $out[] = $t;
+    $where = array();
+    $types = '';
+    $vals = array();
+    if ($scope !== null) $where[] = '`doctor_id` IN (' . clinic_sql_in($scope) . ')';
+    if (clinic_role() === 'client') {
+        $mine = clinic_get_client_by_user(clinic_my_id());
+        $where[] = '`client_id`=?';
+        $types .= 'i';
+        $vals[] = $mine ? (int) $mine['id'] : -1;
     }
-    usort($out, function ($x, $y) {
-        if ($x['date'] === $y['date']) return $y['id'] - $x['id'];
-        return strcmp($y['date'], $x['date']);
-    });
+    if ($client_id > 0) {
+        $where[] = '`client_id`=?';
+        $types .= 'i';
+        $vals[] = $client_id;
+    }
+    if ($doctor_id > 0) {
+        $where[] = '`doctor_id`=?';
+        $types .= 'i';
+        $vals[] = $doctor_id;
+    }
+    if ($from !== '') {
+        $where[] = '`date`>=?';
+        $types .= 's';
+        $vals[] = $from;
+    }
+    if ($to !== '') {
+        $where[] = '`date`<=?';
+        $types .= 's';
+        $vals[] = $to;
+    }
+    $sql = 'SELECT * FROM `clinic_transactions`';
+    if ($where) $sql .= ' WHERE ' . implode(' AND ', $where);
+    $sql .= ' ORDER BY `date` DESC, `id` DESC LIMIT 1000';
+    $rows = clinic_db_q($sql, $types, $vals);
+    $out = array();
+    foreach ($rows as $r) $out[] = clinic_txn_row($r);
     return $out;
 }
 
 // جمع‌بندی مالی یک مراجع
 function clinic_client_totals($client_id) {
-    $data = store_load();
-    $expected = 0;
-    if (isset($data['clinic_appointments'])) {
-        foreach ($data['clinic_appointments'] as $a) {
-            if ((int) $a['client_id'] !== (int) $client_id) continue;
-            if (in_array($a['status'], array('cancel_client', 'cancel_clinic'), true)) continue;
-            $expected += (int) (isset($a['fee']) ? $a['fee'] : 0);
-        }
-    }
+    $client_id = (int) $client_id;
+    $e = clinic_db_one("SELECT COALESCE(SUM(`fee`),0) AS s FROM `clinic_appointments` WHERE `client_id`=? AND `status` NOT IN ('cancel_client','cancel_clinic')", 'i', array($client_id));
+    $expected = $e ? (int) $e['s'] : 0;
+    $rows = clinic_db_q('SELECT `kind`, COALESCE(SUM(`amount`),0) AS s FROM `clinic_transactions` WHERE `client_id`=? GROUP BY `kind`', 'i', array($client_id));
     $paid = 0;
     $prepay = 0;
     $discount = 0;
     $charge = 0;
-    if (isset($data['clinic_transactions'])) {
-        foreach ($data['clinic_transactions'] as $t) {
-            if ((int) $t['client_id'] !== (int) $client_id) continue;
-            if ($t['kind'] === 'payment') $paid += (int) $t['amount'];
-            elseif ($t['kind'] === 'prepay') $prepay += (int) $t['amount'];
-            elseif ($t['kind'] === 'discount') $discount += (int) $t['amount'];
-            elseif ($t['kind'] === 'charge') $charge += (int) $t['amount'];
-        }
+    foreach ($rows as $r) {
+        if ($r['kind'] === 'payment') $paid = (int) $r['s'];
+        elseif ($r['kind'] === 'prepay') $prepay = (int) $r['s'];
+        elseif ($r['kind'] === 'discount') $discount = (int) $r['s'];
+        elseif ($r['kind'] === 'charge') $charge = (int) $r['s'];
     }
-    $total_debt_value = $expected + $charge;
-    $total_paid_value = $paid + $prepay + $discount;
     return array(
         'expected' => $expected, 'paid' => $paid, 'prepay' => $prepay,
         'discount' => $discount, 'charge' => $charge,
-        'debt' => $total_debt_value - $total_paid_value,
+        'debt' => ($expected + $charge) - ($paid + $prepay + $discount),
     );
 }
 
@@ -1346,8 +1423,8 @@ function clinic_per_doctor_income($from, $to) {
 function clinic_default_settings() {
     return array(
         'reminder_mode' => 'manual', // manual | auto
-        'reminder_template' => "سلام {name} عزیز 🌸\nیادآوری نوبت {doctor}:\n📅 {date} — ساعت {time}\nلطفاً در صورت نیاز به جابه‌جایی، حداقل ۲۴ ساعت قبل اطلاع دهید.",
-        'crisis_text' => "اگر احساس خطر فوری برای خودتان یا دیگران دارید، لطفاً سریعاً با اورژانس (۱۱۵) یا اورژانس اجتماعی (۱۲۳) تماس بگیرید.",
+        'reminder_template' => "سلام {name} عزیز\nیادآوری نوبت {doctor}:\n{date} — ساعت {time}\nلطفاً در صورت نیاز به جابه‌جایی، حداقل ۲۴ ساعت قبل اطلاع دهید.",
+        'crisis_text' => 'اگر احساس خطر فوری برای خودتان یا دیگران دارید، لطفاً سریعاً با اورژانس (۱۱۵) یا اورژانس اجتماعی (۱۲۳) تماس بگیرید.',
         'accuracy_text' => 'صحت اطلاعات واردشده را تأیید می‌کنم.',
         'cancel_hours' => 24,
         'sms_api_url' => '',
@@ -1358,33 +1435,31 @@ function clinic_default_settings() {
 }
 
 function clinic_get_settings() {
-    $data = store_load();
     $base = clinic_default_settings();
-    if (isset($data['clinic_settings']) && is_array($data['clinic_settings'])) {
-        foreach ($base as $k => $v) {
-            if (isset($data['clinic_settings'][$k])) $base[$k] = $data['clinic_settings'][$k];
+    $rows = clinic_db_q('SELECT `skey`,`svalue` FROM `clinic_settings`', '', array());
+    foreach ($rows as $r) {
+        if (isset($base[$r['skey']])) {
+            $base[$r['skey']] = $r['svalue'] === null ? '' : $r['svalue'];
         }
     }
+    $base['cancel_hours'] = (int) $base['cancel_hours'];
+    if ($base['cancel_hours'] < 1) $base['cancel_hours'] = 24;
     return $base;
 }
 
 function clinic_save_settings($patch) {
-    $data = store_load();
-    if (!isset($data['clinic_settings']) || !is_array($data['clinic_settings'])) {
-        $data['clinic_settings'] = clinic_default_settings();
-    }
     $allow = array('reminder_mode', 'reminder_template', 'crisis_text', 'accuracy_text', 'cancel_hours', 'sms_api_url', 'sms_ok_contains', 'clinic_name', 'clinic_contact');
     foreach ($allow as $k) {
         if (!isset($patch[$k])) continue;
         if ($k === 'reminder_mode') {
-            $data['clinic_settings'][$k] = ($patch[$k] === 'auto') ? 'auto' : 'manual';
+            $v = ($patch[$k] === 'auto') ? 'auto' : 'manual';
         } elseif ($k === 'cancel_hours') {
-            $data['clinic_settings'][$k] = max(1, min(168, (int) $patch[$k]));
+            $v = (string) max(1, min(168, (int) $patch[$k]));
         } else {
-            $data['clinic_settings'][$k] = trim((string) $patch[$k]);
+            $v = trim((string) $patch[$k]);
         }
+        clinic_db_exec('INSERT INTO `clinic_settings` (`skey`,`svalue`) VALUES (?,?) ON DUPLICATE KEY UPDATE `svalue`=VALUES(`svalue`)', 'ss', array($k, $v));
     }
-    store_save($data);
 }
 
 function clinic_reminder_text($appt, $client, $doctor_name) {
@@ -1402,15 +1477,7 @@ function clinic_reminder_text($appt, $client, $doctor_name) {
 }
 
 function clinic_mark_reminded($appt_id, $by_user_id) {
-    $data = store_load();
-    foreach ($data['clinic_appointments'] as $i => $a) {
-        if ((int) $a['id'] === (int) $appt_id) {
-            $data['clinic_appointments'][$i]['remind_sent_at'] = joma_now();
-            store_save($data);
-            return true;
-        }
-    }
-    return false;
+    return clinic_db_exec('UPDATE `clinic_appointments` SET `remind_sent_at`=? WHERE `id`=?', 'si', array(joma_now(), (int) $appt_id));
 }
 
 // ارسال پیامک خودکار (قالب URL قابل تنظیم با {to} و {text})
@@ -1568,56 +1635,58 @@ function clinic_import_rows($rows, $doctor_id, $by_user_id) {
 
 // ------------------------------------------------------------- لاگ ---
 function clinic_audit($action, $client_id, $detail) {
-    $data = store_load();
-    $id = store_next_id($data);
-    $data['clinic_audit'][] = array(
-        'id' => $id, 'at' => joma_now(), 'user_id' => clinic_my_id(),
-        'action' => (string) $action, 'client_id' => (int) $client_id, 'detail' => (string) $detail,
+    clinic_db_exec(
+        'INSERT INTO `clinic_audit` (`at`,`user_id`,`action`,`client_id`,`detail`) VALUES (?,?,?,?,?)',
+        'sisis',
+        array(joma_now(), clinic_my_id(), (string) $action, (int) $client_id, (string) $detail)
     );
-    // سقف لاگ برای سبکی فایل
-    if (count($data['clinic_audit']) > 3000) {
-        $data['clinic_audit'] = array_slice($data['clinic_audit'], -3000);
+    // سقف لاگ برای سبکی جدول
+    $row = clinic_db_one('SELECT COUNT(*) AS c FROM `clinic_audit`', '', array());
+    if ($row && (int) $row['c'] > 3200) {
+        $m = clinic_db();
+        @mysqli_query($m, 'DELETE FROM `clinic_audit` ORDER BY `id` ASC LIMIT 200');
     }
-    store_save($data);
 }
 
 function clinic_list_audit($client_id, $limit) {
-    $data = store_load();
+    $client_id = (int) $client_id;
+    $limit = max(1, min(500, (int) $limit));
+    if ($client_id > 0) {
+        $rows = clinic_db_q('SELECT * FROM `clinic_audit` WHERE `client_id`=? ORDER BY `id` DESC LIMIT ' . $limit, 'i', array($client_id));
+    } else {
+        $rows = clinic_db_q('SELECT * FROM `clinic_audit` ORDER BY `id` DESC LIMIT ' . $limit, '', array());
+    }
     $out = array();
-    if (!isset($data['clinic_audit'])) return $out;
-    foreach (array_reverse($data['clinic_audit']) as $a) {
-        if ($client_id > 0 && (int) $a['client_id'] !== (int) $client_id) continue;
+    foreach ($rows as $a) {
+        $a['id'] = (int) $a['id'];
+        $a['user_id'] = (int) $a['user_id'];
+        $a['client_id'] = (int) $a['client_id'];
         // محدوده دکتر برای لاگ پرونده‌ها
-        if ($client_id === 0 && clinic_role() === 'doctor') {
-            if ((int) $a['client_id'] > 0) {
-                $c = clinic_get_client($a['client_id']);
-                if (!$c || (int) $c['doctor_id'] !== clinic_my_id()) continue;
-            }
+        if ($client_id === 0 && clinic_role() === 'doctor' && $a['client_id'] > 0) {
+            $c = clinic_get_client($a['client_id']);
+            if (!$c || (int) $c['doctor_id'] !== clinic_my_id()) continue;
         }
-        if ($client_id === 0 && clinic_role() === 'secretary') {
-            if ((int) $a['client_id'] > 0) {
-                $c = clinic_get_client($a['client_id']);
-                $d = clinic_my_doctor_id();
-                if (!$c || (int) $c['doctor_id'] !== $d) continue;
-            }
+        if ($client_id === 0 && clinic_role() === 'secretary' && $a['client_id'] > 0) {
+            $c = clinic_get_client($a['client_id']);
+            $d = clinic_my_doctor_id();
+            if (!$c || (int) $c['doctor_id'] !== $d) continue;
         }
         $out[] = $a;
-        if (count($out) >= $limit) break;
     }
     return $out;
 }
 
 // ------------------------------------------------- داشبورد: آمارها ---
 function clinic_count_new_week($doctor_ids) {
-    $today = clinic_today();
     $week_ago = date('Y-m-d H:i:s', time() - 7 * 86400);
-    $data = store_load();
-    $n = 0;
-    foreach ($data['clinic_clients'] as $c) {
-        if ($doctor_ids !== null && !in_array((int) $c['doctor_id'], $doctor_ids, true)) continue;
-        if ($c['created_at'] >= $week_ago) $n++;
+    $sql = 'SELECT COUNT(*) AS c FROM `clinic_clients` WHERE `created_at`>=?';
+    $types = 's';
+    $vals = array($week_ago);
+    if ($doctor_ids !== null) {
+        $sql .= ' AND `doctor_id` IN (' . clinic_sql_in($doctor_ids) . ')';
     }
-    return $n;
+    $row = clinic_db_one($sql, $types, $vals);
+    return $row ? (int) $row['c'] : 0;
 }
 
 function clinic_clients_without_next($doctor_ids) {
