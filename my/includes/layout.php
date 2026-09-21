@@ -9,6 +9,7 @@ function joma_header($title, $crumbs = array(), $opts = array()) {
         $compact = !empty($prefs['compact_cards']);
     }
     $bodyClass = array();
+    if (strpos($page, 'clinic_') === 0) $bodyClass[] = 'clinic-page'; // CLINIC: اسکوپ استایل مطب
     if ($u) $bodyClass[] = 'authed';
     if ($compact) $bodyClass[] = 'compact';
     if (!empty($opts['public'])) $bodyClass[] = 'is-public';
@@ -74,7 +75,7 @@ function joma_header($title, $crumbs = array(), $opts = array()) {
             if (is_file($__hcfg)) {
                 $HAMMASIR_CONFIG = array();
                 include $__hcfg;
-                if (!empty($HAMMASIR_CONFIG['hammasir_enabled']) && $u) {
+                if (!empty($HAMMASIR_CONFIG['hammasir_enabled']) && $u && $__clinic_role !== 'client') { // CLINIC: مخفی برای مراجع مطب
                     $__hfn = dirname(__FILE__) . '/../functions/hammasir.php';
                     if (is_file($__hfn)) {
                         include_once $__hfn;
@@ -218,7 +219,7 @@ function joma_header($title, $crumbs = array(), $opts = array()) {
             if (is_file($__hcfg2)) {
                 $HAMMASIR_CONFIG = array();
                 include $__hcfg2;
-                if (!empty($HAMMASIR_CONFIG['hammasir_enabled'])) {
+                if (!empty($HAMMASIR_CONFIG['hammasir_enabled']) && $__clinic_role !== 'client') { // CLINIC: مخفی برای مراجع مطب
                     $__hfn2 = dirname(__FILE__) . '/../functions/hammasir.php';
                     if (is_file($__hfn2)) {
                         include_once $__hfn2;

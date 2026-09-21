@@ -6,7 +6,7 @@ $allowed = array(
     'mood', 'dashboard', 'plan', 'today', 'library',
     'periods', 'period', 'reports', 'profile', 'settings', 'about', 'support', 'learn',
 );
-// CLINIC (مدیریت مطب) — توابع در bootstrap لود می‌شود (functions/clinic.php)
+// CLINIC (مدیریت مطب) — ADD-ONLY: فقط همین ۱۰ route اضافه شده است.
 $allowed[] = 'clinic_dashboard';
 $allowed[] = 'clinic_clients';
 $allowed[] = 'clinic_client';
@@ -17,6 +17,13 @@ $allowed[] = 'clinic_receipt';
 $allowed[] = 'clinic_settings';
 $allowed[] = 'clinic_import';
 $allowed[] = 'clinic_users';
+// CLINIC: لود تنبل توابع مطب — فقط وقتی صفحه مطب درخواست شود (الگوی هم‌مسیر)؛
+// صفحات قبلی هیچ فایل/تابعی از مطب لود نمی‌کنند، پس خطای احتمالی مطب به آن‌ها سرایت نمی‌کند.
+if (strpos($p, 'clinic_') === 0) {
+    $__clinic_lib = dirname(__FILE__) . '/functions/clinic.php';
+    if (is_file($__clinic_lib)) require_once $__clinic_lib;
+    unset($__clinic_lib);
+}
 // JOMA-HAMMASIR-BEGIN
 // اتصال حداقلی ماژول «هم‌مسیر» (Phase 1B — D26/D28/D29؛ fail-closed)
 // با Flag خاموش: فقط همین فایل کانفیگ کوچک خوانده می‌شود؛ هیچ query،

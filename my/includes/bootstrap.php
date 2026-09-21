@@ -64,5 +64,4 @@ unset($_joma_reg_gate);
 $GLOBALS['JOMA_BASE'] = joma_compute_base();
 require dirname(__FILE__) . '/store.php';
 require dirname(__FILE__) . '/../functions/joma.php';
-require dirname(__FILE__) . '/../functions/clinic.php';
 require dirname(__FILE__) . '/layout.php';

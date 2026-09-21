@@ -13,6 +13,7 @@ $_SERVER['SCRIPT_NAME'] = '/index.php';
 $_SERVER['HTTP_HOST'] = 'localhost';
 $_SERVER['HTTPS'] = 'off';
 require dirname(__FILE__) . '/../includes/bootstrap.php';
+require dirname(__FILE__) . '/../functions/clinic.php';
 
 function seed_user($username, $first, $last, $phone, $pass, $role, $doctor_id) {
     foreach (store_load()['users'] as $ex) {

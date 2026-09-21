@@ -10,3 +10,4 @@ my/data/hammasir/*.bak
 Thumbs.db
 *.swp
 *~
+my/data/hammasir/store.json
