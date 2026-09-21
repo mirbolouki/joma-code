@@ -1,0 +1,6 @@
+<FilesMatch "\.php$">
+Require all denied
+</FilesMatch>
+<Files "config.example.php">
+Require all granted
+</Files>

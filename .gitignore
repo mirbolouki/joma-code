@@ -1,0 +1,12 @@
+# Runtime data (never commit real user data)
+my/data/store.json
+my/data/sessions/
+my/data/clinic_files/
+my/error_log
+my/data/hammasir/store.lock
+my/data/hammasir/*.bak
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
