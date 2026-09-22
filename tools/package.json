@@ -1,0 +1,14 @@
+{
+  "name": "clinic-sms-test-tools",
+  "version": "1.0.0",
+  "description": "Development-only PHP WASM test runner; never upload to hosting",
+  "scripts": {
+    "test": "cd .. && PHP=8.3 tools/node_modules/.bin/php-wasm-cli tests/lint.php && PHP=8.3 tools/node_modules/.bin/php-wasm-cli tests/clinic_helpers.php && PHP=8.3 tools/node_modules/.bin/php-wasm-cli -d disable_functions=curl_init,curl_setopt_array,curl_exec,curl_getinfo,curl_close,mysqli_begin_transaction,mysqli_commit,mysqli_rollback tests/sms_auth.php"
+  },
+  "keywords": [],
+  "author": "",
+  "devDependencies": {
+    "@php-wasm/cli": "^3.1.55"
+  },
+  "private": true
+}

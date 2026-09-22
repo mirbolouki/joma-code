@@ -1,0 +1,68 @@
+/* CLINIC — استایل‌های ماژول «مدیریت مطب».
+   همه قوانین زیر body.clinic-page اسکوپ شده‌اند (کلاس بدنه فقط در صفحات مطب)
+   تا هیچ تأثیری روی صفحات قبلی (جوما/هم‌مسیر) نداشته باشند. */
+body.clinic-page .clinic-menu-title{font-weight:700;font-size:13px;opacity:.75;padding:8px 10px 2px;}
+body.clinic-page .clinic-menu-sep{border-top:1px dashed rgba(0,0,0,.12);margin:8px 4px;}
+body.clinic-page .clinic-badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap;}
+body.clinic-page .b-blue{background:#e3edf7;color:#24507e;}
+body.clinic-page .b-green{background:#e2f2e5;color:#1f6b34;}
+body.clinic-page .b-red{background:#fbe3e1;color:#a4261f;}
+body.clinic-page .b-orange{background:#fdf0dd;color:#9a5b13;}
+body.clinic-page .b-gray{background:#ececec;color:#555;}
+body.clinic-page .clinic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0;}
+body.clinic-page .clinic-stat{background:#faf8f4;border:1px solid rgba(0,0,0,.07);border-radius:14px;padding:12px;text-align:center;}
+body.clinic-page .clinic-stat b{display:block;font-size:22px;margin-top:4px;}
+body.clinic-page .clinic-stat small{opacity:.7;}
+body.clinic-page .clinic-table{width:100%;border-collapse:collapse;font-size:14px;}
+body.clinic-page .clinic-table th,body.clinic-page .clinic-table td{padding:8px 6px;border-bottom:1px solid rgba(0,0,0,.08);text-align:right;vertical-align:top;}
+body.clinic-page .clinic-table th{opacity:.65;font-weight:700;font-size:13px;}
+body.clinic-page .clinic-table tr:hover td{background:#faf8f4;}
+body.clinic-page .table-wrap{overflow-x:auto;}
+body.clinic-page .clinic-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0;}
+body.clinic-page .clinic-tabs a{padding:8px 14px;border-radius:999px;background:#f1ece4;text-decoration:none;color:inherit;font-size:14px;}
+body.clinic-page .clinic-tabs a.on{background:#2f5d62;color:#fff;font-weight:700;}
+body.clinic-page .clinic-fs{border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:12px;margin:14px 0;}
+body.clinic-page .clinic-fs legend{font-weight:700;padding:0 8px;}
+body.clinic-page .clinic-opts{margin:10px 0;}
+body.clinic-page .clinic-opts-label{display:block;font-weight:700;margin-bottom:6px;font-size:14px;}
+body.clinic-page .clinic-pill{display:inline-flex!important;margin:3px 0 3px 6px!important;background:#f4f0e9;border-radius:999px;padding:6px 12px!important;font-size:13px;}
+body.clinic-page .clinic-pill input{margin-left:6px;}
+body.clinic-page .clinic-acc{background:#eef6f0;border-radius:12px;padding:10px!important;}
+body.clinic-page .clinic-kvbox{background:#faf8f4;border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:8px 12px;margin-bottom:12px;}
+body.clinic-page .clinic-kv{display:flex;gap:8px;padding:5px 0;border-bottom:1px dashed rgba(0,0,0,.07);font-size:14px;}
+body.clinic-page .clinic-kv:last-child{border-bottom:none;}
+body.clinic-page .clinic-kv span{min-width:170px;opacity:.65;}
+body.clinic-page .clinic-kv strong{font-weight:600;}
+body.clinic-page .clinic-alert{border-radius:12px;padding:12px;margin:12px 0;font-size:14px;}
+body.clinic-page .clinic-alert.red{background:#fdecea;border:1px solid #f3c2bd;color:#8f1d16;}
+body.clinic-page .clinic-alert.orange{background:#fdf3e3;border:1px solid #ecd3a8;color:#7c4a0b;}
+body.clinic-page .clinic-alert.green{background:#e9f6ec;border:1px solid #bfe3c8;color:#1c5c2e;}
+body.clinic-page .clinic-alert.blue{background:#e8f0fa;border:1px solid #bcd0ec;color:#24467c;}
+body.clinic-page .clinic-timeline{border-right:3px solid #e5ddd0;margin:8px 8px 8px 0;padding-right:14px;}
+body.clinic-page .clinic-tl-item{margin-bottom:14px;position:relative;}
+body.clinic-page .clinic-tl-item:before{content:'';position:absolute;right:-21px;top:6px;width:11px;height:11px;border-radius:50%;background:#2f5d62;}
+body.clinic-page .clinic-card{border:1px solid rgba(0,0,0,.08);border-radius:14px;padding:12px;margin:10px 0;background:#fff;}
+body.clinic-page .clinic-card h4{margin:0 0 6px;}
+body.clinic-page .clinic-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+body.clinic-page .clinic-row .grow{flex:1;min-width:200px;}
+body.clinic-page .clinic-search{display:flex;gap:8px;margin:10px 0;}
+body.clinic-page .clinic-search input{flex:1;}
+body.clinic-page .clinic-filters{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;}
+body.clinic-page .clinic-filters select{min-width:130px;}
+body.clinic-page .btn-small{padding:4px 10px!important;font-size:13px!important;}
+body.clinic-page .hint{opacity:.65;font-size:13px;}
+body.clinic-page code.ltr{direction:ltr;unicode-bidi:embed;}
+@media (max-width:640px){
+  body.clinic-page .clinic-kv{flex-direction:column;gap:0;}
+  body.clinic-page .clinic-kv span{min-width:0;}
+}
+/* چاپ رسید — فقط صفحات مطب */
+@media print{
+  body.clinic-page .side,body.clinic-page .mob-head,body.clinic-page .mobile,body.clinic-page .hammasir-fab,body.clinic-page .crumbs,body.clinic-page .no-print{display:none!important;}
+  body.clinic-page{background:#fff;}
+  body.clinic-page .card{box-shadow:none;border:1px solid #999;}
+}
+body.clinic-page .receipt{max-width:520px;margin:0 auto;border:2px solid #333;border-radius:12px;padding:20px;}
+body.clinic-page .receipt h2{text-align:center;margin-top:0;}
+body.clinic-page .receipt table{width:100%;font-size:15px;}
+body.clinic-page .receipt td{padding:6px 4px;border-bottom:1px dashed #bbb;}
