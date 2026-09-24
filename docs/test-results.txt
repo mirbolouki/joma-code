@@ -1,0 +1,49 @@
+
+> clinic-sms-test-tools@1.0.0 test
+> cd .. && PHP=8.3 tools/node_modules/.bin/php-wasm-cli tests/lint.php && PHP=8.3 tools/node_modules/.bin/php-wasm-cli tests/clinic_helpers.php && PHP=8.3 tools/node_modules/.bin/php-wasm-cli -d disable_functions=curl_init,curl_setopt_array,curl_exec,curl_getinfo,curl_close,mysqli_begin_transaction,mysqli_commit,mysqli_rollback tests/sms_auth.php
+
+PASS: 58 PHP files parsed by PHP 8.3.33
+PASS: 10 phone normalization cases
+PASS SMS disabled until configured
+PASS private config roundtrip
+PASS provider success requires message ID
+PASS verify endpoint fixed HTTPS
+PASS TLS validation enabled
+PASS no redirect credential leakage
+PASS documented JSON contract
+PASS custom SMS uses POST body, not credential-bearing URL
+PASS template identifier supplied
+PASS 25 character parameter cap
+PASS 24 character invitation accepted
+PASS provider failure 401/1
+PASS provider failure 429/1
+PASS provider failure 500/1
+PASS provider failure 200/0
+PASS malformed response rejected
+PASS OTP request
+PASS six digit OTP
+PASS no raw OTP or API key in state/log
+PASS OTP purpose binding
+PASS OTP invitation binding
+PASS resend cooldown across session
+PASS correct OTP succeeds
+PASS OTP single use
+PASS five failed attempts lock challenge
+PASS expired challenge rejected
+PASS first limit reservation
+PASS clearing session cannot bypass limit
+PASS registration creates client role and one record
+PASS direct registration waits for doctor
+PASS password hashed
+PASS reset reuses account and record
+PASS reset changes password
+PASS staff account cannot be reset through client flow
+PASS staff role preserved
+PASS inactive account rejected
+PASS reset cannot create unknown account
+PASS invitation assigns issuing doctor
+PASS invitation cannot target another mobile
+PASS existing doctor not silently replaced
+PASS doctor preserved on rejection
+PASS ambiguous account binding rejected
+ALL 42 CHECKS PASSED (mock transport and database)

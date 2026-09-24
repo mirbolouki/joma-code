@@ -1,0 +1,15 @@
+{
+  "config/.htaccess": "fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934",
+  "data/.htaccess": "fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934",
+  "functions/clinic.php": "5e2d0e5fbf8cc471c6742d4ca6d09bdcfeaf02360f33de2b35fdc1744771090d",
+  "functions/clinic_sms.php": "1ad6584654dd4bd359c9b106f7213bad95a35181cc6326da488cf7390ed125a7",
+  "includes/bootstrap.php": "849984a6490ea586344ff7890f5a3b3a04a6634e46fe6c6068dd147a881d683d",
+  "includes/helpers.php": "9794baa7860a26b5b7ba790ed485e69c953cb26d2d509733e1b8792deb73ece9",
+  "index.php": "cc87447f628718bff8a8085b763682891d71163f1e7235ef78879e2cda45d578",
+  "pages/clinic_auth.php": "0b94e0faee85f626c37c9dbd05fa12cfed3d81d04ec11bc5109308498563242a",
+  "pages/clinic_clients.php": "0477fdbbb6e92329011ffe87779829ecd274fcf0f9c240c76f0f54880e0ccb85",
+  "pages/clinic_dashboard.php": "06d6f7f2dd98944b7db4a32dd95cbcddf0db1a20c56967bed7cac587a71df7bc",
+  "pages/clinic_intake.php": "4ab4a7403a77dadd974feab79de429ad3358d03e68029f38c064a509d0015a07",
+  "pages/clinic_login.php": "4a985400cc44d26a3b74ee1eda99b04893a93218407345bb5450e377420d484c",
+  "pages/clinic_sms.php": "7f8eb5fe34e43f5715df5e8dd6268706ce8f776d7969e86be2e46ead59ec5999"
+}
