@@ -1,0 +1,18 @@
+{
+  "archive": "joma-db-check-upload-v0.1.1.zip",
+  "sha256": "d628f2082569c79c8f9035fdf593781791c40d3f036d8c0eb792dc4cd29d191e",
+  "files": [
+    {
+      "name": "joma-db-check.php",
+      "sha256": "78b5a093f4a112c9c6ddbe9e0306ef2165649300c47cd929fe58a40edf8f6ac8"
+    },
+    {
+      "name": "expected-schema.json",
+      "sha256": "61261dfb1a44aa5e16bda22db7a5a5f1f0a4c0d0dc55b98b8912b0b1af4293fd"
+    }
+  ],
+  "contains_credentials": false,
+  "configuration_included": false,
+  "default_behavior": "404 until private configuration is explicitly enabled; token and HTTPS required",
+  "purpose": "temporary upload-only bundle, not the JOMA application"
+}
