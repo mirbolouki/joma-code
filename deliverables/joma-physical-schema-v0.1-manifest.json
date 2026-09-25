@@ -1,0 +1,102 @@
+{
+  "release": "joma-physical-schema-v0.1",
+  "status": "review-candidate-not-live-upgrade",
+  "target": "Oracle MySQL >= 8.0.16, InnoDB",
+  "database_runtime_tested": false,
+  "static_tests_passed": 18,
+  "tables": 70,
+  "foreign_keys": 173,
+  "files": [
+    {
+      "path": "database/joma-v0.1/000_preflight_readonly.sql",
+      "sha256": "5486d91fc1f7bc7bf8baa635415089ea5144f3a1ee0488570b4a43a2c5ab6d68",
+      "bytes": 883
+    },
+    {
+      "path": "database/joma-v0.1/001_core.sql",
+      "sha256": "11464af0ab9d255a6b6385b7e8ec74eb254fdb7c498bc7f4f4af0bc1cb3a3d1e",
+      "bytes": 94294
+    },
+    {
+      "path": "database/joma-v0.1/README-FA.md",
+      "sha256": "f8e2ab6a855dbd5a12bc39de7e7c774565dbe1b9b096e414ec85f0e671966bbc",
+      "bytes": 2929
+    },
+    {
+      "path": "database/joma-v0.1/VALIDATION.md",
+      "sha256": "7e1a5cb616fa6be3a906b997504766362907a6d4fce74ac0244bddeab69476c0",
+      "bytes": 3230
+    },
+    {
+      "path": "database/joma-v0.1/diagrams/01-identity.mmd",
+      "sha256": "80a60152705e11f49be1645c02d2c6e808401acb4fd53c96f1c55fe5c43493c3",
+      "bytes": 2879
+    },
+    {
+      "path": "database/joma-v0.1/diagrams/02-services-clinical.mmd",
+      "sha256": "b21a32abba7f2cce172675c1ccfc3c0ceccd52a3d78acf626c308d8c75791873",
+      "bytes": 5063
+    },
+    {
+      "path": "database/joma-v0.1/diagrams/03-representation.mmd",
+      "sha256": "2fb80abc79e56de584f4286f1ef7edc07d3a05723973e560da79bc7731018c9a",
+      "bytes": 4143
+    },
+    {
+      "path": "database/joma-v0.1/diagrams/04-scheduling.mmd",
+      "sha256": "359194bf1868bedacb4c94008596f531758745714c795f779c1a3955cf3b840e",
+      "bytes": 5211
+    },
+    {
+      "path": "database/joma-v0.1/diagrams/05-forms.mmd",
+      "sha256": "77a9669c7861eaadd5c4b785fc92c76e0b0ce1f3b0a8ac9bde844507cad388fd",
+      "bytes": 6010
+    },
+    {
+      "path": "database/joma-v0.1/diagrams/06-reports.mmd",
+      "sha256": "704619f11c9b69663daa00df1156d3e298cc055fe20c6c756105ce9443c3b84e",
+      "bytes": 4112
+    },
+    {
+      "path": "database/joma-v0.1/diagrams/07-private-messages.mmd",
+      "sha256": "f4389aa7098551b731e0cd93af46c4d9f3e9fff2b470308c3a2820f31f619c6d",
+      "bytes": 1110
+    },
+    {
+      "path": "database/joma-v0.1/diagrams/08-finance.mmd",
+      "sha256": "0d4e97093e6592e8b4640114772396f7a45d70bc75afe09c1541865c9866048f",
+      "bytes": 2370
+    },
+    {
+      "path": "database/joma-v0.1/diagrams/09-operations.mmd",
+      "sha256": "b83bd916b3ac3849480b1e9797afcf254ef1caa032c4366173f0fc018f304f4e",
+      "bytes": 2642
+    },
+    {
+      "path": "docs/JOMA-LOGICAL-ERD-ADDENDUM-v0.2-FA.md",
+      "sha256": "aed5973923d72d0887f3bf86a8e48fa69b65d191e49549a5ae890f5fb567035d",
+      "bytes": 4695
+    },
+    {
+      "path": "docs/JOMA-PHYSICAL-ERD-v0.1-FA.md",
+      "sha256": "98ca067d64d6f2eaac67bab0ad34811becb390280d2e222c2e3c31c02f550f19",
+      "bytes": 34639
+    },
+    {
+      "path": "docs/JOMA-PHYSICAL-SCHEMA-v0.1-FA.md",
+      "sha256": "e55880bb4276dbb16ca60a6b2b19c4cd0ec94a1303f5473e71c170e66bc227f9",
+      "bytes": 24826
+    },
+    {
+      "path": "tests/joma_schema_static.py",
+      "sha256": "58b3e98ce3d7692a584dbf6de2ea3857f1b31ffdd0e1fccc1120323658a1e81e",
+      "bytes": 6096
+    },
+    {
+      "path": "tools/generate-joma-schema.py",
+      "sha256": "66d1a390a273f6861a06d164d23378247cad972ab5e526d106f22cc20215ac9a",
+      "bytes": 52637
+    }
+  ],
+  "archive_sha256": "bde776fdbcd36091a9f075eb02cf4f4e3a4ac59994a5edcf8c5c1686143b4522"
+}

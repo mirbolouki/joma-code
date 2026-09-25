@@ -1,0 +1,149 @@
+erDiagram
+    joma_admissions {
+        BINARY16 id PK
+    }
+    joma_appointment_allocations {
+        BINARY16 id PK
+        BINARY16 appointment_id FK
+        BINARY16 resource_id FK
+        DATETIME starts_at
+        DATETIME ends_at
+        DATETIME created_at
+    }
+    joma_appointment_changes {
+        BINARY16 id PK
+        BINARY16 appointment_id FK
+        BINARY16 command_id FK, UK
+        BINARY16 actor_person_id FK
+        VARCHAR change_code
+        JSON before_json
+        JSON after_json
+        VARCHAR reason_code
+        DATETIME created_at
+    }
+    joma_appointment_requests {
+        BINARY16 id PK
+        BINARY16 subject_person_id FK
+        BINARY16 admission_id FK
+        BINARY16 case_id FK
+        BINARY16 offering_id FK
+        DATETIME preferred_start_at
+        VARCHAR status
+        BINARY16 fulfilled_appointment_id FK, UK
+        DATETIME created_at
+    }
+    joma_appointments {
+        BINARY16 id PK
+        BINARY16 case_id FK
+        BINARY16 therapist_person_id FK
+        BINARY16 scope_id FK
+        BINARY16 offering_id FK
+        BINARY16 hold_id FK, UK
+        BINARY16 rebooked_from_appointment_id FK
+        DATETIME starts_at
+        DATETIME ends_at
+        VARCHAR status
+        VARCHAR origin
+        INT cancellation_notice_minutes
+        BINARY16 command_id FK, UK
+        DATETIME created_at
+    }
+    joma_attendance_observations {
+        BINARY16 id PK
+        BINARY16 appointment_id FK
+        BINARY16 observed_person_id FK
+        BINARY16 recorded_by_person_id FK
+        DATETIME observed_at
+        VARCHAR observation_code
+        DATETIME created_at
+    }
+    joma_capacity_holds {
+        BINARY16 id PK
+        BINARY16 case_id FK
+        BINARY16 offering_id FK
+        BINARY16 policy_version_id FK
+        BINARY16 request_id FK
+        BINARY16 actor_person_id FK
+        DATETIME starts_at
+        DATETIME ends_at
+        DATETIME held_at
+        DATETIME expires_at
+        VARCHAR status
+        BINARY16 command_id FK, UK
+        DATETIME created_at
+    }
+    joma_clinical_cases {
+        BINARY16 id PK
+    }
+    joma_clinical_sessions {
+        BINARY16 id PK
+        BINARY16 case_id FK
+        BINARY16 clinician_person_id FK
+        BINARY16 appointment_id FK, UK
+        DATETIME started_at
+        DATETIME ended_at
+        BINARY16 command_id FK, UK
+        DATETIME created_at
+    }
+    joma_command_receipts {
+        BINARY16 id PK
+    }
+    joma_hold_allocations {
+        BINARY16 id PK
+        BINARY16 hold_id FK
+        BINARY16 resource_id FK
+        DATETIME starts_at
+        DATETIME ends_at
+        DATETIME created_at
+    }
+    joma_persons {
+        BINARY16 id PK
+    }
+    joma_schedule_resources {
+        BINARY16 id PK
+        BINARY16 scope_id FK
+        BINARY16 therapist_person_id FK, UK
+        VARCHAR kind
+        VARCHAR label
+        DATETIME created_at
+    }
+    joma_service_offerings {
+        BINARY16 id PK
+    }
+    joma_service_policy_versions {
+        BINARY16 id PK
+    }
+    joma_work_scopes {
+        BINARY16 id PK
+    }
+    joma_persons ||--o{ joma_appointment_requests : subject_person_id
+    joma_admissions o|--o{ joma_appointment_requests : admission_id
+    joma_clinical_cases o|--o{ joma_appointment_requests : case_id
+    joma_service_offerings ||--o{ joma_appointment_requests : offering_id
+    joma_work_scopes o|--o{ joma_schedule_resources : scope_id
+    joma_persons o|--o| joma_schedule_resources : therapist_person_id
+    joma_clinical_cases ||--o{ joma_capacity_holds : case_id
+    joma_service_offerings ||--o{ joma_capacity_holds : offering_id
+    joma_service_policy_versions ||--o{ joma_capacity_holds : policy_version_id
+    joma_appointment_requests o|--o{ joma_capacity_holds : request_id
+    joma_persons ||--o{ joma_capacity_holds : actor_person_id
+    joma_command_receipts ||--o| joma_capacity_holds : command_id
+    joma_capacity_holds ||--o{ joma_hold_allocations : hold_id
+    joma_schedule_resources ||--o{ joma_hold_allocations : resource_id
+    joma_clinical_cases ||--o{ joma_appointments : case_id
+    joma_service_offerings ||--o{ joma_appointments : offering_id
+    joma_capacity_holds o|--o{ joma_appointments : hold_id
+    joma_appointments o|--o{ joma_appointments : rebooked_from_appointment_id
+    joma_command_receipts ||--o| joma_appointments : command_id
+    joma_appointments o|--o| joma_appointment_requests : fulfilled_appointment_id
+    joma_appointments ||--o{ joma_appointment_allocations : appointment_id
+    joma_schedule_resources ||--o{ joma_appointment_allocations : resource_id
+    joma_appointments ||--o{ joma_appointment_changes : appointment_id
+    joma_command_receipts ||--o| joma_appointment_changes : command_id
+    joma_persons ||--o{ joma_appointment_changes : actor_person_id
+    joma_appointments ||--o{ joma_attendance_observations : appointment_id
+    joma_persons ||--o{ joma_attendance_observations : observed_person_id
+    joma_persons ||--o{ joma_attendance_observations : recorded_by_person_id
+    joma_clinical_cases ||--o{ joma_clinical_sessions : case_id
+    joma_appointments o|--o{ joma_clinical_sessions : appointment_id
+    joma_command_receipts ||--o| joma_clinical_sessions : command_id

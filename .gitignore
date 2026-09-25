@@ -1,0 +1,8 @@
+node_modules/
+__pycache__/
+*.py[cod]
+clinic-app/config/clinic_db.php
+clinic-app/config/clinic_sms.php
+clinic-app/config/config.php
+clinic-app/data/*
+!clinic-app/data/.htaccess

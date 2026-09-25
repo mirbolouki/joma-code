@@ -1,0 +1,149 @@
+erDiagram
+    joma_admission_participants {
+        BINARY16 id PK
+        BINARY16 admission_id FK
+        BINARY16 person_id FK
+        VARCHAR participation_role
+        DATETIME created_at
+    }
+    joma_admissions {
+        BINARY16 id PK
+        BINARY16 primary_subject_id FK
+        BINARY16 scope_id FK
+        BINARY16 offering_id FK
+        BINARY16 recorded_by_person_id FK
+        BINARY16 case_id FK
+        VARCHAR status
+        DATETIME created_at
+    }
+    joma_case_operational_contexts {
+        BINARY16 id PK
+        BINARY16 case_id FK
+        BINARY16 scope_id FK
+        DATETIME valid_from
+        DATETIME valid_until
+        VARCHAR basis_reference
+        DATETIME created_at
+    }
+    joma_case_participants {
+        BINARY16 id PK
+        BINARY16 case_id FK
+        BINARY16 person_id FK
+        VARCHAR clinical_role
+        DATETIME valid_from
+        DATETIME valid_until
+        DATETIME created_at
+    }
+    joma_clinical_cases {
+        BINARY16 id PK
+        BINARY16 relationship_id FK, UK
+        BINARY16 responsible_therapist_id FK
+        VARCHAR purpose_summary
+        VARCHAR status
+        DATETIME opened_at
+        DATETIME closed_at
+        DATETIME created_at
+    }
+    joma_command_receipts {
+        BINARY16 id PK
+    }
+    joma_memberships {
+        BINARY16 id PK
+    }
+    joma_persons {
+        BINARY16 id PK
+    }
+    joma_responsibility_acceptances {
+        BINARY16 id PK
+        BINARY16 admission_id FK
+        BINARY16 assignment_id FK, UK
+        BINARY16 therapist_person_id FK
+        BINARY16 actor_person_id
+        BINARY16 command_id FK, UK
+        DATETIME accepted_at
+        DATETIME created_at
+    }
+    joma_service_definitions {
+        INT id PK
+        VARCHAR code UK
+        VARCHAR label
+        BOOLEAN is_active
+        DATETIME created_at
+    }
+    joma_service_offerings {
+        BINARY16 id PK
+        BINARY16 scope_id FK
+        INT service_id FK
+        BINARY16 policy_version_id FK
+        SMALLINT duration_minutes
+        VARCHAR status
+        DATETIME created_at
+    }
+    joma_service_policy_versions {
+        BINARY16 id PK
+        INT service_id FK
+        INT version_no
+        VARCHAR status
+        JSON policy_json
+        BINARY16 author_person_id FK
+        BINARY16 approved_by_person_id FK
+        DATETIME effective_at
+        DATETIME created_at
+    }
+    joma_service_providers {
+        BINARY16 id PK
+        BINARY16 offering_id FK
+        BINARY16 scope_id FK
+        BINARY16 membership_id FK
+        BINARY16 person_id FK
+        DATETIME valid_from
+        DATETIME valid_until
+        DATETIME created_at
+    }
+    joma_therapeutic_relationships {
+        BINARY16 id PK
+        BINARY16 acceptance_id FK, UK
+        BINARY16 therapist_person_id FK
+        VARCHAR status
+        DATETIME activated_at
+        DATETIME ended_at
+        DATETIME created_at
+    }
+    joma_therapist_assignments {
+        BINARY16 id PK
+        BINARY16 admission_id FK
+        BINARY16 therapist_person_id FK
+        BINARY16 assigned_by_person_id FK
+        VARCHAR status
+        BINARY16 open_admission_id UK
+        DATETIME created_at
+    }
+    joma_work_scopes {
+        BINARY16 id PK
+    }
+    joma_service_definitions ||--o{ joma_service_policy_versions : service_id
+    joma_persons ||--o{ joma_service_policy_versions : author_person_id
+    joma_persons o|--o{ joma_service_policy_versions : approved_by_person_id
+    joma_work_scopes ||--o{ joma_service_offerings : scope_id
+    joma_service_policy_versions ||--o{ joma_service_offerings : policy_version_id
+    joma_service_offerings ||--o{ joma_service_providers : offering_id
+    joma_memberships ||--o{ joma_service_providers : membership_id
+    joma_persons ||--o{ joma_admissions : primary_subject_id
+    joma_persons ||--o{ joma_admissions : recorded_by_person_id
+    joma_service_offerings ||--o{ joma_admissions : offering_id
+    joma_admissions ||--o{ joma_admission_participants : admission_id
+    joma_persons ||--o{ joma_admission_participants : person_id
+    joma_admissions ||--o{ joma_therapist_assignments : admission_id
+    joma_persons ||--o{ joma_therapist_assignments : therapist_person_id
+    joma_persons ||--o{ joma_therapist_assignments : assigned_by_person_id
+    joma_admissions ||--o{ joma_responsibility_acceptances : admission_id
+    joma_therapist_assignments o|--o{ joma_responsibility_acceptances : assignment_id
+    joma_persons ||--o{ joma_responsibility_acceptances : therapist_person_id
+    joma_command_receipts ||--o| joma_responsibility_acceptances : command_id
+    joma_responsibility_acceptances ||--o{ joma_therapeutic_relationships : acceptance_id
+    joma_therapeutic_relationships ||--o{ joma_clinical_cases : relationship_id
+    joma_clinical_cases o|--o{ joma_admissions : case_id
+    joma_clinical_cases ||--o{ joma_case_participants : case_id
+    joma_persons ||--o{ joma_case_participants : person_id
+    joma_clinical_cases ||--o{ joma_case_operational_contexts : case_id
+    joma_work_scopes ||--o{ joma_case_operational_contexts : scope_id
