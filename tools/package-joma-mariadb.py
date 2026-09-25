@@ -14,8 +14,8 @@ manifest={'target':'MariaDB 10.11.x','tables': ['joma_'+n for n in m.TABLES], 'f
 manifest['foreign_key_details']=[{'name':f'fk_joma_{i:03d}','table':'joma_'+src,'columns':list(cols),'referenced_table':'joma_'+dst,'referenced_columns':list(refs)} for i,(src,cols,dst,refs) in enumerate(m.FKS,1)]
 (out/'expected-schema.json').write_text(json.dumps(manifest,indent=2)+'\n')
 (ROOT/'deploy/joma-db-check/expected-schema.json').write_text(json.dumps(manifest,indent=2)+'\n')
-verify="""-- READ ONLY. Select mirbolouki_clinic in phpMyAdmin before running.
-SELECT DATABASE() AS selected_database, VERSION() AS server_version,
+verify="""-- READ ONLY. Target schema is explicit; safe even if phpMyAdmin changes its selected database.
+SELECT 'mirbolouki_clinic' AS verification_target, DATABASE() AS connection_default_database, VERSION() AS server_version,
        @@foreign_key_checks AS foreign_keys_enabled,
        @@check_constraint_checks AS checks_enabled, @@sql_mode AS sql_mode;
 SELECT COUNT(*) AS joma_table_count,
@@ -43,19 +43,20 @@ for label,names,source,key,predicate in [
  verify+=f"\n-- {label}: expected ZERO rows.\nSELECT e.expected_name FROM (\n{union}\n) e WHERE NOT EXISTS (SELECT 1 FROM {source} a WHERE a.{key}=e.expected_name AND {predicate});\n"
 verify+="""
 -- MariaDB JSON columns normally appear as LONGTEXT / utf8mb4_bin. This is expected.
-SHOW CREATE TABLE joma_form_versions;
-SHOW CREATE TABLE joma_form_submission_revisions;
-SHOW CREATE TABLE joma_accounts;
-SHOW CREATE TABLE joma_clinical_sessions;
+SHOW CREATE TABLE `mirbolouki_clinic`.`joma_form_versions`;
+SHOW CREATE TABLE `mirbolouki_clinic`.`joma_form_submission_revisions`;
+SHOW CREATE TABLE `mirbolouki_clinic`.`joma_accounts`;
+SHOW CREATE TABLE `mirbolouki_clinic`.`joma_clinical_sessions`;
 """
+verify = verify.replace('TABLE_SCHEMA=DATABASE()', "TABLE_SCHEMA='mirbolouki_clinic'").replace('CONSTRAINT_SCHEMA=DATABASE()', "CONSTRAINT_SCHEMA='mirbolouki_clinic'")
 (out/'002_verify_readonly.sql').write_text(verify)
 (out/'000_preflight_readonly.sql').write_text("""-- READ ONLY. This file does not create, modify, or drop anything.
-SELECT DATABASE() AS selected_database, VERSION() AS server_version,
+SELECT 'mirbolouki_clinic' AS verification_target, DATABASE() AS connection_default_database, VERSION() AS server_version,
        @@version_comment AS distribution, @@sql_mode AS sql_mode,
        @@foreign_key_checks AS foreign_keys_enabled,
        @@check_constraint_checks AS checks_enabled;
 SELECT COUNT(*) AS existing_base_tables FROM information_schema.TABLES
-WHERE TABLE_SCHEMA=DATABASE() AND TABLE_TYPE='BASE TABLE';
+WHERE TABLE_SCHEMA='mirbolouki_clinic' AND TABLE_TYPE='BASE TABLE';
 SELECT ENGINE,SUPPORT,TRANSACTIONS FROM information_schema.ENGINES WHERE ENGINE='InnoDB';
 """)
 print('MariaDB candidate generated:',len(manifest['tables']),'tables,',len(manifest['foreign_keys']),'FK,',len(manifest['json_columns']),'JSON columns')

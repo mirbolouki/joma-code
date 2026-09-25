@@ -1,21 +1,21 @@
--- READ ONLY. Select mirbolouki_clinic in phpMyAdmin before running.
-SELECT DATABASE() AS selected_database, VERSION() AS server_version,
+-- READ ONLY. Target schema is explicit; safe even if phpMyAdmin changes its selected database.
+SELECT 'mirbolouki_clinic' AS verification_target, DATABASE() AS connection_default_database, VERSION() AS server_version,
        @@foreign_key_checks AS foreign_keys_enabled,
        @@check_constraint_checks AS checks_enabled, @@sql_mode AS sql_mode;
 SELECT COUNT(*) AS joma_table_count,
        SUM(ENGINE='InnoDB') AS innodb_count,
        SUM(TABLE_COLLATION='utf8mb4_unicode_ci') AS table_collation_count
 FROM information_schema.TABLES
-WHERE TABLE_SCHEMA=DATABASE() AND TABLE_TYPE='BASE TABLE' AND LEFT(TABLE_NAME,5)='joma_';
+WHERE TABLE_SCHEMA='mirbolouki_clinic' AND TABLE_TYPE='BASE TABLE' AND LEFT(TABLE_NAME,5)='joma_';
 SELECT CONSTRAINT_TYPE, COUNT(*) AS constraint_count
 FROM information_schema.TABLE_CONSTRAINTS
-WHERE CONSTRAINT_SCHEMA=DATABASE() AND LEFT(TABLE_NAME,5)='joma_'
+WHERE CONSTRAINT_SCHEMA='mirbolouki_clinic' AND LEFT(TABLE_NAME,5)='joma_'
 GROUP BY CONSTRAINT_TYPE;
 -- Expected: 70 tables, 70 PK, 173 FK, 72 UNIQUE. CHECK count can exceed 90
 -- because MariaDB adds JSON_VALID constraints automatically.
 SELECT DELETE_RULE, UPDATE_RULE, COUNT(*) AS fk_count
 FROM information_schema.REFERENTIAL_CONSTRAINTS
-WHERE CONSTRAINT_SCHEMA=DATABASE() AND LEFT(TABLE_NAME,5)='joma_'
+WHERE CONSTRAINT_SCHEMA='mirbolouki_clinic' AND LEFT(TABLE_NAME,5)='joma_'
 GROUP BY DELETE_RULE,UPDATE_RULE;
 -- Both rules must be RESTRICT for all 173 FKs.
 
@@ -160,7 +160,7 @@ UNION ALL
 SELECT 'joma_notification_intents' AS expected_name
 UNION ALL
 SELECT 'joma_notification_attempts' AS expected_name
-) e WHERE NOT EXISTS (SELECT 1 FROM information_schema.TABLES a WHERE a.TABLE_NAME=e.expected_name AND TABLE_SCHEMA=DATABASE());
+) e WHERE NOT EXISTS (SELECT 1 FROM information_schema.TABLES a WHERE a.TABLE_NAME=e.expected_name AND TABLE_SCHEMA='mirbolouki_clinic');
 
 -- Missing expected foreign keys: expected ZERO rows.
 SELECT e.expected_name FROM (
@@ -509,7 +509,7 @@ UNION ALL
 SELECT 'fk_joma_172' AS expected_name
 UNION ALL
 SELECT 'fk_joma_173' AS expected_name
-) e WHERE NOT EXISTS (SELECT 1 FROM information_schema.TABLE_CONSTRAINTS a WHERE a.CONSTRAINT_NAME=e.expected_name AND CONSTRAINT_SCHEMA=DATABASE() AND CONSTRAINT_TYPE='FOREIGN KEY');
+) e WHERE NOT EXISTS (SELECT 1 FROM information_schema.TABLE_CONSTRAINTS a WHERE a.CONSTRAINT_NAME=e.expected_name AND CONSTRAINT_SCHEMA='mirbolouki_clinic' AND CONSTRAINT_TYPE='FOREIGN KEY');
 
 -- Missing explicit checks: expected ZERO rows.
 SELECT e.expected_name FROM (
@@ -692,10 +692,10 @@ UNION ALL
 SELECT 'ck_notification_intents_1' AS expected_name
 UNION ALL
 SELECT 'ck_notification_attempts_1' AS expected_name
-) e WHERE NOT EXISTS (SELECT 1 FROM information_schema.TABLE_CONSTRAINTS a WHERE a.CONSTRAINT_NAME=e.expected_name AND CONSTRAINT_SCHEMA=DATABASE() AND CONSTRAINT_TYPE='CHECK');
+) e WHERE NOT EXISTS (SELECT 1 FROM information_schema.TABLE_CONSTRAINTS a WHERE a.CONSTRAINT_NAME=e.expected_name AND CONSTRAINT_SCHEMA='mirbolouki_clinic' AND CONSTRAINT_TYPE='CHECK');
 
 -- MariaDB JSON columns normally appear as LONGTEXT / utf8mb4_bin. This is expected.
-SHOW CREATE TABLE joma_form_versions;
-SHOW CREATE TABLE joma_form_submission_revisions;
-SHOW CREATE TABLE joma_accounts;
-SHOW CREATE TABLE joma_clinical_sessions;
+SHOW CREATE TABLE `mirbolouki_clinic`.`joma_form_versions`;
+SHOW CREATE TABLE `mirbolouki_clinic`.`joma_form_submission_revisions`;
+SHOW CREATE TABLE `mirbolouki_clinic`.`joma_accounts`;
+SHOW CREATE TABLE `mirbolouki_clinic`.`joma_clinical_sessions`;

@@ -44,4 +44,16 @@ class MariaDBPackage(unittest.TestCase):
             sql=(ROOT/'database/joma-mariadb-v0.1'/f).read_text()
             sql=re.sub(r'--[^\n]*','',sql)
             self.assertIsNone(re.search(r'\b(?:INSERT|UPDATE|DELETE|ALTER|DROP|CREATE|TRUNCATE)\b',sql.replace('SHOW CREATE TABLE','SHOW_TABLE_DEFINITION'),re.I))
+    def test_verification_target_not_connection_default(self):
+        for name in ['000_preflight_readonly.sql','002_verify_readonly.sql']:
+            text=(ROOT/'database/joma-mariadb-v0.1'/name).read_text()
+            self.assertNotRegex(text,r'(?:TABLE|CONSTRAINT)_SCHEMA\s*=\s*DATABASE\(\)')
+            self.assertIn("TABLE_SCHEMA='mirbolouki_clinic'",text)
+        verify=(ROOT/'database/joma-mariadb-v0.1/002_verify_readonly.sql').read_text()
+        shows=re.findall(r'SHOW CREATE TABLE ([^;]+);',verify)
+        self.assertEqual(len(shows),4)
+        self.assertTrue(all(x.startswith('`mirbolouki_clinic`.') for x in shows))
+    def test_write_tests_block_existing_non_joma_tables(self):
+        self.assertIn("|| $nonJomaTables",PHP)
+        self.assertIn("strpos($name, 'joma_') !== 0",PHP)
 if __name__=='__main__':unittest.main(verbosity=2)

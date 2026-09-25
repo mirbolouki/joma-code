@@ -98,6 +98,7 @@ try {
     $tables = [];
     $rows = $db->query("SELECT TABLE_NAME,ENGINE,TABLE_COLLATION FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_TYPE='BASE TABLE'");
     while ($row = $rows->fetch_assoc()) { $tables[$row['TABLE_NAME']] = $row; }
+    $nonJomaTables = array_filter(array_keys($tables), function ($name) { return strpos($name, 'joma_') !== 0; });
     $missingTables = array_diff($manifest['tables'], array_keys($tables));
     $unexpectedTables = array_diff(array_filter(array_keys($tables), function ($name) { return strpos($name, 'joma_') === 0; }), $manifest['tables']);
     $tableOk = !$missingTables && !$unexpectedTables;
@@ -143,9 +144,12 @@ try {
     $metadataOk = $targetOk && $strict && $checksOn && $tableOk && $fkOk && $ckOk && $badRules === 0 && $uniqueOk;
     echo '<p>این نتیجه فقط اتصال و بخشی از ساختار را بررسی می‌کند؛ تست مجوز، هم‌زمانی یا انطباق کامل برنامه نیست.</p>';
 
+    if ($nonJomaTables) {
+        echo '<p>احتیاط: جدول‌های خارج از پیشوند joma_ موجودند. دیتابیس خالی و یک‌بارمصرف فرض نمی‌شود؛ تست نوشتنی مسدود است.</p>';
+    }
     if (($_POST['mode'] ?? 'read') === 'rollback') {
-        if (empty($config['allow_rollback_tests']) || !$metadataOk) {
-            joma_check_line('Write-test gate', false, 'Disabled or metadata checks failed');
+        if (empty($config['allow_rollback_tests']) || !$metadataOk || $nonJomaTables) {
+            joma_check_line('Write-test gate', false, 'Disabled, metadata failed, or non-JOMA tables exist');
         } else {
             $db->begin_transaction();
             try {
