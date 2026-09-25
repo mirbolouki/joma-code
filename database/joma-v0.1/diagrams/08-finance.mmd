@@ -1,0 +1,76 @@
+erDiagram
+    joma_command_receipts {
+        BINARY16 id PK
+    }
+    joma_destination_accounts {
+        BINARY16 id PK
+        BINARY16 financial_space_id FK
+        VARCHAR bank_reference
+        VARCHAR label
+        BOOLEAN is_active
+        DATETIME created_at
+    }
+    joma_financial_spaces {
+        BINARY16 id PK
+        BINARY16 scope_id FK
+        VARCHAR label
+        DATETIME created_at
+    }
+    joma_payment_methods {
+        INT id PK
+        VARCHAR code UK
+        VARCHAR label
+        BOOLEAN is_active
+        BOOLEAN is_bank_method
+        DATETIME created_at
+    }
+    joma_payment_receipts {
+        BINARY16 id PK
+        BINARY16 financial_space_id FK
+        BINARY16 payer_person_id FK
+        INT method_id FK
+        BOOLEAN method_is_bank FK
+        BINARY16 destination_account_id FK
+        DECIMAL amount
+        CHAR currency_code
+        DATETIME received_at
+        BINARY16 recorded_by_person_id FK
+        VARCHAR provider_code
+        VARCHAR provider_transaction_reference
+        BINARY16 command_id FK, UK
+        DATETIME created_at
+    }
+    joma_persons {
+        BINARY16 id PK
+    }
+    joma_product_definitions {
+        INT id PK
+        VARCHAR code UK
+        VARCHAR label
+        BOOLEAN is_active
+        DATETIME created_at
+    }
+    joma_product_entitlements {
+        BINARY16 id PK
+        INT product_id FK
+        BINARY16 beneficiary_person_id FK
+        VARCHAR source_system_code
+        VARCHAR source_reference
+        DATETIME valid_from
+        DATETIME valid_until
+        DATETIME revoked_at
+        DATETIME created_at
+    }
+    joma_work_scopes {
+        BINARY16 id PK
+    }
+    joma_work_scopes ||--o{ joma_financial_spaces : scope_id
+    joma_financial_spaces ||--o{ joma_destination_accounts : financial_space_id
+    joma_financial_spaces ||--o{ joma_payment_receipts : financial_space_id
+    joma_persons ||--o{ joma_payment_receipts : payer_person_id
+    joma_destination_accounts o|--o{ joma_payment_receipts : destination_account_id
+    joma_persons ||--o{ joma_payment_receipts : recorded_by_person_id
+    joma_command_receipts ||--o| joma_payment_receipts : command_id
+    joma_payment_methods ||--o{ joma_payment_receipts : method_id
+    joma_product_definitions ||--o{ joma_product_entitlements : product_id
+    joma_persons ||--o{ joma_product_entitlements : beneficiary_person_id

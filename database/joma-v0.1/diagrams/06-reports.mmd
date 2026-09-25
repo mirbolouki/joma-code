@@ -1,0 +1,116 @@
+erDiagram
+    joma_assessment_assignments {
+        BINARY16 id PK
+        BINARY16 assessment_id FK
+        BINARY16 assessor_person_id FK
+        BINARY16 authorized_by_person_id FK
+        BINARY16 scope_id FK
+        DATETIME valid_from
+        DATETIME valid_until
+        DATETIME revoked_at
+        DATETIME created_at
+    }
+    joma_assessment_reports {
+        BINARY16 id PK
+        BINARY16 assessment_id FK
+        BINARY16 case_id FK
+        DATETIME created_at
+    }
+    joma_assessment_respondents {
+        BINARY16 id PK
+        BINARY16 assessment_id FK
+        BINARY16 respondent_person_id FK
+        BINARY16 representation_id FK
+        DATETIME created_at
+    }
+    joma_assessments {
+        BINARY16 id PK
+        BINARY16 case_id FK
+        BINARY16 subject_person_id FK
+        VARCHAR instrument_reference
+        VARCHAR status_code
+        DATETIME created_at
+    }
+    joma_clinical_cases {
+        BINARY16 id PK
+    }
+    joma_command_receipts {
+        BINARY16 id PK
+    }
+    joma_persons {
+        BINARY16 id PK
+    }
+    joma_protected_files {
+        BINARY16 id PK
+        VARCHAR storage_key UK
+        VARCHAR original_name
+        VARCHAR media_type
+        BIGINT byte_length
+        BINARY16 sha256
+        BINARY16 uploaded_by_person_id FK
+        VARCHAR state
+        DATETIME created_at
+    }
+    joma_report_publication_audiences {
+        BINARY16 id PK
+        BINARY16 publication_id FK
+        BINARY16 recipient_person_id FK
+        BINARY16 access_subject_person_id FK
+        BINARY16 scope_id FK
+        VARCHAR basis_kind
+        BINARY16 representation_id FK
+        DATETIME revoked_at
+        DATETIME created_at
+    }
+    joma_report_publications {
+        BINARY16 id PK
+        BINARY16 report_version_id FK
+        BINARY16 case_id FK
+        BINARY16 published_by_person_id FK
+        VARCHAR channel
+        DATETIME published_at
+        DATETIME revoked_at
+        BINARY16 command_id FK, UK
+        DATETIME created_at
+    }
+    joma_report_versions {
+        BINARY16 id PK
+        BINARY16 report_id FK
+        BINARY16 case_id FK
+        INT version_no
+        BINARY16 author_person_id FK
+        BINARY16 uploaded_by_person_id FK
+        MEDIUMTEXT report_text
+        BINARY16 protected_file_id FK
+        VARCHAR status
+        DATETIME created_at
+    }
+    joma_representations {
+        BINARY16 id PK
+    }
+    joma_work_scopes {
+        BINARY16 id PK
+    }
+    joma_clinical_cases ||--o{ joma_assessments : case_id
+    joma_persons ||--o{ joma_assessments : subject_person_id
+    joma_assessments ||--o{ joma_assessment_respondents : assessment_id
+    joma_persons ||--o{ joma_assessment_respondents : respondent_person_id
+    joma_representations o|--o{ joma_assessment_respondents : representation_id
+    joma_assessments ||--o{ joma_assessment_assignments : assessment_id
+    joma_persons ||--o{ joma_assessment_assignments : assessor_person_id
+    joma_persons ||--o{ joma_assessment_assignments : authorized_by_person_id
+    joma_work_scopes ||--o{ joma_assessment_assignments : scope_id
+    joma_persons ||--o{ joma_protected_files : uploaded_by_person_id
+    joma_assessments ||--o{ joma_assessment_reports : assessment_id
+    joma_assessment_reports ||--o{ joma_report_versions : report_id
+    joma_persons ||--o{ joma_report_versions : author_person_id
+    joma_persons ||--o{ joma_report_versions : uploaded_by_person_id
+    joma_protected_files o|--o{ joma_report_versions : protected_file_id
+    joma_report_versions ||--o{ joma_report_publications : report_version_id
+    joma_clinical_cases ||--o{ joma_report_publications : case_id
+    joma_command_receipts ||--o| joma_report_publications : command_id
+    joma_report_publications ||--o{ joma_report_publication_audiences : publication_id
+    joma_persons ||--o{ joma_report_publication_audiences : recipient_person_id
+    joma_persons ||--o{ joma_report_publication_audiences : access_subject_person_id
+    joma_work_scopes ||--o{ joma_report_publication_audiences : scope_id
+    joma_representations o|--o{ joma_report_publication_audiences : representation_id

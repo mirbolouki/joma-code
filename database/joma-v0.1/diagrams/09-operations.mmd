@@ -1,0 +1,83 @@
+erDiagram
+    joma_audit_entries {
+        BINARY16 id PK
+        BINARY16 command_id FK
+        BINARY16 actor_person_id FK
+        VARCHAR system_actor_code
+        BINARY16 scope_id FK
+        VARCHAR action_code
+        VARCHAR resource_kind
+        VARCHAR resource_reference
+        VARCHAR decision
+        VARCHAR reason_code
+        JSON redacted_metadata_json
+        DATETIME created_at
+    }
+    joma_command_receipts {
+        BINARY16 id PK
+        BINARY16 scope_id FK
+        BINARY16 actor_person_id FK
+        VARCHAR system_actor_code
+        VARCHAR command_name
+        BINARY16 idempotency_key
+        BINARY16 payload_hash
+        VARCHAR status
+        JSON result_reference_json
+        DATETIME completed_at
+        DATETIME created_at
+    }
+    joma_config_definitions {
+        INT id PK
+        VARCHAR key_code UK
+        VARCHAR value_type
+        JSON validation_json
+        DATETIME created_at
+    }
+    joma_config_versions {
+        BINARY16 id PK
+        INT definition_id FK
+        BINARY16 scope_id FK
+        INT version_no
+        JSON value_json
+        DATETIME effective_at
+        BINARY16 changed_by_person_id FK
+        BINARY16 command_id FK, UK
+        DATETIME created_at
+    }
+    joma_notification_attempts {
+        BINARY16 id PK
+        BINARY16 intent_id FK
+        INT attempt_no
+        VARCHAR provider_reference
+        VARCHAR result_code
+        DATETIME attempted_at
+        DATETIME created_at
+    }
+    joma_notification_intents {
+        BINARY16 id PK
+        BINARY16 command_id FK
+        BINARY16 recipient_person_id FK
+        VARCHAR template_code
+        VARCHAR status
+        DATETIME scheduled_at
+        JSON redacted_parameters_json
+        DATETIME created_at
+    }
+    joma_persons {
+        BINARY16 id PK
+    }
+    joma_work_scopes {
+        BINARY16 id PK
+    }
+    joma_work_scopes ||--o{ joma_command_receipts : scope_id
+    joma_persons o|--o{ joma_command_receipts : actor_person_id
+    joma_config_definitions ||--o{ joma_config_versions : definition_id
+    joma_work_scopes ||--o{ joma_config_versions : scope_id
+    joma_persons ||--o{ joma_config_versions : changed_by_person_id
+    joma_command_receipts ||--o| joma_config_versions : command_id
+    joma_command_receipts o|--o{ joma_audit_entries : command_id
+    joma_persons o|--o{ joma_audit_entries : actor_person_id
+    joma_work_scopes o|--o{ joma_audit_entries : scope_id
+    joma_command_receipts ||--o{ joma_notification_intents : command_id
+    joma_persons ||--o{ joma_notification_intents : recipient_person_id
+    joma_notification_intents ||--o{ joma_notification_attempts : intent_id

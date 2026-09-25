@@ -1,0 +1,98 @@
+erDiagram
+    joma_accounts {
+        BINARY16 id PK
+        BINARY16 person_id FK
+        VARCHAR login_name UK
+        VARCHAR password_hash
+        VARCHAR status
+        BINARY16 active_person_id UK
+        DATETIME created_at
+    }
+    joma_contact_points {
+        BINARY16 id PK
+        VARCHAR kind
+        VARCHAR normalized_value
+        DATETIME created_at
+    }
+    joma_memberships {
+        BINARY16 id PK
+        BINARY16 person_id FK
+        BINARY16 scope_id FK
+        VARCHAR status
+        DATETIME valid_from
+        DATETIME valid_until
+        DATETIME created_at
+    }
+    joma_person_contacts {
+        BINARY16 id PK
+        BINARY16 person_id FK
+        BINARY16 contact_id FK
+        VARCHAR relationship_label
+        DATETIME verified_at
+        DATETIME created_at
+    }
+    joma_persons {
+        BINARY16 id PK
+        VARCHAR given_name
+        VARCHAR family_name
+        DATE birth_date
+        VARCHAR sex_code
+        VARCHAR status
+        DATETIME created_at
+    }
+    joma_professional_credentials {
+        BINARY16 id PK
+        BINARY16 profile_id FK
+        VARCHAR credential_type
+        VARCHAR issuer
+        VARCHAR credential_reference
+        DATE valid_until
+        DATETIME created_at
+    }
+    joma_professional_profiles {
+        BINARY16 id PK
+        BINARY16 person_id FK
+        VARCHAR professional_type
+        JSON specialties_json
+        DATETIME created_at
+    }
+    joma_role_assignments {
+        BINARY16 id PK
+        BINARY16 account_id FK
+        BINARY16 person_id FK
+        BINARY16 membership_id FK
+        BINARY16 scope_id FK
+        INT role_id FK
+        DATETIME valid_from
+        DATETIME valid_until
+        DATETIME revoked_at
+        DATETIME created_at
+    }
+    joma_role_definitions {
+        INT id PK
+        VARCHAR code UK
+        VARCHAR label
+        BOOLEAN is_active
+        DATETIME created_at
+    }
+    joma_work_scopes {
+        BINARY16 id PK
+        VARCHAR kind
+        BINARY16 parent_scope_id FK
+        BINARY16 independent_practitioner_id FK
+        VARCHAR label
+        VARCHAR status
+        DATETIME created_at
+    }
+    joma_persons ||--o{ joma_accounts : person_id
+    joma_persons ||--o{ joma_person_contacts : person_id
+    joma_contact_points ||--o{ joma_person_contacts : contact_id
+    joma_work_scopes o|--o{ joma_work_scopes : parent_scope_id
+    joma_persons o|--o{ joma_work_scopes : independent_practitioner_id
+    joma_persons ||--o{ joma_memberships : person_id
+    joma_work_scopes ||--o{ joma_memberships : scope_id
+    joma_accounts ||--o{ joma_role_assignments : account_id
+    joma_memberships ||--o{ joma_role_assignments : membership_id
+    joma_role_definitions ||--o{ joma_role_assignments : role_id
+    joma_persons ||--o{ joma_professional_profiles : person_id
+    joma_professional_profiles ||--o{ joma_professional_credentials : profile_id

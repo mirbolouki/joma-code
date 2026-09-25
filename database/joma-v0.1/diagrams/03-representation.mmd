@@ -1,0 +1,116 @@
+erDiagram
+    joma_administrative_delegations {
+        BINARY16 id PK
+        BINARY16 grantor_role_assignment_id FK
+        BINARY16 grantor_person_id FK
+        BINARY16 grantee_membership_id FK
+        BINARY16 grantee_person_id FK
+        BINARY16 scope_id FK
+        VARCHAR kind
+        BINARY16 target_admission_id FK
+        BINARY16 target_representation_id FK
+        JSON allowed_actions_json
+        DATETIME valid_from
+        DATETIME valid_until
+        DATETIME revoked_at
+        DATETIME created_at
+    }
+    joma_admissions {
+        BINARY16 id PK
+    }
+    joma_case_representation_restrictions {
+        BINARY16 id PK
+        BINARY16 representation_id FK
+        BINARY16 case_id FK
+        BINARY16 clinician_person_id FK
+        INT service_id FK
+        BINARY16 command_id FK, UK
+        DATETIME suspended_at
+        VARCHAR status
+        VARCHAR reason_code
+        DATETIME created_at
+    }
+    joma_clinical_cases {
+        BINARY16 id PK
+    }
+    joma_command_receipts {
+        BINARY16 id PK
+    }
+    joma_memberships {
+        BINARY16 id PK
+    }
+    joma_persons {
+        BINARY16 id PK
+    }
+    joma_representation_events {
+        BINARY16 id PK
+        BINARY16 representation_id FK
+        BINARY16 command_id FK
+        BINARY16 actor_person_id FK
+        BINARY16 scope_id FK
+        VARCHAR event_code
+        VARCHAR reason_code
+        DATETIME created_at
+    }
+    joma_representation_verifications {
+        BINARY16 id PK
+        BINARY16 representation_id FK
+        BINARY16 representative_person_id FK
+        BINARY16 subject_person_id FK
+        BINARY16 scope_id FK
+        BINARY16 authority_basis_id FK
+        BINARY16 actor_person_id FK
+        VARCHAR evidence_type
+        VARCHAR policy_reference
+        VARCHAR result
+        DATETIME checked_at
+        DATETIME created_at
+    }
+    joma_representations {
+        BINARY16 id PK
+        BINARY16 representative_person_id FK
+        BINARY16 subject_person_id FK
+        BINARY16 scope_id FK
+        VARCHAR status
+        JSON allowed_actions_json
+        DATETIME valid_from
+        DATETIME valid_until
+        DATETIME revoked_at
+        DATETIME created_at
+    }
+    joma_role_assignments {
+        BINARY16 id PK
+    }
+    joma_service_definitions {
+        INT id PK
+    }
+    joma_verification_authority_bases {
+        BINARY16 id PK
+        BINARY16 actor_person_id FK
+        BINARY16 scope_id FK
+        BINARY16 direct_role_assignment_id FK
+        BINARY16 delegation_id FK
+        DATETIME created_at
+    }
+    joma_work_scopes {
+        BINARY16 id PK
+    }
+    joma_persons ||--o{ joma_representations : representative_person_id
+    joma_persons ||--o{ joma_representations : subject_person_id
+    joma_work_scopes ||--o{ joma_representations : scope_id
+    joma_role_assignments ||--o{ joma_administrative_delegations : grantor_role_assignment_id
+    joma_memberships ||--o{ joma_administrative_delegations : grantee_membership_id
+    joma_admissions o|--o{ joma_administrative_delegations : target_admission_id
+    joma_representations o|--o{ joma_administrative_delegations : target_representation_id
+    joma_role_assignments o|--o{ joma_verification_authority_bases : direct_role_assignment_id
+    joma_administrative_delegations o|--o{ joma_verification_authority_bases : delegation_id
+    joma_representations ||--o{ joma_representation_verifications : representation_id
+    joma_verification_authority_bases ||--o{ joma_representation_verifications : authority_basis_id
+    joma_representations ||--o{ joma_representation_events : representation_id
+    joma_command_receipts ||--o{ joma_representation_events : command_id
+    joma_persons ||--o{ joma_representation_events : actor_person_id
+    joma_work_scopes ||--o{ joma_representation_events : scope_id
+    joma_representations ||--o{ joma_case_representation_restrictions : representation_id
+    joma_clinical_cases ||--o{ joma_case_representation_restrictions : case_id
+    joma_service_definitions o|--o{ joma_case_representation_restrictions : service_id
+    joma_command_receipts ||--o| joma_case_representation_restrictions : command_id

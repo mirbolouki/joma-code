@@ -1,0 +1,34 @@
+erDiagram
+    joma_clinical_cases {
+        BINARY16 id PK
+    }
+    joma_command_receipts {
+        BINARY16 id PK
+    }
+    joma_persons {
+        BINARY16 id PK
+    }
+    joma_practitioner_messages {
+        BINARY16 id PK
+        BINARY16 case_id FK
+        BINARY16 sender_person_id FK
+        BINARY16 recipient_person_id FK
+        MEDIUMTEXT message_body
+        DATETIME sent_at
+        BINARY16 command_id FK, UK
+        DATETIME created_at
+    }
+    joma_private_note_references {
+        BINARY16 id PK
+        BINARY16 case_id FK
+        BINARY16 author_person_id FK
+        VARCHAR storage_mode
+        BINARY16 opaque_author_reference
+        DATETIME created_at
+    }
+    joma_clinical_cases ||--o{ joma_private_note_references : case_id
+    joma_persons ||--o{ joma_private_note_references : author_person_id
+    joma_clinical_cases o|--o{ joma_practitioner_messages : case_id
+    joma_persons ||--o{ joma_practitioner_messages : sender_person_id
+    joma_persons ||--o{ joma_practitioner_messages : recipient_person_id
+    joma_command_receipts ||--o| joma_practitioner_messages : command_id
