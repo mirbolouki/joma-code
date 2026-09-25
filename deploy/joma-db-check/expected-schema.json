@@ -1,0 +1,2969 @@
+{
+  "target": "MariaDB 10.11.x",
+  "tables": [
+    "joma_role_definitions",
+    "joma_service_definitions",
+    "joma_payment_methods",
+    "joma_product_definitions",
+    "joma_persons",
+    "joma_accounts",
+    "joma_contact_points",
+    "joma_person_contacts",
+    "joma_work_scopes",
+    "joma_memberships",
+    "joma_role_assignments",
+    "joma_professional_profiles",
+    "joma_professional_credentials",
+    "joma_command_receipts",
+    "joma_service_policy_versions",
+    "joma_service_offerings",
+    "joma_service_providers",
+    "joma_admissions",
+    "joma_admission_participants",
+    "joma_therapist_assignments",
+    "joma_responsibility_acceptances",
+    "joma_therapeutic_relationships",
+    "joma_clinical_cases",
+    "joma_case_participants",
+    "joma_case_operational_contexts",
+    "joma_representations",
+    "joma_administrative_delegations",
+    "joma_verification_authority_bases",
+    "joma_representation_verifications",
+    "joma_representation_events",
+    "joma_case_representation_restrictions",
+    "joma_appointment_requests",
+    "joma_schedule_resources",
+    "joma_capacity_holds",
+    "joma_hold_allocations",
+    "joma_appointments",
+    "joma_appointment_allocations",
+    "joma_appointment_changes",
+    "joma_attendance_observations",
+    "joma_clinical_sessions",
+    "joma_form_templates",
+    "joma_form_versions",
+    "joma_form_approvals",
+    "joma_service_form_requirements",
+    "joma_service_prerequisites",
+    "joma_form_instances",
+    "joma_form_subjects",
+    "joma_form_submission_revisions",
+    "joma_consent_evidence",
+    "joma_form_publications",
+    "joma_assessments",
+    "joma_assessment_respondents",
+    "joma_assessment_assignments",
+    "joma_protected_files",
+    "joma_assessment_reports",
+    "joma_report_versions",
+    "joma_report_publications",
+    "joma_form_publication_audiences",
+    "joma_report_publication_audiences",
+    "joma_private_note_references",
+    "joma_practitioner_messages",
+    "joma_financial_spaces",
+    "joma_destination_accounts",
+    "joma_payment_receipts",
+    "joma_product_entitlements",
+    "joma_config_definitions",
+    "joma_config_versions",
+    "joma_audit_entries",
+    "joma_notification_intents",
+    "joma_notification_attempts"
+  ],
+  "foreign_keys": [
+    "fk_joma_001",
+    "fk_joma_002",
+    "fk_joma_003",
+    "fk_joma_004",
+    "fk_joma_005",
+    "fk_joma_006",
+    "fk_joma_007",
+    "fk_joma_008",
+    "fk_joma_009",
+    "fk_joma_010",
+    "fk_joma_011",
+    "fk_joma_012",
+    "fk_joma_013",
+    "fk_joma_014",
+    "fk_joma_015",
+    "fk_joma_016",
+    "fk_joma_017",
+    "fk_joma_018",
+    "fk_joma_019",
+    "fk_joma_020",
+    "fk_joma_021",
+    "fk_joma_022",
+    "fk_joma_023",
+    "fk_joma_024",
+    "fk_joma_025",
+    "fk_joma_026",
+    "fk_joma_027",
+    "fk_joma_028",
+    "fk_joma_029",
+    "fk_joma_030",
+    "fk_joma_031",
+    "fk_joma_032",
+    "fk_joma_033",
+    "fk_joma_034",
+    "fk_joma_035",
+    "fk_joma_036",
+    "fk_joma_037",
+    "fk_joma_038",
+    "fk_joma_039",
+    "fk_joma_040",
+    "fk_joma_041",
+    "fk_joma_042",
+    "fk_joma_043",
+    "fk_joma_044",
+    "fk_joma_045",
+    "fk_joma_046",
+    "fk_joma_047",
+    "fk_joma_048",
+    "fk_joma_049",
+    "fk_joma_050",
+    "fk_joma_051",
+    "fk_joma_052",
+    "fk_joma_053",
+    "fk_joma_054",
+    "fk_joma_055",
+    "fk_joma_056",
+    "fk_joma_057",
+    "fk_joma_058",
+    "fk_joma_059",
+    "fk_joma_060",
+    "fk_joma_061",
+    "fk_joma_062",
+    "fk_joma_063",
+    "fk_joma_064",
+    "fk_joma_065",
+    "fk_joma_066",
+    "fk_joma_067",
+    "fk_joma_068",
+    "fk_joma_069",
+    "fk_joma_070",
+    "fk_joma_071",
+    "fk_joma_072",
+    "fk_joma_073",
+    "fk_joma_074",
+    "fk_joma_075",
+    "fk_joma_076",
+    "fk_joma_077",
+    "fk_joma_078",
+    "fk_joma_079",
+    "fk_joma_080",
+    "fk_joma_081",
+    "fk_joma_082",
+    "fk_joma_083",
+    "fk_joma_084",
+    "fk_joma_085",
+    "fk_joma_086",
+    "fk_joma_087",
+    "fk_joma_088",
+    "fk_joma_089",
+    "fk_joma_090",
+    "fk_joma_091",
+    "fk_joma_092",
+    "fk_joma_093",
+    "fk_joma_094",
+    "fk_joma_095",
+    "fk_joma_096",
+    "fk_joma_097",
+    "fk_joma_098",
+    "fk_joma_099",
+    "fk_joma_100",
+    "fk_joma_101",
+    "fk_joma_102",
+    "fk_joma_103",
+    "fk_joma_104",
+    "fk_joma_105",
+    "fk_joma_106",
+    "fk_joma_107",
+    "fk_joma_108",
+    "fk_joma_109",
+    "fk_joma_110",
+    "fk_joma_111",
+    "fk_joma_112",
+    "fk_joma_113",
+    "fk_joma_114",
+    "fk_joma_115",
+    "fk_joma_116",
+    "fk_joma_117",
+    "fk_joma_118",
+    "fk_joma_119",
+    "fk_joma_120",
+    "fk_joma_121",
+    "fk_joma_122",
+    "fk_joma_123",
+    "fk_joma_124",
+    "fk_joma_125",
+    "fk_joma_126",
+    "fk_joma_127",
+    "fk_joma_128",
+    "fk_joma_129",
+    "fk_joma_130",
+    "fk_joma_131",
+    "fk_joma_132",
+    "fk_joma_133",
+    "fk_joma_134",
+    "fk_joma_135",
+    "fk_joma_136",
+    "fk_joma_137",
+    "fk_joma_138",
+    "fk_joma_139",
+    "fk_joma_140",
+    "fk_joma_141",
+    "fk_joma_142",
+    "fk_joma_143",
+    "fk_joma_144",
+    "fk_joma_145",
+    "fk_joma_146",
+    "fk_joma_147",
+    "fk_joma_148",
+    "fk_joma_149",
+    "fk_joma_150",
+    "fk_joma_151",
+    "fk_joma_152",
+    "fk_joma_153",
+    "fk_joma_154",
+    "fk_joma_155",
+    "fk_joma_156",
+    "fk_joma_157",
+    "fk_joma_158",
+    "fk_joma_159",
+    "fk_joma_160",
+    "fk_joma_161",
+    "fk_joma_162",
+    "fk_joma_163",
+    "fk_joma_164",
+    "fk_joma_165",
+    "fk_joma_166",
+    "fk_joma_167",
+    "fk_joma_168",
+    "fk_joma_169",
+    "fk_joma_170",
+    "fk_joma_171",
+    "fk_joma_172",
+    "fk_joma_173"
+  ],
+  "explicit_checks": [
+    "ck_role_definitions_1",
+    "ck_service_definitions_1",
+    "ck_payment_methods_1",
+    "ck_product_definitions_1",
+    "ck_persons_1",
+    "ck_persons_2",
+    "ck_accounts_1",
+    "ck_contact_points_1",
+    "ck_work_scopes_1",
+    "ck_work_scopes_2",
+    "ck_work_scopes_3",
+    "ck_work_scopes_4",
+    "ck_memberships_1",
+    "ck_memberships_2",
+    "ck_role_assignments_1",
+    "ck_command_receipts_1",
+    "ck_command_receipts_2",
+    "ck_service_policy_versions_1",
+    "ck_service_policy_versions_2",
+    "ck_service_policy_versions_3",
+    "ck_service_offerings_1",
+    "ck_service_offerings_2",
+    "ck_service_providers_1",
+    "ck_admissions_1",
+    "ck_admissions_2",
+    "ck_therapist_assignments_1",
+    "ck_responsibility_acceptances_1",
+    "ck_therapeutic_relationships_1",
+    "ck_clinical_cases_1",
+    "ck_case_participants_1",
+    "ck_case_operational_contexts_1",
+    "ck_representations_1",
+    "ck_representations_2",
+    "ck_representations_3",
+    "ck_representations_4",
+    "ck_administrative_delegations_1",
+    "ck_administrative_delegations_2",
+    "ck_administrative_delegations_3",
+    "ck_verification_authority_bases_1",
+    "ck_representation_verifications_1",
+    "ck_case_representation_restrictions_1",
+    "ck_appointment_requests_1",
+    "ck_appointment_requests_2",
+    "ck_appointment_requests_3",
+    "ck_schedule_resources_1",
+    "ck_capacity_holds_1",
+    "ck_capacity_holds_2",
+    "ck_capacity_holds_3",
+    "ck_capacity_holds_4",
+    "ck_hold_allocations_1",
+    "ck_appointments_1",
+    "ck_appointments_2",
+    "ck_appointments_3",
+    "ck_appointments_4",
+    "ck_appointment_allocations_1",
+    "ck_clinical_sessions_1",
+    "ck_form_templates_1",
+    "ck_form_versions_1",
+    "ck_form_versions_2",
+    "ck_form_versions_3",
+    "ck_form_versions_4",
+    "ck_form_approvals_1",
+    "ck_service_form_requirements_1",
+    "ck_form_instances_1",
+    "ck_form_instances_2",
+    "ck_form_submission_revisions_1",
+    "ck_form_submission_revisions_2",
+    "ck_form_submission_revisions_3",
+    "ck_form_submission_revisions_4",
+    "ck_assessment_assignments_1",
+    "ck_protected_files_1",
+    "ck_protected_files_2",
+    "ck_report_versions_1",
+    "ck_report_versions_2",
+    "ck_report_versions_3",
+    "ck_report_publications_1",
+    "ck_form_publication_audiences_1",
+    "ck_report_publication_audiences_1",
+    "ck_private_note_references_1",
+    "ck_destination_accounts_1",
+    "ck_payment_receipts_1",
+    "ck_payment_receipts_2",
+    "ck_payment_receipts_3",
+    "ck_payment_receipts_4",
+    "ck_product_entitlements_1",
+    "ck_config_versions_1",
+    "ck_audit_entries_1",
+    "ck_audit_entries_2",
+    "ck_notification_intents_1",
+    "ck_notification_attempts_1"
+  ],
+  "unique_indexes": [
+    {
+      "table": "joma_role_definitions",
+      "name": "uq_role_definitions_1",
+      "columns": [
+        "code"
+      ]
+    },
+    {
+      "table": "joma_service_definitions",
+      "name": "uq_service_definitions_1",
+      "columns": [
+        "code"
+      ]
+    },
+    {
+      "table": "joma_payment_methods",
+      "name": "uq_payment_methods_1",
+      "columns": [
+        "code"
+      ]
+    },
+    {
+      "table": "joma_payment_methods",
+      "name": "uq_payment_methods_2",
+      "columns": [
+        "id",
+        "is_bank_method"
+      ]
+    },
+    {
+      "table": "joma_product_definitions",
+      "name": "uq_product_definitions_1",
+      "columns": [
+        "code"
+      ]
+    },
+    {
+      "table": "joma_accounts",
+      "name": "uq_accounts_1",
+      "columns": [
+        "login_name"
+      ]
+    },
+    {
+      "table": "joma_accounts",
+      "name": "uq_accounts_2",
+      "columns": [
+        "active_person_id"
+      ]
+    },
+    {
+      "table": "joma_accounts",
+      "name": "uq_accounts_3",
+      "columns": [
+        "id",
+        "person_id"
+      ]
+    },
+    {
+      "table": "joma_contact_points",
+      "name": "uq_contact_points_1",
+      "columns": [
+        "kind",
+        "normalized_value"
+      ]
+    },
+    {
+      "table": "joma_person_contacts",
+      "name": "uq_person_contacts_1",
+      "columns": [
+        "person_id",
+        "contact_id"
+      ]
+    },
+    {
+      "table": "joma_memberships",
+      "name": "uq_memberships_1",
+      "columns": [
+        "person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "table": "joma_memberships",
+      "name": "uq_memberships_2",
+      "columns": [
+        "id",
+        "person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "table": "joma_role_assignments",
+      "name": "uq_role_assignments_1",
+      "columns": [
+        "id",
+        "person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "table": "joma_command_receipts",
+      "name": "uq_command_receipts_1",
+      "columns": [
+        "scope_id",
+        "idempotency_key"
+      ]
+    },
+    {
+      "table": "joma_service_policy_versions",
+      "name": "uq_service_policy_versions_1",
+      "columns": [
+        "service_id",
+        "version_no"
+      ]
+    },
+    {
+      "table": "joma_service_policy_versions",
+      "name": "uq_service_policy_versions_2",
+      "columns": [
+        "id",
+        "service_id"
+      ]
+    },
+    {
+      "table": "joma_service_offerings",
+      "name": "uq_service_offerings_1",
+      "columns": [
+        "id",
+        "scope_id"
+      ]
+    },
+    {
+      "table": "joma_admission_participants",
+      "name": "uq_admission_participants_1",
+      "columns": [
+        "admission_id",
+        "person_id",
+        "participation_role"
+      ]
+    },
+    {
+      "table": "joma_therapist_assignments",
+      "name": "uq_therapist_assignments_1",
+      "columns": [
+        "open_admission_id"
+      ]
+    },
+    {
+      "table": "joma_therapist_assignments",
+      "name": "uq_therapist_assignments_2",
+      "columns": [
+        "id",
+        "admission_id",
+        "therapist_person_id"
+      ]
+    },
+    {
+      "table": "joma_responsibility_acceptances",
+      "name": "uq_responsibility_acceptances_1",
+      "columns": [
+        "assignment_id"
+      ]
+    },
+    {
+      "table": "joma_responsibility_acceptances",
+      "name": "uq_responsibility_acceptances_2",
+      "columns": [
+        "command_id"
+      ]
+    },
+    {
+      "table": "joma_responsibility_acceptances",
+      "name": "uq_responsibility_acceptances_3",
+      "columns": [
+        "id",
+        "therapist_person_id"
+      ]
+    },
+    {
+      "table": "joma_therapeutic_relationships",
+      "name": "uq_therapeutic_relationships_1",
+      "columns": [
+        "acceptance_id"
+      ]
+    },
+    {
+      "table": "joma_therapeutic_relationships",
+      "name": "uq_therapeutic_relationships_2",
+      "columns": [
+        "id",
+        "therapist_person_id"
+      ]
+    },
+    {
+      "table": "joma_clinical_cases",
+      "name": "uq_clinical_cases_1",
+      "columns": [
+        "relationship_id"
+      ]
+    },
+    {
+      "table": "joma_clinical_cases",
+      "name": "uq_clinical_cases_2",
+      "columns": [
+        "id",
+        "responsible_therapist_id"
+      ]
+    },
+    {
+      "table": "joma_case_operational_contexts",
+      "name": "uq_case_operational_contexts_1",
+      "columns": [
+        "id",
+        "case_id",
+        "scope_id"
+      ]
+    },
+    {
+      "table": "joma_representations",
+      "name": "uq_representations_1",
+      "columns": [
+        "id",
+        "representative_person_id",
+        "subject_person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "table": "joma_administrative_delegations",
+      "name": "uq_administrative_delegations_1",
+      "columns": [
+        "id",
+        "grantee_person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "table": "joma_verification_authority_bases",
+      "name": "uq_verification_authority_bases_1",
+      "columns": [
+        "id",
+        "actor_person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "table": "joma_case_representation_restrictions",
+      "name": "uq_case_representation_restrictions_1",
+      "columns": [
+        "command_id"
+      ]
+    },
+    {
+      "table": "joma_appointment_requests",
+      "name": "uq_appointment_requests_1",
+      "columns": [
+        "fulfilled_appointment_id"
+      ]
+    },
+    {
+      "table": "joma_schedule_resources",
+      "name": "uq_schedule_resources_1",
+      "columns": [
+        "therapist_person_id"
+      ]
+    },
+    {
+      "table": "joma_capacity_holds",
+      "name": "uq_capacity_holds_1",
+      "columns": [
+        "command_id"
+      ]
+    },
+    {
+      "table": "joma_capacity_holds",
+      "name": "uq_capacity_holds_2",
+      "columns": [
+        "id",
+        "case_id"
+      ]
+    },
+    {
+      "table": "joma_hold_allocations",
+      "name": "uq_hold_allocations_1",
+      "columns": [
+        "hold_id",
+        "resource_id"
+      ]
+    },
+    {
+      "table": "joma_appointments",
+      "name": "uq_appointments_1",
+      "columns": [
+        "hold_id"
+      ]
+    },
+    {
+      "table": "joma_appointments",
+      "name": "uq_appointments_2",
+      "columns": [
+        "command_id"
+      ]
+    },
+    {
+      "table": "joma_appointments",
+      "name": "uq_appointments_3",
+      "columns": [
+        "id",
+        "case_id",
+        "therapist_person_id"
+      ]
+    },
+    {
+      "table": "joma_appointment_allocations",
+      "name": "uq_appointment_allocations_1",
+      "columns": [
+        "appointment_id",
+        "resource_id"
+      ]
+    },
+    {
+      "table": "joma_appointment_changes",
+      "name": "uq_appointment_changes_1",
+      "columns": [
+        "command_id"
+      ]
+    },
+    {
+      "table": "joma_clinical_sessions",
+      "name": "uq_clinical_sessions_1",
+      "columns": [
+        "appointment_id"
+      ]
+    },
+    {
+      "table": "joma_clinical_sessions",
+      "name": "uq_clinical_sessions_2",
+      "columns": [
+        "command_id"
+      ]
+    },
+    {
+      "table": "joma_form_versions",
+      "name": "uq_form_versions_1",
+      "columns": [
+        "template_id",
+        "version_no"
+      ]
+    },
+    {
+      "table": "joma_service_prerequisites",
+      "name": "uq_service_prerequisites_1",
+      "columns": [
+        "policy_version_id",
+        "action_code",
+        "prerequisite_code"
+      ]
+    },
+    {
+      "table": "joma_form_instances",
+      "name": "uq_form_instances_1",
+      "columns": [
+        "id",
+        "case_id"
+      ]
+    },
+    {
+      "table": "joma_form_subjects",
+      "name": "uq_form_subjects_1",
+      "columns": [
+        "instance_id",
+        "subject_person_id"
+      ]
+    },
+    {
+      "table": "joma_form_submission_revisions",
+      "name": "uq_form_submission_revisions_1",
+      "columns": [
+        "instance_id",
+        "revision_no"
+      ]
+    },
+    {
+      "table": "joma_form_submission_revisions",
+      "name": "uq_form_submission_revisions_2",
+      "columns": [
+        "command_id"
+      ]
+    },
+    {
+      "table": "joma_form_submission_revisions",
+      "name": "uq_form_submission_revisions_3",
+      "columns": [
+        "id",
+        "instance_id"
+      ]
+    },
+    {
+      "table": "joma_form_publications",
+      "name": "uq_form_publications_1",
+      "columns": [
+        "command_id"
+      ]
+    },
+    {
+      "table": "joma_assessments",
+      "name": "uq_assessments_1",
+      "columns": [
+        "id",
+        "case_id"
+      ]
+    },
+    {
+      "table": "joma_assessment_respondents",
+      "name": "uq_assessment_respondents_1",
+      "columns": [
+        "assessment_id",
+        "respondent_person_id"
+      ]
+    },
+    {
+      "table": "joma_protected_files",
+      "name": "uq_protected_files_1",
+      "columns": [
+        "storage_key"
+      ]
+    },
+    {
+      "table": "joma_assessment_reports",
+      "name": "uq_assessment_reports_1",
+      "columns": [
+        "id",
+        "case_id"
+      ]
+    },
+    {
+      "table": "joma_report_versions",
+      "name": "uq_report_versions_1",
+      "columns": [
+        "report_id",
+        "version_no"
+      ]
+    },
+    {
+      "table": "joma_report_versions",
+      "name": "uq_report_versions_2",
+      "columns": [
+        "id",
+        "case_id"
+      ]
+    },
+    {
+      "table": "joma_report_publications",
+      "name": "uq_report_publications_1",
+      "columns": [
+        "command_id"
+      ]
+    },
+    {
+      "table": "joma_form_publication_audiences",
+      "name": "uq_form_publication_audiences_1",
+      "columns": [
+        "publication_id",
+        "recipient_person_id"
+      ]
+    },
+    {
+      "table": "joma_report_publication_audiences",
+      "name": "uq_report_publication_audiences_1",
+      "columns": [
+        "publication_id",
+        "recipient_person_id"
+      ]
+    },
+    {
+      "table": "joma_private_note_references",
+      "name": "uq_private_note_references_1",
+      "columns": [
+        "author_person_id",
+        "opaque_author_reference"
+      ]
+    },
+    {
+      "table": "joma_practitioner_messages",
+      "name": "uq_practitioner_messages_1",
+      "columns": [
+        "command_id"
+      ]
+    },
+    {
+      "table": "joma_destination_accounts",
+      "name": "uq_destination_accounts_1",
+      "columns": [
+        "id",
+        "financial_space_id"
+      ]
+    },
+    {
+      "table": "joma_payment_receipts",
+      "name": "uq_payment_receipts_1",
+      "columns": [
+        "command_id"
+      ]
+    },
+    {
+      "table": "joma_payment_receipts",
+      "name": "uq_payment_receipts_2",
+      "columns": [
+        "financial_space_id",
+        "provider_code",
+        "provider_transaction_reference"
+      ]
+    },
+    {
+      "table": "joma_product_entitlements",
+      "name": "uq_product_entitlements_1",
+      "columns": [
+        "source_system_code",
+        "source_reference",
+        "product_id",
+        "beneficiary_person_id"
+      ]
+    },
+    {
+      "table": "joma_config_definitions",
+      "name": "uq_config_definitions_1",
+      "columns": [
+        "key_code"
+      ]
+    },
+    {
+      "table": "joma_config_versions",
+      "name": "uq_config_versions_1",
+      "columns": [
+        "definition_id",
+        "scope_id",
+        "version_no"
+      ]
+    },
+    {
+      "table": "joma_config_versions",
+      "name": "uq_config_versions_2",
+      "columns": [
+        "command_id"
+      ]
+    },
+    {
+      "table": "joma_notification_intents",
+      "name": "uq_notification_intents_1",
+      "columns": [
+        "command_id",
+        "recipient_person_id",
+        "template_code"
+      ]
+    },
+    {
+      "table": "joma_notification_attempts",
+      "name": "uq_notification_attempts_1",
+      "columns": [
+        "intent_id",
+        "attempt_no"
+      ]
+    }
+  ],
+  "json_columns": [
+    {
+      "table": "joma_professional_profiles",
+      "column": "specialties_json"
+    },
+    {
+      "table": "joma_command_receipts",
+      "column": "result_reference_json"
+    },
+    {
+      "table": "joma_service_policy_versions",
+      "column": "policy_json"
+    },
+    {
+      "table": "joma_representations",
+      "column": "allowed_actions_json"
+    },
+    {
+      "table": "joma_administrative_delegations",
+      "column": "allowed_actions_json"
+    },
+    {
+      "table": "joma_appointment_changes",
+      "column": "before_json"
+    },
+    {
+      "table": "joma_appointment_changes",
+      "column": "after_json"
+    },
+    {
+      "table": "joma_form_versions",
+      "column": "schema_json"
+    },
+    {
+      "table": "joma_service_prerequisites",
+      "column": "parameters_json"
+    },
+    {
+      "table": "joma_form_submission_revisions",
+      "column": "answers_json"
+    },
+    {
+      "table": "joma_config_definitions",
+      "column": "validation_json"
+    },
+    {
+      "table": "joma_config_versions",
+      "column": "value_json"
+    },
+    {
+      "table": "joma_audit_entries",
+      "column": "redacted_metadata_json"
+    },
+    {
+      "table": "joma_notification_intents",
+      "column": "redacted_parameters_json"
+    }
+  ],
+  "foreign_key_details": [
+    {
+      "name": "fk_joma_001",
+      "table": "joma_accounts",
+      "columns": [
+        "person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_002",
+      "table": "joma_person_contacts",
+      "columns": [
+        "person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_003",
+      "table": "joma_person_contacts",
+      "columns": [
+        "contact_id"
+      ],
+      "referenced_table": "joma_contact_points",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_004",
+      "table": "joma_work_scopes",
+      "columns": [
+        "parent_scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_005",
+      "table": "joma_work_scopes",
+      "columns": [
+        "independent_practitioner_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_006",
+      "table": "joma_memberships",
+      "columns": [
+        "person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_007",
+      "table": "joma_memberships",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_008",
+      "table": "joma_role_assignments",
+      "columns": [
+        "account_id",
+        "person_id"
+      ],
+      "referenced_table": "joma_accounts",
+      "referenced_columns": [
+        "id",
+        "person_id"
+      ]
+    },
+    {
+      "name": "fk_joma_009",
+      "table": "joma_role_assignments",
+      "columns": [
+        "membership_id",
+        "person_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_memberships",
+      "referenced_columns": [
+        "id",
+        "person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_010",
+      "table": "joma_role_assignments",
+      "columns": [
+        "role_id"
+      ],
+      "referenced_table": "joma_role_definitions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_011",
+      "table": "joma_professional_profiles",
+      "columns": [
+        "person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_012",
+      "table": "joma_professional_credentials",
+      "columns": [
+        "profile_id"
+      ],
+      "referenced_table": "joma_professional_profiles",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_013",
+      "table": "joma_command_receipts",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_014",
+      "table": "joma_command_receipts",
+      "columns": [
+        "actor_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_015",
+      "table": "joma_service_policy_versions",
+      "columns": [
+        "service_id"
+      ],
+      "referenced_table": "joma_service_definitions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_016",
+      "table": "joma_service_policy_versions",
+      "columns": [
+        "author_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_017",
+      "table": "joma_service_policy_versions",
+      "columns": [
+        "approved_by_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_018",
+      "table": "joma_service_offerings",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_019",
+      "table": "joma_service_offerings",
+      "columns": [
+        "policy_version_id",
+        "service_id"
+      ],
+      "referenced_table": "joma_service_policy_versions",
+      "referenced_columns": [
+        "id",
+        "service_id"
+      ]
+    },
+    {
+      "name": "fk_joma_020",
+      "table": "joma_service_providers",
+      "columns": [
+        "offering_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_service_offerings",
+      "referenced_columns": [
+        "id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_021",
+      "table": "joma_service_providers",
+      "columns": [
+        "membership_id",
+        "person_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_memberships",
+      "referenced_columns": [
+        "id",
+        "person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_022",
+      "table": "joma_admissions",
+      "columns": [
+        "primary_subject_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_023",
+      "table": "joma_admissions",
+      "columns": [
+        "recorded_by_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_024",
+      "table": "joma_admissions",
+      "columns": [
+        "offering_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_service_offerings",
+      "referenced_columns": [
+        "id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_025",
+      "table": "joma_admission_participants",
+      "columns": [
+        "admission_id"
+      ],
+      "referenced_table": "joma_admissions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_026",
+      "table": "joma_admission_participants",
+      "columns": [
+        "person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_027",
+      "table": "joma_therapist_assignments",
+      "columns": [
+        "admission_id"
+      ],
+      "referenced_table": "joma_admissions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_028",
+      "table": "joma_therapist_assignments",
+      "columns": [
+        "therapist_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_029",
+      "table": "joma_therapist_assignments",
+      "columns": [
+        "assigned_by_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_030",
+      "table": "joma_responsibility_acceptances",
+      "columns": [
+        "admission_id"
+      ],
+      "referenced_table": "joma_admissions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_031",
+      "table": "joma_responsibility_acceptances",
+      "columns": [
+        "assignment_id",
+        "admission_id",
+        "therapist_person_id"
+      ],
+      "referenced_table": "joma_therapist_assignments",
+      "referenced_columns": [
+        "id",
+        "admission_id",
+        "therapist_person_id"
+      ]
+    },
+    {
+      "name": "fk_joma_032",
+      "table": "joma_responsibility_acceptances",
+      "columns": [
+        "therapist_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_033",
+      "table": "joma_responsibility_acceptances",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_034",
+      "table": "joma_therapeutic_relationships",
+      "columns": [
+        "acceptance_id",
+        "therapist_person_id"
+      ],
+      "referenced_table": "joma_responsibility_acceptances",
+      "referenced_columns": [
+        "id",
+        "therapist_person_id"
+      ]
+    },
+    {
+      "name": "fk_joma_035",
+      "table": "joma_clinical_cases",
+      "columns": [
+        "relationship_id",
+        "responsible_therapist_id"
+      ],
+      "referenced_table": "joma_therapeutic_relationships",
+      "referenced_columns": [
+        "id",
+        "therapist_person_id"
+      ]
+    },
+    {
+      "name": "fk_joma_036",
+      "table": "joma_admissions",
+      "columns": [
+        "case_id"
+      ],
+      "referenced_table": "joma_clinical_cases",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_037",
+      "table": "joma_case_participants",
+      "columns": [
+        "case_id"
+      ],
+      "referenced_table": "joma_clinical_cases",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_038",
+      "table": "joma_case_participants",
+      "columns": [
+        "person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_039",
+      "table": "joma_case_operational_contexts",
+      "columns": [
+        "case_id"
+      ],
+      "referenced_table": "joma_clinical_cases",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_040",
+      "table": "joma_case_operational_contexts",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_041",
+      "table": "joma_representations",
+      "columns": [
+        "representative_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_042",
+      "table": "joma_representations",
+      "columns": [
+        "subject_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_043",
+      "table": "joma_representations",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_044",
+      "table": "joma_administrative_delegations",
+      "columns": [
+        "grantor_role_assignment_id",
+        "grantor_person_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_role_assignments",
+      "referenced_columns": [
+        "id",
+        "person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_045",
+      "table": "joma_administrative_delegations",
+      "columns": [
+        "grantee_membership_id",
+        "grantee_person_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_memberships",
+      "referenced_columns": [
+        "id",
+        "person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_046",
+      "table": "joma_administrative_delegations",
+      "columns": [
+        "target_admission_id"
+      ],
+      "referenced_table": "joma_admissions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_047",
+      "table": "joma_administrative_delegations",
+      "columns": [
+        "target_representation_id"
+      ],
+      "referenced_table": "joma_representations",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_048",
+      "table": "joma_verification_authority_bases",
+      "columns": [
+        "direct_role_assignment_id",
+        "actor_person_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_role_assignments",
+      "referenced_columns": [
+        "id",
+        "person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_049",
+      "table": "joma_verification_authority_bases",
+      "columns": [
+        "delegation_id",
+        "actor_person_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_administrative_delegations",
+      "referenced_columns": [
+        "id",
+        "grantee_person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_050",
+      "table": "joma_representation_verifications",
+      "columns": [
+        "representation_id",
+        "representative_person_id",
+        "subject_person_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_representations",
+      "referenced_columns": [
+        "id",
+        "representative_person_id",
+        "subject_person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_051",
+      "table": "joma_representation_verifications",
+      "columns": [
+        "authority_basis_id",
+        "actor_person_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_verification_authority_bases",
+      "referenced_columns": [
+        "id",
+        "actor_person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_052",
+      "table": "joma_representation_events",
+      "columns": [
+        "representation_id"
+      ],
+      "referenced_table": "joma_representations",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_053",
+      "table": "joma_representation_events",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_054",
+      "table": "joma_representation_events",
+      "columns": [
+        "actor_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_055",
+      "table": "joma_representation_events",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_056",
+      "table": "joma_case_representation_restrictions",
+      "columns": [
+        "representation_id"
+      ],
+      "referenced_table": "joma_representations",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_057",
+      "table": "joma_case_representation_restrictions",
+      "columns": [
+        "case_id",
+        "clinician_person_id"
+      ],
+      "referenced_table": "joma_clinical_cases",
+      "referenced_columns": [
+        "id",
+        "responsible_therapist_id"
+      ]
+    },
+    {
+      "name": "fk_joma_058",
+      "table": "joma_case_representation_restrictions",
+      "columns": [
+        "service_id"
+      ],
+      "referenced_table": "joma_service_definitions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_059",
+      "table": "joma_case_representation_restrictions",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_060",
+      "table": "joma_appointment_requests",
+      "columns": [
+        "subject_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_061",
+      "table": "joma_appointment_requests",
+      "columns": [
+        "admission_id"
+      ],
+      "referenced_table": "joma_admissions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_062",
+      "table": "joma_appointment_requests",
+      "columns": [
+        "case_id"
+      ],
+      "referenced_table": "joma_clinical_cases",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_063",
+      "table": "joma_appointment_requests",
+      "columns": [
+        "offering_id"
+      ],
+      "referenced_table": "joma_service_offerings",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_064",
+      "table": "joma_schedule_resources",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_065",
+      "table": "joma_schedule_resources",
+      "columns": [
+        "therapist_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_066",
+      "table": "joma_capacity_holds",
+      "columns": [
+        "case_id"
+      ],
+      "referenced_table": "joma_clinical_cases",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_067",
+      "table": "joma_capacity_holds",
+      "columns": [
+        "offering_id"
+      ],
+      "referenced_table": "joma_service_offerings",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_068",
+      "table": "joma_capacity_holds",
+      "columns": [
+        "policy_version_id"
+      ],
+      "referenced_table": "joma_service_policy_versions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_069",
+      "table": "joma_capacity_holds",
+      "columns": [
+        "request_id"
+      ],
+      "referenced_table": "joma_appointment_requests",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_070",
+      "table": "joma_capacity_holds",
+      "columns": [
+        "actor_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_071",
+      "table": "joma_capacity_holds",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_072",
+      "table": "joma_hold_allocations",
+      "columns": [
+        "hold_id"
+      ],
+      "referenced_table": "joma_capacity_holds",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_073",
+      "table": "joma_hold_allocations",
+      "columns": [
+        "resource_id"
+      ],
+      "referenced_table": "joma_schedule_resources",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_074",
+      "table": "joma_appointments",
+      "columns": [
+        "case_id",
+        "therapist_person_id"
+      ],
+      "referenced_table": "joma_clinical_cases",
+      "referenced_columns": [
+        "id",
+        "responsible_therapist_id"
+      ]
+    },
+    {
+      "name": "fk_joma_075",
+      "table": "joma_appointments",
+      "columns": [
+        "offering_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_service_offerings",
+      "referenced_columns": [
+        "id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_076",
+      "table": "joma_appointments",
+      "columns": [
+        "hold_id",
+        "case_id"
+      ],
+      "referenced_table": "joma_capacity_holds",
+      "referenced_columns": [
+        "id",
+        "case_id"
+      ]
+    },
+    {
+      "name": "fk_joma_077",
+      "table": "joma_appointments",
+      "columns": [
+        "rebooked_from_appointment_id"
+      ],
+      "referenced_table": "joma_appointments",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_078",
+      "table": "joma_appointments",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_079",
+      "table": "joma_appointment_requests",
+      "columns": [
+        "fulfilled_appointment_id"
+      ],
+      "referenced_table": "joma_appointments",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_080",
+      "table": "joma_appointment_allocations",
+      "columns": [
+        "appointment_id"
+      ],
+      "referenced_table": "joma_appointments",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_081",
+      "table": "joma_appointment_allocations",
+      "columns": [
+        "resource_id"
+      ],
+      "referenced_table": "joma_schedule_resources",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_082",
+      "table": "joma_appointment_changes",
+      "columns": [
+        "appointment_id"
+      ],
+      "referenced_table": "joma_appointments",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_083",
+      "table": "joma_appointment_changes",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_084",
+      "table": "joma_appointment_changes",
+      "columns": [
+        "actor_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_085",
+      "table": "joma_attendance_observations",
+      "columns": [
+        "appointment_id"
+      ],
+      "referenced_table": "joma_appointments",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_086",
+      "table": "joma_attendance_observations",
+      "columns": [
+        "observed_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_087",
+      "table": "joma_attendance_observations",
+      "columns": [
+        "recorded_by_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_088",
+      "table": "joma_clinical_sessions",
+      "columns": [
+        "case_id",
+        "clinician_person_id"
+      ],
+      "referenced_table": "joma_clinical_cases",
+      "referenced_columns": [
+        "id",
+        "responsible_therapist_id"
+      ]
+    },
+    {
+      "name": "fk_joma_089",
+      "table": "joma_clinical_sessions",
+      "columns": [
+        "appointment_id",
+        "case_id",
+        "clinician_person_id"
+      ],
+      "referenced_table": "joma_appointments",
+      "referenced_columns": [
+        "id",
+        "case_id",
+        "therapist_person_id"
+      ]
+    },
+    {
+      "name": "fk_joma_090",
+      "table": "joma_clinical_sessions",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_091",
+      "table": "joma_form_templates",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_092",
+      "table": "joma_form_versions",
+      "columns": [
+        "template_id"
+      ],
+      "referenced_table": "joma_form_templates",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_093",
+      "table": "joma_form_versions",
+      "columns": [
+        "author_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_094",
+      "table": "joma_form_approvals",
+      "columns": [
+        "form_version_id"
+      ],
+      "referenced_table": "joma_form_versions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_095",
+      "table": "joma_form_approvals",
+      "columns": [
+        "role_assignment_id",
+        "approver_person_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_role_assignments",
+      "referenced_columns": [
+        "id",
+        "person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_096",
+      "table": "joma_service_form_requirements",
+      "columns": [
+        "policy_version_id"
+      ],
+      "referenced_table": "joma_service_policy_versions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_097",
+      "table": "joma_service_form_requirements",
+      "columns": [
+        "form_version_id"
+      ],
+      "referenced_table": "joma_form_versions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_098",
+      "table": "joma_service_prerequisites",
+      "columns": [
+        "policy_version_id"
+      ],
+      "referenced_table": "joma_service_policy_versions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_099",
+      "table": "joma_form_instances",
+      "columns": [
+        "form_version_id"
+      ],
+      "referenced_table": "joma_form_versions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_100",
+      "table": "joma_form_instances",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_101",
+      "table": "joma_form_instances",
+      "columns": [
+        "admission_id"
+      ],
+      "referenced_table": "joma_admissions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_102",
+      "table": "joma_form_instances",
+      "columns": [
+        "case_id"
+      ],
+      "referenced_table": "joma_clinical_cases",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_103",
+      "table": "joma_form_instances",
+      "columns": [
+        "appointment_id"
+      ],
+      "referenced_table": "joma_appointments",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_104",
+      "table": "joma_form_instances",
+      "columns": [
+        "designated_respondent_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_105",
+      "table": "joma_form_subjects",
+      "columns": [
+        "instance_id"
+      ],
+      "referenced_table": "joma_form_instances",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_106",
+      "table": "joma_form_subjects",
+      "columns": [
+        "subject_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_107",
+      "table": "joma_form_submission_revisions",
+      "columns": [
+        "instance_id"
+      ],
+      "referenced_table": "joma_form_instances",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_108",
+      "table": "joma_form_submission_revisions",
+      "columns": [
+        "respondent_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_109",
+      "table": "joma_form_submission_revisions",
+      "columns": [
+        "recorded_by_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_110",
+      "table": "joma_form_submission_revisions",
+      "columns": [
+        "representation_id"
+      ],
+      "referenced_table": "joma_representations",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_111",
+      "table": "joma_form_submission_revisions",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_112",
+      "table": "joma_consent_evidence",
+      "columns": [
+        "submission_revision_id"
+      ],
+      "referenced_table": "joma_form_submission_revisions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_113",
+      "table": "joma_consent_evidence",
+      "columns": [
+        "subject_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_114",
+      "table": "joma_consent_evidence",
+      "columns": [
+        "consenting_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_115",
+      "table": "joma_consent_evidence",
+      "columns": [
+        "representation_id"
+      ],
+      "referenced_table": "joma_representations",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_116",
+      "table": "joma_form_publications",
+      "columns": [
+        "submission_revision_id",
+        "instance_id"
+      ],
+      "referenced_table": "joma_form_submission_revisions",
+      "referenced_columns": [
+        "id",
+        "instance_id"
+      ]
+    },
+    {
+      "name": "fk_joma_117",
+      "table": "joma_form_publications",
+      "columns": [
+        "instance_id",
+        "case_id"
+      ],
+      "referenced_table": "joma_form_instances",
+      "referenced_columns": [
+        "id",
+        "case_id"
+      ]
+    },
+    {
+      "name": "fk_joma_118",
+      "table": "joma_form_publications",
+      "columns": [
+        "published_by_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_119",
+      "table": "joma_form_publications",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_120",
+      "table": "joma_assessments",
+      "columns": [
+        "case_id"
+      ],
+      "referenced_table": "joma_clinical_cases",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_121",
+      "table": "joma_assessments",
+      "columns": [
+        "subject_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_122",
+      "table": "joma_assessment_respondents",
+      "columns": [
+        "assessment_id"
+      ],
+      "referenced_table": "joma_assessments",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_123",
+      "table": "joma_assessment_respondents",
+      "columns": [
+        "respondent_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_124",
+      "table": "joma_assessment_respondents",
+      "columns": [
+        "representation_id"
+      ],
+      "referenced_table": "joma_representations",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_125",
+      "table": "joma_assessment_assignments",
+      "columns": [
+        "assessment_id"
+      ],
+      "referenced_table": "joma_assessments",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_126",
+      "table": "joma_assessment_assignments",
+      "columns": [
+        "assessor_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_127",
+      "table": "joma_assessment_assignments",
+      "columns": [
+        "authorized_by_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_128",
+      "table": "joma_assessment_assignments",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_129",
+      "table": "joma_protected_files",
+      "columns": [
+        "uploaded_by_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_130",
+      "table": "joma_assessment_reports",
+      "columns": [
+        "assessment_id",
+        "case_id"
+      ],
+      "referenced_table": "joma_assessments",
+      "referenced_columns": [
+        "id",
+        "case_id"
+      ]
+    },
+    {
+      "name": "fk_joma_131",
+      "table": "joma_report_versions",
+      "columns": [
+        "report_id",
+        "case_id"
+      ],
+      "referenced_table": "joma_assessment_reports",
+      "referenced_columns": [
+        "id",
+        "case_id"
+      ]
+    },
+    {
+      "name": "fk_joma_132",
+      "table": "joma_report_versions",
+      "columns": [
+        "author_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_133",
+      "table": "joma_report_versions",
+      "columns": [
+        "uploaded_by_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_134",
+      "table": "joma_report_versions",
+      "columns": [
+        "protected_file_id"
+      ],
+      "referenced_table": "joma_protected_files",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_135",
+      "table": "joma_report_publications",
+      "columns": [
+        "report_version_id",
+        "case_id"
+      ],
+      "referenced_table": "joma_report_versions",
+      "referenced_columns": [
+        "id",
+        "case_id"
+      ]
+    },
+    {
+      "name": "fk_joma_136",
+      "table": "joma_report_publications",
+      "columns": [
+        "case_id",
+        "published_by_person_id"
+      ],
+      "referenced_table": "joma_clinical_cases",
+      "referenced_columns": [
+        "id",
+        "responsible_therapist_id"
+      ]
+    },
+    {
+      "name": "fk_joma_137",
+      "table": "joma_report_publications",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_138",
+      "table": "joma_form_publication_audiences",
+      "columns": [
+        "publication_id"
+      ],
+      "referenced_table": "joma_form_publications",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_139",
+      "table": "joma_form_publication_audiences",
+      "columns": [
+        "recipient_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_140",
+      "table": "joma_form_publication_audiences",
+      "columns": [
+        "access_subject_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_141",
+      "table": "joma_form_publication_audiences",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_142",
+      "table": "joma_form_publication_audiences",
+      "columns": [
+        "representation_id",
+        "recipient_person_id",
+        "access_subject_person_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_representations",
+      "referenced_columns": [
+        "id",
+        "representative_person_id",
+        "subject_person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_143",
+      "table": "joma_report_publication_audiences",
+      "columns": [
+        "publication_id"
+      ],
+      "referenced_table": "joma_report_publications",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_144",
+      "table": "joma_report_publication_audiences",
+      "columns": [
+        "recipient_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_145",
+      "table": "joma_report_publication_audiences",
+      "columns": [
+        "access_subject_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_146",
+      "table": "joma_report_publication_audiences",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_147",
+      "table": "joma_report_publication_audiences",
+      "columns": [
+        "representation_id",
+        "recipient_person_id",
+        "access_subject_person_id",
+        "scope_id"
+      ],
+      "referenced_table": "joma_representations",
+      "referenced_columns": [
+        "id",
+        "representative_person_id",
+        "subject_person_id",
+        "scope_id"
+      ]
+    },
+    {
+      "name": "fk_joma_148",
+      "table": "joma_private_note_references",
+      "columns": [
+        "case_id",
+        "author_person_id"
+      ],
+      "referenced_table": "joma_clinical_cases",
+      "referenced_columns": [
+        "id",
+        "responsible_therapist_id"
+      ]
+    },
+    {
+      "name": "fk_joma_149",
+      "table": "joma_private_note_references",
+      "columns": [
+        "author_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_150",
+      "table": "joma_practitioner_messages",
+      "columns": [
+        "case_id"
+      ],
+      "referenced_table": "joma_clinical_cases",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_151",
+      "table": "joma_practitioner_messages",
+      "columns": [
+        "sender_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_152",
+      "table": "joma_practitioner_messages",
+      "columns": [
+        "recipient_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_153",
+      "table": "joma_practitioner_messages",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_154",
+      "table": "joma_financial_spaces",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_155",
+      "table": "joma_destination_accounts",
+      "columns": [
+        "financial_space_id"
+      ],
+      "referenced_table": "joma_financial_spaces",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_156",
+      "table": "joma_payment_receipts",
+      "columns": [
+        "financial_space_id"
+      ],
+      "referenced_table": "joma_financial_spaces",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_157",
+      "table": "joma_payment_receipts",
+      "columns": [
+        "payer_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_158",
+      "table": "joma_payment_receipts",
+      "columns": [
+        "destination_account_id",
+        "financial_space_id"
+      ],
+      "referenced_table": "joma_destination_accounts",
+      "referenced_columns": [
+        "id",
+        "financial_space_id"
+      ]
+    },
+    {
+      "name": "fk_joma_159",
+      "table": "joma_payment_receipts",
+      "columns": [
+        "recorded_by_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_160",
+      "table": "joma_payment_receipts",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_161",
+      "table": "joma_payment_receipts",
+      "columns": [
+        "method_id",
+        "method_is_bank"
+      ],
+      "referenced_table": "joma_payment_methods",
+      "referenced_columns": [
+        "id",
+        "is_bank_method"
+      ]
+    },
+    {
+      "name": "fk_joma_162",
+      "table": "joma_product_entitlements",
+      "columns": [
+        "product_id"
+      ],
+      "referenced_table": "joma_product_definitions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_163",
+      "table": "joma_product_entitlements",
+      "columns": [
+        "beneficiary_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_164",
+      "table": "joma_config_versions",
+      "columns": [
+        "definition_id"
+      ],
+      "referenced_table": "joma_config_definitions",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_165",
+      "table": "joma_config_versions",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_166",
+      "table": "joma_config_versions",
+      "columns": [
+        "changed_by_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_167",
+      "table": "joma_config_versions",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_168",
+      "table": "joma_audit_entries",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_169",
+      "table": "joma_audit_entries",
+      "columns": [
+        "actor_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_170",
+      "table": "joma_audit_entries",
+      "columns": [
+        "scope_id"
+      ],
+      "referenced_table": "joma_work_scopes",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_171",
+      "table": "joma_notification_intents",
+      "columns": [
+        "command_id"
+      ],
+      "referenced_table": "joma_command_receipts",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_172",
+      "table": "joma_notification_intents",
+      "columns": [
+        "recipient_person_id"
+      ],
+      "referenced_table": "joma_persons",
+      "referenced_columns": [
+        "id"
+      ]
+    },
+    {
+      "name": "fk_joma_173",
+      "table": "joma_notification_attempts",
+      "columns": [
+        "intent_id"
+      ],
+      "referenced_table": "joma_notification_intents",
+      "referenced_columns": [
+        "id"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "release": "joma-mariadb-10.11-v0.1",
+  "target_reported": "10.11.19-MariaDB-cll-lve",
+  "database": "mirbolouki_clinic",
+  "remote_runtime_tested": false,
+  "static_checks_passed": 24,
+  "php_parser_checked": "8.4.25 (WASM), two files",
+  "files": [
+    {
+      "path": "database/joma-mariadb-v0.1/000_preflight_readonly.sql",
+      "sha256": "567b450f58310af576e8fa93fb3221decb4aa2f3d482cc2dc6505d8195c70a51"
+    },
+    {
+      "path": "database/joma-mariadb-v0.1/001_core.sql",
+      "sha256": "ccd14b9d7cdc365c9c877fb1f24e01858e274b1ece955c05b1f558922e5e5ce3"
+    },
+    {
+      "path": "database/joma-mariadb-v0.1/002_verify_readonly.sql",
+      "sha256": "aac68548e400ee717cd42a168c006ce7dabedb2220f0f1198c936746f1f6e5a0"
+    },
+    {
+      "path": "database/joma-mariadb-v0.1/expected-schema.json",
+      "sha256": "61261dfb1a44aa5e16bda22db7a5a5f1f0a4c0d0dc55b98b8912b0b1af4293fd"
+    },
+    {
+      "path": "deploy/joma-db-check/expected-schema.json",
+      "sha256": "61261dfb1a44aa5e16bda22db7a5a5f1f0a4c0d0dc55b98b8912b0b1af4293fd"
+    },
+    {
+      "path": "deploy/joma-db-check/joma-db-check-config.example.php",
+      "sha256": "f9f733f01e5ece7b2cf62ddbc20448f13d1f0ddf07c334963debd0ce0c3ba7ab"
+    },
+    {
+      "path": "deploy/joma-db-check/joma-db-check.php",
+      "sha256": "82a9ac90f738b547b62f4d5c309566a60e9028a0706430cb12df4aaf7d95b045"
+    },
+    {
+      "path": "docs/JOMA-MARIADB-10.11-INSTALL-TEST-FA.md",
+      "sha256": "0163c3b79f676339efe81c34fcb54a32730389252800c17341139f4b27fe2b63"
+    }
+  ],
+  "archive_sha256": "915ed6a9c3121ef7bc06535d08ea236bc144d8a5711943eb5151f259569aa3da"
+}
