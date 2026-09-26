@@ -1,6 +1,6 @@
-# JOMA core — مرجع سرتاسری ورود تا فایل، نسخهٔ ۰٫۸
+# JOMA core — مرجع سرتاسری ورود تا فایل، نسخهٔ ۰٫۹
 
-این پوشه مستقل از `clinic-app` است. **برنامهٔ آمادهٔ قابل نصب نیست؛ آزمون واقعی دو اتصالی روی MariaDB و اتصال مالی باز است.**
+این پوشه مستقل از `clinic-app` است. **برنامهٔ آمادهٔ قابل نصب نیست؛ آزمون واقعی دو اتصالی کامل و اتصال مالی باز است.**
 
 ## فایل‌ها
 
@@ -26,7 +26,9 @@
 - `../tests/joma_core_files.php` — ۲۲.
 - `../tests/joma_core_e2e.php` — ۲۰ بررسی سرتاسری `login→context→acceptance→hold→confirm→portal→file` + `rate limit` و `http map`.
 - `../docs/JOMA-SERVICE-CONTRACTS-v0.1-FA.md` — قرارداد.
-- `../docs/JOMA-CORE-TEST-REPORT-v0.8-FA.md` — نتایج و محدودیت.
+- `../docs/JOMA-CONCURRENCY-PLAN-v0.1-FA.md` — نقشهٔ ۷ آزمون هم‌زمانی روی MariaDB واقعی.
+- `../deploy/joma-concurrency-check/joma-concurrency-check.php` — ۱۴ بررسی (۹ خواندنی + ۵ نوشتنی سبک با `PK/rollback/CHECK/قفل ۲ثانیه`) برای هاست.
+- `../docs/JOMA-CORE-TEST-REPORT-v0.9-FA.md` — نتایج و محدودیت.
 
 ## اجرا
 
@@ -75,6 +77,6 @@ PHP=8.4 tools/node_modules/.bin/php-wasm-cli tests/joma_core_e2e.php
 ## مرز
 
 - همهٔ SQLها با `?`; `FOR UPDATE` و `UNIQUE` در mock؛ `E2E` با یک `MockMysqli` ترتیبی کل جریان `login→file` را آزموده.
-- `rate_limit` در این مرحله حافظه‌ای است؛ پیاده‌سازی تولید باید در DB/Redis با `FOR UPDATE` باشد.
-- `hold`/`receipt` روی MariaDB واقعی با دو اتصال و `deadlock/retry` هنوز باز است.
+- `rate_limit` در این مرحله حافظه‌ای است؛ تولید باید DB/Redis با `FOR UPDATE` باشد.
+- `hold`/`receipt` روی MariaDB واقعی با دو اتصال و `deadlock/retry` هنوز به‌صورت دستی با دو ترمینال (راهنما در `JOMA-CONCURRENCY-PLAN`) باز است؛ اسکریپت `joma-concurrency-check` ۱۴ بررسی خودکارِ سبک را فراهم می‌کند.
 - هاست بی‌نیاز از Node/npm/Composer.
