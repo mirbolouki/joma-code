@@ -146,8 +146,19 @@ header{position:sticky;top:0;background:#fff;border-bottom:1px solid #e5e7eb;z-i
 <button class="btn sec" onclick="document.getElementById('holdCard').scrollIntoView({behavior:'smooth'})">رفتن به رزروِ پرونده</button>
 </div>
 </div>
+<div class="card" style="border:1px dashed #d0d5dd">
+<h3 style="margin:0 0 8px">📝 یادداشتِ خصوصی — فقط نویسنده</h3>
+<p class="muted" style="margin:0 0 10px">حتی مدیر با نقشِ درمانی هم نمی‌بیند؛ بیمار/ولی/درمانگرِ دیگر هم نه. جدا از گزارش.</p>
+<div style="background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px">
+<b>یادداشتِ خصوصیِ alice — امروز ۱۰:۳۰</b>
+<div class="muted" style="margin:6px 0">«مراجع اضطرابِ موقعیتی گزارش کرد...»</div>
+<span class="badge wait">Author-only</span>
+</div>
+<div style="height:8px"></div>
+<button class="btn sec" onclick="alert('نمایشی: تلاشِ بیمار/مدیر برای دیدنِ این یادداشت → 404 یکنواخت (joma-core/files.php + portal)')">تلاشِ بیمار برای دیدن → باید 404</button>
+</div>
 <div class="card">
-<h3 style="margin:0 0 8px">پورتال — فقط با انتشار</h3>
+<h3 style="margin:0 0 8px">📄 گزارش — انتشار با Audience صریح</h3>
 <p class="muted" style="margin:0 0 10px">Draft فقط برای درمانگر؛ انتشار با Audience صریح برای بیمار.</p>
 <div class="kv"><span>گزارش #R-201</span><span class="badge wait">DRAFT</span></div>
 <div class="kv"><span>دسترسی بیمار</span><span class="muted">ندارد</span></div>
