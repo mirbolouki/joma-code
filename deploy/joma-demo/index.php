@@ -172,13 +172,17 @@ header{position:sticky;top:0;background:#fff;border-bottom:1px solid #e5e7eb;z-i
 </div>
 
 <div class="card" id="holdCard" style="margin-top:16px">
-<h3 style="margin:0 0 8px">رزرو ۱۵ دقیقه — نمایشِ قفل</h3>
-<p class="muted" style="margin:0 0 10px">در واقعی `joma-core/hold.php` با `ORDER BY id FOR UPDATE` هم‌پوشانی را `half-open` چک می‌کند.</p>
+<h3 style="margin:0 0 8px">📅 نوبت و جلسه — ۱:۱ اختیاری</h3>
+<p class="muted" style="margin:0 0 10px">Session ↔ Appointment اختیاریِ ۱:۱؛ جلسهٔ بدون نوبت با Case/درمانگرِ معتبر مجاز است؛ یک نوبت چند جلسه ندارد.</p>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-<div style="border:1px solid #e5e7eb;border-radius:12px;padding:12px"><b>۱۰:۰۰–۱۰:۱۵</b><div class="muted">خالی</div><button class="btn" style="margin-top:8px" onclick="this.textContent='رزرو شد ✓';this.disabled=true;document.getElementById('holdOk').style.display='block'">رزرو</button></div>
+<div style="border:1px solid #e5e7eb;border-radius:12px;padding:12px"><b>۱۰:۰۰–۱۰:۱۵</b><div class="muted">نوبتِ hold — خالی</div><button class="btn" style="margin-top:8px" onclick="this.textContent='رزرو شد ✓';this.disabled=true;document.getElementById('holdOk').style.display='block';document.getElementById('sessionOk').style.display='block'">رزروِ نوبت</button></div>
 <div style="border:1px solid #e5e7eb;border-radius:12px;padding:12px;opacity:.6"><b>۱۰:۱۰–۱۰:۲۵</b><div class="muted">متداخل — باید رد شود</div><button class="btn sec" disabled>رد (CAPACITY_CONFLICT)</button></div>
 </div>
-<div id="holdOk" style="display:none;margin-top:12px" class="hint">✓ hold ساخته شد — انقضا ۱۵ دقیقه. در واقعی اگر هم‌زمان نفر دوم بزند، با قفلِ سطر ۲ ثانیه صبر و سپس ۴۰۹ می‌گیرد (تستِ هاست PASS شد).</div>
+<div id="holdOk" style="display:none;margin-top:12px" class="hint">✓ hold ساخته شد — انقضا ۱۵ دقیقه. در واقعی قفلِ سطر ۲ثانیه.</div>
+<div id="sessionOk" style="display:none;margin-top:10px;background:#ecfdf3;border:1px solid #abefc6;border-radius:12px;padding:12px">
+<b>جلسه #S-301 — پرونده #C-1001</b><div class="muted" style="margin:4px 0">بدون نوبت هم می‌شود؛ با نوبت، یک جلسه ↔ یک نوبت (nullable UNIQUE)</div>
+<div class="kv" style="border:0;padding:4px 0"><span>وضعیت</span><span class="badge ok">برنامه‌ریزی شده</span></div>
+</div>
 </div>
 
 <div class="card" style="margin-top:16px">
