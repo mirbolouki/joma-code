@@ -23,39 +23,7 @@ function joma_acceptance_validate_purpose(string $raw): ?string {
     return $trim;
 }
 
-function joma_db_begin($db): bool {
-    if (!is_object($db)) { return false; }
-    try {
-        if (method_exists($db, 'begin_transaction')) {
-            return (bool) $db->begin_transaction();
-        }
-        // Fallback for mocks.
-        if (method_exists($db, 'begin_transaction_mock')) {
-            return (bool) $db->begin_transaction_mock();
-        }
-        // Raw query
-        if (method_exists($db, 'query')) {
-            return (bool) $db->query('START TRANSACTION');
-        }
-        return false;
-    } catch (Throwable $e) { return false; }
-}
-function joma_db_commit($db): bool {
-    if (!is_object($db)) { return false; }
-    try {
-        if (method_exists($db, 'commit')) { return (bool) $db->commit(); }
-        if (method_exists($db, 'query')) { return (bool) $db->query('COMMIT'); }
-        return false;
-    } catch (Throwable $e) { return false; }
-}
-function joma_db_rollback($db): bool {
-    if (!is_object($db)) { return false; }
-    try {
-        if (method_exists($db, 'rollback')) { return (bool) $db->rollback(); }
-        if (method_exists($db, 'query')) { return (bool) $db->query('ROLLBACK'); }
-        return false;
-    } catch (Throwable $e) { return false; }
-}
+// Transaction helpers are in db.php (joma_db_begin/commit/rollback)
 
 /**
  * Execute acceptance atomically.

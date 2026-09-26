@@ -94,3 +94,45 @@ function joma_db_prepare($db, string $sql) {
         return null;
     }
 }
+
+if (!function_exists('joma_db_begin')) {
+function joma_db_begin($db): bool {
+    if (!is_object($db)) { return false; }
+    try {
+        if (method_exists($db, 'begin_transaction')) {
+            return (bool) $db->begin_transaction();
+        }
+        if (method_exists($db, 'query')) {
+            return (bool) $db->query('START TRANSACTION');
+        }
+        return false;
+    } catch (Throwable $e) { return false; }
+}
+function joma_db_commit($db): bool {
+    if (!is_object($db)) { return false; }
+    try {
+        if (method_exists($db, 'commit')) { return (bool) $db->commit(); }
+        if (method_exists($db, 'query')) { return (bool) $db->query('COMMIT'); }
+        return false;
+    } catch (Throwable $e) { return false; }
+}
+function joma_db_rollback($db): bool {
+    if (!is_object($db)) { return false; }
+    try {
+        if (method_exists($db, 'rollback')) { return (bool) $db->rollback(); }
+        if (method_exists($db, 'query')) { return (bool) $db->query('ROLLBACK'); }
+        return false;
+    } catch (Throwable $e) { return false; }
+}
+function joma_db_bind_params($stmt, string $types, array $params): bool {
+    if (!is_object($stmt) || !method_exists($stmt, 'bind_param')) { return false; }
+    // Ensure params are refs for mysqli.
+    $refs = [];
+    foreach ($params as $k => $v) { $refs[$k] = $v; }
+    $args = array_merge([$types], $refs);
+    // Need to pass by reference array.
+    $refArgs = [];
+    foreach ($args as $k => &$v) { $refArgs[$k] = &$v; }
+    return (bool) call_user_func_array([$stmt, 'bind_param'], $refArgs);
+}
+}
