@@ -87,13 +87,39 @@ header{position:sticky;top:0;background:#fff;border-bottom:1px solid #e5e7eb;z-i
 <div class="card" style="margin-bottom:12px">
 <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
 <div><b>سلام <?=htmlspecialchars($demoUser['name'],ENT_QUOTES,'UTF-8')?></b> <span class="badge <?= $role==='therapist'?'ok':'wait'?>"><?= $role==='therapist'?'درمانگر':'بیمار'?></span></div>
-<div class="muted">نقش نمایشی — تغییر با نامِ دیگر در ورود</div>
+<div class="muted">نقش نمایشی — سندِ مادر ۴۰بخش</div>
 </div>
 <div class="steps">
-<span class="step ok">۱ ورود ✓</span><span class="step active">۲ ساخت پرونده</span><span class="step">۳ رزرو</span><span class="step">۴ پورتال</span>
+<span class="step ok">۱ ورود ✓</span><span class="step active">۲ پرونده</span><span class="step">۳ رزرو</span><span class="step">۴ پورتال</span>
 </div>
 </div>
 
+<div class="card" id="caseListCard">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<h3 style="margin:0">📁 پرونده‌های من</h3>
+<span class="muted">۳ پرونده — طبق سند: فردی/زوج/کودک</span>
+</div>
+<div style="height:10px"></div>
+<div style="display:grid;gap:10px">
+<div style="border:1px solid #e5e7eb;border-radius:12px;padding:12px;cursor:pointer" onclick="document.getElementById('caseDetail').scrollIntoView({behavior:'smooth'})">
+<div style="display:flex;justify-content:space-between"><b>پرونده #C-1001 — خانم احمدی</b><span class="badge ok">ACTIVE</span></div>
+<div class="muted" style="margin:4px 0">فردی بزرگسال · هدف: اضطراب · درمانگر مسئول: alice · امروز</div>
+<div class="muted">یک CTA: دیدن پرونده → رزرو/یادداشت/گزارش</div>
+</div>
+<div style="border:1px solid #e5e7eb;border-radius:12px;padding:12px;opacity:.9;cursor:pointer" onclick="alert('نمایشی: پروندهٔ زوج — افراد: آقای حسینی + خانم حسینی — یک پرونده، دو شرکت‌کننده، یک درمانگرِ مسئول')">
+<div style="display:flex;justify-content:space-between"><b>پرونده #C-1002 — حسینی (زوج)</b><span class="badge ok">ACTIVE</span></div>
+<div class="muted" style="margin:4px 0">زوج · هدف: تعارضِ زوجی · شرکت‌کنندگان: ۲ نفر · جلسهٔ فردیِ درونِ زوج با همین پرونده</div>
+</div>
+<div style="border:1px solid #e5e7eb;border-radius:12px;padding:12px;opacity:.7">
+<div style="display:flex;justify-content:space-between"><b>پرونده #C-1003 — کودک علی (۹ ساله)</b><span class="badge wait" style="background:#fee4e2;color:#b42318;border-color:#fecdc2">CLOSED</span></div>
+<div class="muted" style="margin:4px 0">کودک · ولی: مادر (نماینده/پرداخت) · مستند: مادر پاسخ‌دهنده است نه شرکت‌کنندهٔ بالینی</div>
+<div class="muted">بسته شده — باز نمی‌شود؛ بازگشت = پروندهٔ جدید (سند)</div>
+</div>
+</div>
+<div class="hint" style="margin-top:12px">طبق سند: پرونده مرزِ هدف+بافت+افراد+رابطه است، نه برچسبِ خدمت. تغییرِ درمانگر = پروندهٔ جدید با حفظِ تاریخچه.</div>
+</div>
+
+<div style="height:12px"></div>
 <div class="grid">
 <div class="card" style="border:2px solid var(--c)">
 <h3 style="margin:0 0 4px">📁 ساخت پرونده — پذیرش</h3>
@@ -108,11 +134,12 @@ header{position:sticky;top:0;background:#fff;border-bottom:1px solid #e5e7eb;z-i
 <button class="btn" onclick="document.getElementById('accept').style.display='block';this.style.display='none'">✓ پذیرش و ساختِ پروندهٔ فعال</button>
 <div id="accept" style="display:none">
 <div class="hint" style="margin-bottom:10px">✓ پرونده ساخته شد — ۵ ردیفِ اتمیک: Relationship + Case + عضویت + کانتکست + Audit. از این به بعد <b>رزروِ ۱۵دقیقه و جلسات</b> فعال می‌شود.</div>
-<div style="background:#ecfdf3;border:1px solid #abefc6;border-radius:12px;padding:12px">
-<div style="display:flex;justify-content:space-between;align-items:center"><b>📁 پرونده #C-1001</b><span class="badge ok">ACTIVE</span></div>
+<div id="caseDetail" style="background:#ecfdf3;border:1px solid #abefc6;border-radius:12px;padding:12px">
+<div style="display:flex;justify-content:space-between;align-items:center"><b>📁 پرونده #C-1001 — جزئیات</b><span class="badge ok">ACTIVE</span></div>
 <div class="kv" style="border:0;padding:6px 0 0"><span>شماره پرونده</span><b>C-1001 / R-9001</b></div>
 <div class="kv" style="border:0;padding:4px 0"><span>تاریخ ساخت</span><b>امروز — توسط alice</b></div>
 <div class="kv" style="border:0;padding:4px 0"><span>افرادِ پرونده</span><b>خانم احمدی (مراجع) + alice (مسئول)</b></div>
+<div class="kv" style="border:0;padding:4px 0"><span>یادداشتِ خصوصی</span><span class="muted">فقط نویسنده می‌بیند — حتی مدیر هم نه</span></div>
 <div class="kv" style="border:0;padding:4px 0 0"><span>وضعیتِ مالی/رضایت</span><span class="muted">دروازهٔ خدمت — نه شرطِ ساختِ پرونده</span></div>
 </div>
 <div style="height:10px"></div>
