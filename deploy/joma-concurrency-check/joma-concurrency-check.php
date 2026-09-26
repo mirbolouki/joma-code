@@ -178,9 +178,9 @@ if (!$allowWrite) {
 
     // Test: hold TTL CHECK (expires <= held+15min) via direct insert with temporary FKs bypass? We test via DDL inspection already, but try to verify via inserting a hold with far TTL should be rejected if FKs existed. Since we cannot easily create FK parents, we just verify the CHECK definition.
     try {
-        $res=$db->query("SELECT CHECK_CLAUSE FROM information_schema.CHECK_CONSTRAINTS WHERE CONSTRAINT_SCHEMA='".$db->real_escape_string($dbName)."' AND TABLE_NAME='joma_capacity_holds' AND CHECK_CLAUSE LIKE '%INTERVAL 15 MINUTE%'");
+        $res=$db->query("SELECT CHECK_CLAUSE FROM information_schema.CHECK_CONSTRAINTS WHERE CONSTRAINT_SCHEMA='".$db->real_escape_string($dbName)."' AND TABLE_NAME='joma_capacity_holds' AND CHECK_CLAUSE LIKE '%15 MINUTE%'");
         $found=false;
-        while($row=$res->fetch_assoc()){ if(strpos($row['CHECK_CLAUSE']??'','15 MINUTE')!==false) $found=true; }
+        while($row=$res->fetch_assoc()){ if(stripos($row['CHECK_CLAUSE']??'','15 minute')!==false) $found=true; }
         add_check('CHECK hold TTL 15min exists', $found, $found?'found':'not found');
     } catch(Throwable $e){ add_check('CHECK hold TTL', false, $e->getMessage()); }
 
