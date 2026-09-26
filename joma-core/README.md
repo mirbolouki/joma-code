@@ -1,29 +1,32 @@
-# JOMA core — مرجع قواعد و لایهٔ ورود/پذیرش/نگه‌داشت/portal/idempotency/files، نسخهٔ ۰٫۷
+# JOMA core — مرجع سرتاسری ورود تا فایل، نسخهٔ ۰٫۸
 
-این پوشه مستقل از `clinic-app` است. **برنامهٔ آمادهٔ قابل نصب نیست؛ اتصال مالی و آزمون واقعی دو اتصالی باز است.**
+این پوشه مستقل از `clinic-app` است. **برنامهٔ آمادهٔ قابل نصب نیست؛ آزمون واقعی دو اتصالی روی MariaDB و اتصال مالی باز است.**
 
 ## فایل‌ها
 
 - `domain_rules.php` — قواعد خالص (۱۰۱).
 - `db.php` — `UUID↔BINARY(16)`، `INT UNSIGNED`، `prepare ?`، `begin/commit/rollback`، `bind_params`.
 - `session.php` — `HttpOnly/Secure/SameSite=Lax`، فقط `account_id/person_id`، CSRF `hex64`.
-- `auth.php` — `WHERE login_name = ?` + `password_verify`.
+- `auth.php` — `WHERE login_name = ?` + `password_verify` با hash ساختگی.
 - `context.php` — `JOIN` معتبر `accounts/memberships/role_assignments`.
 - `acceptance.php` — پذیرش اتمیک `FOR UPDATE` → ۵ درج.
-- `hold.php` — نگه‌داشت ≤۱۵ دقیقه و تأیید با قفل `resources ORDER BY id FOR UPDATE`.
-- `portal.php` — خوانش portal با مخاطب صریح، نمایندگی و `entitlement`.
-- `receipt.php` — idempotency `canonical→sha256` + `UNIQUE(scope, key)` + `FOR UPDATE`.
-- `audit.php` — ممیزی `ALLOWED/DENIED/CONFLICT/FAILED` و نگاشت `HTTP`.
-- `files.php` — **فایل محافظت‌شده**: اعتبارسنجی `READY + storage_key + byte_length + sha256 32`، جلوگیری از `..`، بارگذاری `joma_protected_files` با `?`، بررسی پیوند `report_versions.protected_file_id = file.id`، تفویض به `portal_check`، و تولید هدر `Content-Type/Disposition/Cache-Control: private, no-store/ETag` + مسیر خارج از `document root`.
+- `hold.php` — نگه‌داشت ≤۱۵ دقیقه و تأیید با `resources ORDER BY id FOR UPDATE` و `half-open`.
+- `portal.php` — خوانش portal با مخاطب صریح/نمایندگی/`entitlement`.
+- `receipt.php` — idempotency `canonical→sha256` + `UNIQUE(scope,key)` + `FOR UPDATE`.
+- `audit.php` — ممیزی `ALLOWED/DENIED/CONFLICT/FAILED` و نگاشت `HTTP 401/403/404/409/422/503` با پیام فارسی بدون نشت `stack`.
+- `files.php` — فایل محافظت‌شده `READY + storage_key + sha256`، پیوند `report_versions` و هدر `private, no-store`.
+- `http.php` — **پاسخ JSON یکنواخت** `Content-Type: application/json`، `Cache-Control: no-store`، `X-Content-Type-Options` و پیام فارسی بدون `stack`.
+- `rate_limit.php` — **محدودسازی لغزشی** `sliding window`؛ `login:ip` ۵ در ۶۰ ثانیه، بدون Redis؛ `remaining/reset` برای تست.
 - `../tests/joma_domain_rules.php` — ۱۰۱.
 - `../tests/joma_core_adapters.php` — ۵۷.
 - `../tests/joma_core_acceptance.php` — ۳۳.
 - `../tests/joma_core_hold.php` — ۲۵.
 - `../tests/joma_core_portal.php` — ۲۰.
 - `../tests/joma_core_receipt_audit.php` — ۲۸.
-- `../tests/joma_core_files.php` — ۲۲ بررسی فایل محافظت‌شده (اعتبارسنجی، بارگذاری، پیوند، هدر، مسیر).
+- `../tests/joma_core_files.php` — ۲۲.
+- `../tests/joma_core_e2e.php` — ۲۰ بررسی سرتاسری `login→context→acceptance→hold→confirm→portal→file` + `rate limit` و `http map`.
 - `../docs/JOMA-SERVICE-CONTRACTS-v0.1-FA.md` — قرارداد.
-- `../docs/JOMA-CORE-TEST-REPORT-v0.7-FA.md` — نتایج و محدودیت.
+- `../docs/JOMA-CORE-TEST-REPORT-v0.8-FA.md` — نتایج و محدودیت.
 
 ## اجرا
 
@@ -38,6 +41,7 @@ php tests/joma_core_hold.php
 php tests/joma_core_portal.php
 php tests/joma_core_receipt_audit.php
 php tests/joma_core_files.php
+php tests/joma_core_e2e.php
 python tests/joma_schema_static.py
 python tests/joma_mariadb_static.py
 ```
@@ -54,6 +58,7 @@ PHP=8.1 tools/node_modules/.bin/php-wasm-cli tests/joma_core_hold.php
 PHP=8.1 tools/node_modules/.bin/php-wasm-cli tests/joma_core_portal.php
 PHP=8.1 tools/node_modules/.bin/php-wasm-cli tests/joma_core_receipt_audit.php
 PHP=8.1 tools/node_modules/.bin/php-wasm-cli tests/joma_core_files.php
+PHP=8.1 tools/node_modules/.bin/php-wasm-cli tests/joma_core_e2e.php
 PHP=8.4 tools/node_modules/.bin/php-wasm-cli tests/joma_core_lint.php
 PHP=8.4 tools/node_modules/.bin/php-wasm-cli tests/joma_domain_rules.php
 PHP=8.4 tools/node_modules/.bin/php-wasm-cli tests/joma_core_adapters.php
@@ -62,12 +67,14 @@ PHP=8.4 tools/node_modules/.bin/php-wasm-cli tests/joma_core_hold.php
 PHP=8.4 tools/node_modules/.bin/php-wasm-cli tests/joma_core_portal.php
 PHP=8.4 tools/node_modules/.bin/php-wasm-cli tests/joma_core_receipt_audit.php
 PHP=8.4 tools/node_modules/.bin/php-wasm-cli tests/joma_core_files.php
+PHP=8.4 tools/node_modules/.bin/php-wasm-cli tests/joma_core_e2e.php
 ```
 
 خروج صفر موفق.
 
 ## مرز
 
-- همهٔ SQLها با `?`; `FOR UPDATE` و `UNIQUE` در mock سنجیده شد.
-- فایل‌ها با `storage_key` خارج از `document root` فرض شده؛ **استریم واقعی با `readfile`/`X-Sendfile` و بررسی `byte_length` روی هاست واقعی باز است.**
+- همهٔ SQLها با `?`; `FOR UPDATE` و `UNIQUE` در mock؛ `E2E` با یک `MockMysqli` ترتیبی کل جریان `login→file` را آزموده.
+- `rate_limit` در این مرحله حافظه‌ای است؛ پیاده‌سازی تولید باید در DB/Redis با `FOR UPDATE` باشد.
+- `hold`/`receipt` روی MariaDB واقعی با دو اتصال و `deadlock/retry` هنوز باز است.
 - هاست بی‌نیاز از Node/npm/Composer.

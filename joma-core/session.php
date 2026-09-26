@@ -15,7 +15,7 @@ function joma_session_is_secure_context(): bool {
     return false;
 }
 
-function joma_session_start(bool $secure = null): void {
+function joma_session_start(?bool $secure = null): void {
     if (session_status() === PHP_SESSION_ACTIVE) { return; }
     // In CLI/tests where output already started, we cannot send cookies; keep $_SESSION as array.
     if (headers_sent()) {

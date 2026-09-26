@@ -81,7 +81,7 @@ const JOMA_DUMMY_HASH = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheW
  * Codes are internal: INVALID_CREDENTIALS, ACCOUNT_NOT_ACTIVE, DB_ERROR.
  * HTTP layer must map all to generic message to avoid enumeration.
  */
-function joma_auth_login($db, string $loginNameRaw, string $passwordRaw, string $nowUtc = null): array {
+function joma_auth_login($db, string $loginNameRaw, string $passwordRaw, ?string $nowUtc = null): array {
     $nowUtc = $nowUtc ?? gmdate('Y-m-d H:i:s.000000');
     if (joma_rule_utc_us($nowUtc) === null) {
         return ['ok' => false, 'code' => 'INVALID_TIME'];
@@ -117,7 +117,7 @@ function joma_auth_login($db, string $loginNameRaw, string $passwordRaw, string 
     return ['ok' => true, 'account' => $account];
 }
 
-function joma_auth_login_and_establish($db, string $loginNameRaw, string $passwordRaw, string $nowUtc = null): array {
+function joma_auth_login_and_establish($db, string $loginNameRaw, string $passwordRaw, ?string $nowUtc = null): array {
     $res = joma_auth_login($db, $loginNameRaw, $passwordRaw, $nowUtc);
     if (!($res['ok'] ?? false)) { return $res; }
     joma_session_store_principal($res['account']);
