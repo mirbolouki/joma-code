@@ -1,49 +1,54 @@
-# JOMA core — مرجع قواعد و لایهٔ ورود، نسخهٔ ۰٫۲
+# JOMA core — مرجع قواعد و لایهٔ ورود/پذیرش، نسخهٔ ۰٫۳
 
-این پوشه مستقل از برنامهٔ قدیمی `clinic-app` است. **برنامهٔ آمادهٔ قابل نصب نیست؛ هیچ endpoint عمومی، تراکنش رزرو یا رمزنگاری یادداشت در آن تکمیل نشده است.**
+این پوشه مستقل از برنامهٔ قدیمی `clinic-app` است. **برنامهٔ آمادهٔ قابل نصب نیست؛ هیچ endpoint عمومیِ رزرو، تراکنش hold/confirm یا رمزنگاری یادداشت در آن تکمیل نشده است.**
 
 ## فایل‌ها
 
-- `domain_rules.php` — قواعد خالص و تابع‌محور (۱۰۱ بررسی مستقل).
-- `db.php` — تبدیل UUID متنی↔BINARY(16)، تبدیل عدد unsigned از رشتهٔ mysqli، و `joma_db_prepare` فقط با prepared statement.
-- `session.php` — `session_set_cookie_params` با `HttpOnly/Secure/SameSite=Lax`، `use_strict_mode`، ذخیرهٔ فقط `account_id/person_id`، و توکن CSRF.
-- `auth.php` — اعتبارسنجی `login_name`، جست‌جوی حساب با `WHERE login_name = ?` (بدون درون‌گذاری رشته)، `password_verify` و hash ساختگی برای یکنواختی زمان پاسخ.
-- `context.php` — بارگذاری تصویر معتبر سمت سرور از `joma_accounts + joma_memberships + joma_role_assignments + joma_role_definitions` با یک `JOIN` و دو `?` باینری، بررسی یکپارچگی person/scope و استخراج `policy_status/permissions` از allowlist ثبت‌شده.
+- `domain_rules.php` — قواعد خالص و تابع‌محور (۱۰۱ بررسی).
+- `db.php` — تبدیل `UUID ↔ BINARY(16)`، تبدیل سخت‌گیرانهٔ `INT UNSIGNED`، و `joma_db_prepare` فقط با `?`.
+- `session.php` — `HttpOnly/Secure/SameSite=Lax`، `use_strict_mode`، فقط `account_id/person_id`، و CSRF `hex64`.
+- `auth.php` — `login_name` با `WHERE login_name = ?`، `password_verify` با hash ساختگی برای یکنواختی زمان.
+- `context.php` — بارگذاری `accounts+memberships+role_assignments+role_definitions` با `JOIN` و `?` باینری.
+- `acceptance.php` — **تراکنش اتمیک پذیرش**: `BEGIN` → `SELECT ... FOR UPDATE` روی `therapist_assignments` و `admissions` → بررسی `joma_rule_accept_assignment` → درج `responsibility_acceptances + therapeutic_relationships + clinical_cases + case_participants + case_operational_contexts` → به‌روزرسانی `ASSIGNED→ACCEPTED` و `AWAITING_THERAPIST→LINKED_TO_CASE` → `COMMIT`؛ هر شکست `ROLLBACK`.
 - `../tests/joma_domain_rules.php` — ۱۰۱ بررسی قواعد خالص.
-- `../tests/joma_core_adapters.php` — ۵۷ بررسی لایهٔ DB/session/auth/context با دادهٔ ساختگی و mock mysqli.
-- `../docs/JOMA-SERVICE-CONTRACTS-v0.1-FA.md` — قرارداد خدمات و ترتیب قفل/تراکنش پیشنهادی.
-- `../docs/JOMA-CORE-TEST-REPORT-v0.2-FA.md` — نتایج و محدودیت این مرحله (جایگزین گزارش ۰٫۱).
+- `../tests/joma_core_adapters.php` — ۵۷ بررسی DB/session/auth/context.
+- `../tests/joma_core_acceptance.php` — ۳۳ بررسی تراکنش پذیرش با mock mysqli (قفل، rollback/commit، عدم درون‌گذاری).
+- `../docs/JOMA-SERVICE-CONTRACTS-v0.1-FA.md` — قرارداد خدمات و ترتیب قفل پیشنهادی.
+- `../docs/JOMA-CORE-TEST-REPORT-v0.3-FA.md` — نتایج و محدودیت این مرحله.
 
 ## اجرای محلی برای توسعه‌دهنده
 
-PHP 64-bit 8.1+؛ بدون دیتابیس و بدون اتصال شبکه:
+PHP 64-bit 8.1+؛ بدون دیتابیس:
 
 ```sh
 php tests/joma_core_lint.php
 php tests/joma_domain_rules.php
 php tests/joma_core_adapters.php
+php tests/joma_core_acceptance.php
 python tests/joma_schema_static.py
 python tests/joma_mariadb_static.py
 ```
 
-جایگزین توسعه‌ای (بدون PHP بومی):
+جایگزین بدون PHP بومی:
 
 ```sh
 npm ci --prefix tools --no-audit --no-fund
 PHP=8.1 tools/node_modules/.bin/php-wasm-cli tests/joma_core_lint.php
 PHP=8.1 tools/node_modules/.bin/php-wasm-cli tests/joma_domain_rules.php
 PHP=8.1 tools/node_modules/.bin/php-wasm-cli tests/joma_core_adapters.php
+PHP=8.1 tools/node_modules/.bin/php-wasm-cli tests/joma_core_acceptance.php
 PHP=8.4 tools/node_modules/.bin/php-wasm-cli tests/joma_core_lint.php
 PHP=8.4 tools/node_modules/.bin/php-wasm-cli tests/joma_domain_rules.php
 PHP=8.4 tools/node_modules/.bin/php-wasm-cli tests/joma_core_adapters.php
+PHP=8.4 tools/node_modules/.bin/php-wasm-cli tests/joma_core_acceptance.php
 ```
 
-خروج صفر یعنی موفق؛ هشدار PHP در آزمون به شکست تبدیل می‌شود (تست adapter استثنای `@` را محترم می‌شمارد تا `session_start` پس از خروجی خطا ندهد).
+خروج صفر موفق است؛ هشدار به شکست تبدیل می‌شود (استثنای `@` برای `session_start` محترم است).
 
 ## مرز مهم
 
-- آرایه‌های `snapshot` **تصویر معتبر سمت سرور** هستند، نه JSON مرورگر. `allowed=true` فقط همان قاعده است؛ به‌تنهایی مجوز کامل، ظرفیت آزاد یا موفقیت تراکنش نیست.
-- جست‌جوی ورود و بارگذاری context هیچ‌گاه UUID یا نام کاربری را در SQL درون‌گذاری نمی‌کنند؛ آزمون `injection treated as literal` این را می‌سنجد.
-- `policy_status/permissions` در این تحویل از جدول `joma_role_definitions.is_active` و یک allowlist موقت (`therapist/doctor → routing.accept, scheduling.hold` و ...) می‌آید. نگاشت واقعی باید از سیاست مصوب DB بیاید؛ این allowlist مجوز باز تلقی نمی‌شود.
-- هیچ‌کدام از آزمون‌های این پوشه به MariaDB واقعی، تراکنش هم‌زمان، قفل سطر منبع، deadlock/retry، تحویل فایل محافظت‌شده، entitlement خرید، یا رمزنگاری PrivateNote متصل نشده‌اند. معیار آن‌ها در `JOMA-SERVICE-CONTRACTS` فهرست شده است.
-- هاست برای این کد به Node، npm یا Composer نیاز ندارد. ابزار WASM فقط برای توسعهٔ محلی است و نسخهٔ Node باید با engine بسته‌ها سازگار باشد.
+- `snapshot`‌ها تصویر معتبر سمت سرورند، نه JSON مرورگر. `allowed=true` فقط همان قاعده است.
+- همهٔ SQLها با `?` و `bind_param` هستند؛ آزمون `injection treated as literal` و `no uuid interpolation` این را می‌سنجند. `SELECT ... FOR UPDATE` برای قفل سطر استفاده می‌شود.
+- `acceptance` در این تحویل با دادهٔ ساختگی و mock تراکنش آزموده شده؛ **MariaDB واقعی، دو اتصال هم‌زمان، deadlock/retry، و اتصال به `command_receipts/audit` هنوز اجرا نشده** و در `JOMA-SERVICE-CONTRACTS` به‌عنوان معیار باز مانده است.
+- `policy_status/permissions` از `role_definitions.is_active` و allowlist موقت می‌آید؛ نگاشت واقعی باید از سیاست مصوب بیاید.
+- هاست به Node/npm/Composer نیاز ندارد.

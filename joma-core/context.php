@@ -30,7 +30,7 @@ function joma_context_role_permissions_map(): array {
     ];
 }
 
-function joma_context_resolve_policy(string $roleCode = null, $isActive = null): array {
+function joma_context_resolve_policy(?string $roleCode = null, $isActive = null): array {
     $code = is_string($roleCode) ? strtolower(trim($roleCode)) : '';
     $active = ($isActive === 1 || $isActive === '1' || $isActive === true);
     if ($code === '' || !$active) {
