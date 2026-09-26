@@ -73,7 +73,7 @@ header{position:sticky;top:0;background:#fff;border-bottom:1px solid #e5e7eb;z-i
 <div class="card">
 <h3 style="margin:0 0 8px">مسیر ۴ قدم</h3>
 <div class="steps" style="flex-wrap:wrap">
-<span class="step active">۱ ورود</span><span class="step">۲ پذیرش</span><span class="step">۳ رزرو ۱۵دقیقه</span><span class="step">۴ پورتال</span>
+<span class="step active">۱ ورود</span><span class="step">۲ ساخت پرونده</span><span class="step">۳ رزرو ۱۵دقیقه</span><span class="step">۴ پورتال</span>
 </div>
 <div class="hint">نسخهٔ نمایشی با دادهٔ ساختگی است. هاستِ شما ۱۴ تستِ دیتابیس را PASS کرد — اینجا فقط ظاهرِ موبایل-اول را می‌بینید.</div>
 <ul class="muted" style="margin:12px 0 0;padding:0 18px">
@@ -90,23 +90,33 @@ header{position:sticky;top:0;background:#fff;border-bottom:1px solid #e5e7eb;z-i
 <div class="muted">نقش نمایشی — تغییر با نامِ دیگر در ورود</div>
 </div>
 <div class="steps">
-<span class="step ok">۱ ورود ✓</span><span class="step active">۲ پذیرش</span><span class="step">۳ رزرو</span><span class="step">۴ پورتال</span>
+<span class="step ok">۱ ورود ✓</span><span class="step active">۲ ساخت پرونده</span><span class="step">۳ رزرو</span><span class="step">۴ پورتال</span>
 </div>
 </div>
 
 <div class="grid">
-<div class="card">
-<h3 style="margin:0 0 4px">پذیرش — نمایش</h3>
-<p class="muted" style="margin:0 0 12px">در نسخهٔ واقعی اینجا `joma-core/acceptance.php` با `FOR UPDATE` اجرا می‌شود. اینجا فقط شبیه‌سازی‌ست.</p>
-<div class="kv"><span>درخواست</span><b>#A-9001 — AWAITING_THERAPIST</b></div>
+<div class="card" style="border:2px solid var(--c)">
+<h3 style="margin:0 0 4px">📁 ساخت پرونده — پذیرش</h3>
+<p class="muted" style="margin:0 0 12px">در جوما «پذیرش = ساخت پرونده». با یک کلیک، <b>Relationship + Case (پرونده)</b> با هم و اتمیک ساخته می‌شود — نه جدا.</p>
+<div class="hint" style="margin-bottom:10px">پرونده = هدف + بافت + افراد + رابطهٔ درمانی — نه برچسبِ خدمت. یک درمانگرِ مسئول / پرونده.</div>
+<div class="kv"><span>درخواستِ پذیرش</span><b>#A-9001 — AWAITING_THERAPIST</b></div>
+<div class="kv"><span>متقاضی</span><b>خانم احمدی — فردی بزرگسال</b></div>
 <div class="kv"><span>درمانگر مسئول</span><b>alice (شما)</b></div>
-<div class="kv"><span>وضعیت</span><span class="badge wait">منتظر پذیرش</span></div>
+<div class="kv"><span>بافت/هدف</span><b>درمان فردی — اضطراب</b></div>
+<div class="kv"><span>وضعیت</span><span class="badge wait">پرونده هنوز ساخته نشده</span></div>
 <div style="height:12px"></div>
-<button class="btn" onclick="document.getElementById('accept').style.display='block';this.style.display='none'">پذیرش و ساخت Case فعال</button>
+<button class="btn" onclick="document.getElementById('accept').style.display='block';this.style.display='none'">✓ پذیرش و ساختِ پروندهٔ فعال</button>
 <div id="accept" style="display:none">
-<div class="hint" style="margin-bottom:10px">✓ پذیرش انجام شد — Relationship + Case با یک تراکنش ساخته شد (نمایشی). در واقعی ۵ INSERT اتمیک است.</div>
-<div class="kv"><span>Case</span><b>#C-1001 ACTIVE</b></div>
-<button class="btn sec" onclick="document.getElementById('holdCard').scrollIntoView({behavior:'smooth'})">رفتن به رزرو</button>
+<div class="hint" style="margin-bottom:10px">✓ پرونده ساخته شد — ۵ ردیفِ اتمیک: Relationship + Case + عضویت + کانتکست + Audit. از این به بعد <b>رزروِ ۱۵دقیقه و جلسات</b> فعال می‌شود.</div>
+<div style="background:#ecfdf3;border:1px solid #abefc6;border-radius:12px;padding:12px">
+<div style="display:flex;justify-content:space-between;align-items:center"><b>📁 پرونده #C-1001</b><span class="badge ok">ACTIVE</span></div>
+<div class="kv" style="border:0;padding:6px 0 0"><span>شماره پرونده</span><b>C-1001 / R-9001</b></div>
+<div class="kv" style="border:0;padding:4px 0"><span>تاریخ ساخت</span><b>امروز — توسط alice</b></div>
+<div class="kv" style="border:0;padding:4px 0"><span>افرادِ پرونده</span><b>خانم احمدی (مراجع) + alice (مسئول)</b></div>
+<div class="kv" style="border:0;padding:4px 0 0"><span>وضعیتِ مالی/رضایت</span><span class="muted">دروازهٔ خدمت — نه شرطِ ساختِ پرونده</span></div>
+</div>
+<div style="height:10px"></div>
+<button class="btn sec" onclick="document.getElementById('holdCard').scrollIntoView({behavior:'smooth'})">رفتن به رزروِ پرونده</button>
 </div>
 </div>
 <div class="card">
