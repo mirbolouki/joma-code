@@ -110,16 +110,29 @@ try {
                   "تفسیر اولیه سامانه: {$interpretation}\n" .
                   "تاریخ ثبت سیستمی: " . date('Y-m-d H:i:s');
 
-    $reportVersionId = joma_uuid_v4();
-    $rvBin = joma_uuid_to_bin($reportVersionId);
     $caseBin = $caseId ? joma_uuid_to_bin($caseId) : null;
 
-    $stmtR = $liveDb->prepare("
-        INSERT INTO joma_report_versions (
-            id, case_id, version_no, report_text, status
-        ) VALUES (?, ?, 1, ?, 'PUBLISHED')
-    ");
-    $stmtR->bind_param('sss', $rvBin, $caseBin, $reportText);
+    // 1. Ensure Assessment Record
+    $asBin = joma_uuid_to_bin(joma_uuid_v4());
+    $insAs = $liveDb->prepare("INSERT INTO joma_assessments (id, case_id, subject_person_id, instrument_reference, status_code) VALUES (?, ?, ?, ?, 'COMPLETED')");
+    $insAs->bind_param('ssss', $asBin, $caseBin, $pBin, $testName);
+    $insAs->execute();
+    $insAs->close();
+
+    // 2. Ensure Assessment Report Parent Record
+    $repBin = joma_uuid_to_bin(joma_uuid_v4());
+    $insRep = $liveDb->prepare("INSERT INTO joma_assessment_reports (id, assessment_id, case_id) VALUES (?, ?, ?)");
+    $insRep->bind_param('sss', $repBin, $asBin, $caseBin);
+    $insRep->execute();
+    $insRep->close();
+
+    // 3. Insert Version
+    $reportVersionId = joma_uuid_v4();
+    $rvBin = joma_uuid_to_bin($reportVersionId);
+    $authorBin = $pBin;
+
+    $stmtR = $liveDb->prepare("INSERT INTO joma_report_versions (id, report_id, case_id, version_no, author_person_id, uploaded_by_person_id, report_text, status) VALUES (?, ?, ?, 1, ?, ?, ?, 'REVIEWED')");
+    $stmtR->bind_param('ssssss', $rvBin, $repBin, $caseBin, $authorBin, $authorBin, $reportText);
     $stmtR->execute();
     $stmtR->close();
 

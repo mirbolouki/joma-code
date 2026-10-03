@@ -52,8 +52,10 @@ if ($liveDb) {
         // Published reports for patient
         $resR = $liveDb->query("
             SELECT rv.id, rv.version_no, rv.report_text
-            FROM joma_report_versions rv
-            WHERE rv.status = 'PUBLISHED' LIMIT 5
+            FROM joma_report_publications rp
+            JOIN joma_report_versions rv ON rv.id = rp.report_version_id
+            WHERE rp.channel = 'PORTAL' AND rp.revoked_at IS NULL
+            ORDER BY rp.published_at DESC LIMIT 5
         ");
         if ($resR) {
             while ($rr = $resR->fetch_assoc()) {

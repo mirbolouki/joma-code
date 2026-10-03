@@ -190,9 +190,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     $raBin = joma_uuid_to_bin(joma_uuid_v4());
-                    $mRow = $liveDb->query("SELECT id, scope_id FROM joma_organization_memberships LIMIT 1")->fetch_assoc();
-                    $mBin = $mRow ? $mRow['id'] : joma_uuid_to_bin(joma_uuid_v4());
-                    $scBin = $mRow ? $mRow['scope_id'] : joma_uuid_to_bin('00000000-0000-4000-8000-000000000001');
+                    $scRow = $liveDb->query("SELECT id FROM joma_work_scopes WHERE kind='CENTER' LIMIT 1")->fetch_assoc();
+                    $scBin = $scRow ? $scRow['id'] : joma_uuid_to_bin('00000000-0000-4000-8000-000000000001');
+
+                    $mRow = $liveDb->query("SELECT id FROM joma_memberships LIMIT 1")->fetch_assoc();
+                    if ($mRow) {
+                        $mBin = $mRow['id'];
+                    } else {
+                        $mBin = joma_uuid_to_bin(joma_uuid_v4());
+                        $insM = $liveDb->prepare("INSERT INTO joma_memberships (id, person_id, scope_id, status, valid_from) VALUES (?, ?, ?, 'ACTIVE', NOW(6))");
+                        $insM->bind_param('sss', $mBin, $pBin, $scBin);
+                        $insM->execute();
+                        $insM->close();
+                    }
                     $nowDt = date('Y-m-d H:i:s');
 
                     $st3 = $liveDb->prepare("INSERT INTO joma_role_assignments (id, account_id, person_id, membership_id, scope_id, role_id, valid_from) VALUES (?, ?, ?, ?, ?, ?, ?)");

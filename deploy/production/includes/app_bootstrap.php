@@ -100,9 +100,12 @@ if (!function_exists('joma_uuid_to_bin')) {
 }
 
 if (!function_exists('joma_bin_to_uuid')) {
-    function joma_bin_to_uuid(string $bin): ?string {
-        if (function_exists('joma_db_bin_to_uuid')) return joma_db_bin_to_uuid($bin);
-        if (strlen($bin) !== 16) return null;
+    function joma_bin_to_uuid(?string $bin): ?string {
+        if ($bin === null || strlen($bin) !== 16) return null;
+        if (function_exists('joma_db_bin_to_uuid')) {
+            $res = joma_db_bin_to_uuid($bin);
+            if ($res !== null) return $res;
+        }
         $h = bin2hex($bin);
         return substr($h,0,8).'-'.substr($h,8,4).'-'.substr($h,12,4).'-'.substr($h,16,4).'-'.substr($h,20);
     }
