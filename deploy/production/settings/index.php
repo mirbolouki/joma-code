@@ -178,77 +178,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $st2->execute();
                     $st2->close();
 
-                    // 3. Resolve Role Definition via Prepared Statement
-                    $roleLabel = ($roleCode === 'admin') ? 'مدیر ارشد' : (($roleCode === 'secretary') ? 'منشی و پذیرش' : (($roleCode === 'psychometrist') ? 'روان‌سنج / آزمون‌گر' : 'درمانگر بالینی'));
-                    $stRole = $liveDb->prepare("SELECT id FROM joma_role_definitions WHERE code = ?");
-                    $stRole->bind_param('s', $roleCode);
-                    $stRole->execute();
-                    $rRow = $stRole->get_result()->fetch_assoc();
-                    $stRole->close();
-
-                    $roleId = null;
-                    if ($rRow) {
-                        $roleId = (int)$rRow['id'];
-                    } else {
-                        $stInsRole = $liveDb->prepare("INSERT INTO joma_role_definitions (code, label, is_active) VALUES (?, ?, 1)");
-                        $stInsRole->bind_param('ss', $roleCode, $roleLabel);
-                        $stInsRole->execute();
-                        $roleId = (int)$liveDb->insert_id;
-                        $stInsRole->close();
+                    // 3. Delegate Scope, Membership, and Role Assignment to Hardened Helper
+                    // Enforces composite foreign key constraint `fk_joma_009` atomically
+                    $assignRes = joma_ensure_membership_and_assign_role($liveDb, $pBin, $accBin, $roleCode);
+                    if (!($assignRes['ok'] ?? false)) {
+                        throw new Exception($assignRes['message'] ?? 'خطا در انتساب نقش سازمانی.');
                     }
-
-                    // 4. Resolve Work Scope (Clinic Center Scope)
-                    $stSc = $liveDb->prepare("SELECT id FROM joma_work_scopes WHERE kind = 'CENTER'");
-                    $stSc->execute();
-                    $scRow = $stSc->get_result()->fetch_assoc();
-                    $stSc->close();
-
-                    if ($scRow && !empty($scRow['id'])) {
-                        $scBin = $scRow['id'];
-                    } else {
-                        $scBin = joma_uuid_to_bin('00000000-0000-4000-8000-000000000001');
-                        $insSc = $liveDb->prepare("INSERT INTO joma_work_scopes (id, kind, label, status) VALUES (?, 'CENTER', 'کلینیک مرکزی ژوما', 'ACTIVE')");
-                        $insSc->bind_param('s', $scBin);
-                        $insSc->execute();
-                        $insSc->close();
-                    }
-
-                    // 5. Defensive Membership Resolution & Foreign Key Compliance (fk_joma_009)
-                    // CONSTRAINT fk_joma_009 FOREIGN KEY (membership_id, person_id, scope_id)
-                    // REFERENCES joma_memberships (id, person_id, scope_id)
-                    $mBin = null;
-                    $stMem = $liveDb->prepare("SELECT id FROM joma_memberships WHERE person_id = ? AND scope_id = ?");
-                    $stMem->bind_param('ss', $pBin, $scBin);
-                    $stMem->execute();
-                    $memRow = $stMem->get_result()->fetch_assoc();
-                    $stMem->close();
-
-                    if ($memRow && !empty($memRow['id'])) {
-                        $mBin = $memRow['id'];
-                    } else {
-                        $mBin = joma_uuid_to_bin(joma_uuid_v4());
-                        $insM = $liveDb->prepare("INSERT INTO joma_memberships (id, person_id, scope_id, status, valid_from) VALUES (?, ?, ?, 'ACTIVE', NOW(6))");
-                        $insM->bind_param('sss', $mBin, $pBin, $scBin);
-                        if (!$insM->execute()) {
-                            throw new Exception("خطای ایجاد عضویت سازمانی برای کاربر جدید: " . $insM->error);
-                        }
-                        $insM->close();
-                    }
-
-                    // Strict Defensive Gate: Verify membership exists before attempting role assignment
-                    if ($mBin === null) {
-                        throw new Exception("خطای امنیتی: ایجاد یا یافتن شناسه عضویت معتبر برای انتساب نقش ناموفق بود.");
-                    }
-
-                    // 6. Role Assignment Insertion (Matches Composite FK fk_joma_009 exactly)
-                    $raBin = joma_uuid_to_bin(joma_uuid_v4());
-                    $nowDt = date('Y-m-d H:i:s');
-                    $st3 = $liveDb->prepare("INSERT INTO joma_role_assignments (id, account_id, person_id, membership_id, scope_id, role_id, valid_from) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                    $st3->bind_param('sssssis', $raBin, $accBin, $pBin, $mBin, $scBin, $roleId, $nowDt);
-                    if (!$st3->execute()) {
-                        throw new Exception("خطای انتساب نقش به پرسنل در پایگاه داده: " . $st3->error);
-                    }
-                    $st3->close();
 
                     // Dedicated Per-Service Fees from Dropdowns
                     $srvIndividual = (int)($_POST['fee_individual'] ?? 850000);
@@ -292,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     file_put_contents($settingsFile, json_encode($settings, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
                     $liveDb->commit();
-                    $msg = ['type' => 'success', 'text' => "درمانگر «{$fullName}» با انتخاب حساب مالی مصوب از دراپ‌داون با موفقیت ثبت شد."];
+                    $msg = ['type' => 'success', 'text' => "درمانگر «{$fullName}» با موفقیت ثبت و نقش او تخصیص یافت."];
                 }
             } catch (Throwable $e) {
                 if ($liveDb) $liveDb->rollback();
