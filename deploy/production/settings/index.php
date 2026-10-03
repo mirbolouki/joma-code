@@ -193,7 +193,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $scRow = $liveDb->query("SELECT id FROM joma_work_scopes WHERE kind='CENTER' LIMIT 1")->fetch_assoc();
                     $scBin = $scRow ? $scRow['id'] : joma_uuid_to_bin('00000000-0000-4000-8000-000000000001');
 
-                    $mRow = $liveDb->query("SELECT id FROM joma_memberships LIMIT 1")->fetch_assoc();
+                    // Ensure specific membership for this person in this scope (FK fk_joma_009 requires exact match on membership_id, person_id, scope_id)
+                    $mRow = $liveDb->query("SELECT id FROM joma_memberships WHERE person_id=0x" . bin2hex($pBin) . " AND scope_id=0x" . bin2hex($scBin) . " LIMIT 1")->fetch_assoc();
                     if ($mRow) {
                         $mBin = $mRow['id'];
                     } else {
