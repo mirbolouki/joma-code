@@ -312,7 +312,7 @@ try {
     $nBin = joma_uuid_to_bin($noteId);
     $opaqueRef = random_bytes(32);
 
-    $stNote = $liveDb->prepare("INSERT INTO joma_private_note_references (id, case_id, author_person_id, storage_mode, opaque_author_reference) VALUES (?, ?, ?, 'SERVER_CIPHERTEXT', ?)");
+    $stNote = $liveDb->prepare("INSERT INTO joma_private_note_references (id, case_id, author_person_id, storage_mode, opaque_author_reference) VALUES (?, ?, ?, 'WINDOWS_LOCAL', ?)");
     $stNote->bind_param('ssss', $nBin, $caseBin, $pBin, $opaqueRef);
     $stNote->execute();
     $stNote->close();
