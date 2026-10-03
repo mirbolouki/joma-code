@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>داشبورد منشی | جوما</title>
+<link rel="stylesheet" href="../public_html/assets/css/style.css">
+</head>
+<body>
+<div style="background:#2C3E50;color:#fff;padding:8px 16px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span>🔍 پیش‌نمایش استاتیک رابط کاربری — جوما فاز ۱ (داده‌ها نمونه است)</span><a href="index.html" style="color:#9FC4F0">⬅ فهرست صفحات</a></div>
+<div class="page"><header class="header">
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="menu-toggle" type="button" aria-label="باز کردن منو">☰</button>
+    <a class="header-logo" href="reception-index.html">
+      <img src="../public_html/assets/img/logo.jpg" alt="لوگوی کلینیک جوما">
+      <span>کلینیک جوما</span>
+    </a>
+  </div>
+  <div class="header-right">
+    <span class="header-role">منشی</span>
+    <span class="header-user">⬤ فرهاد رضایی</span>
+    <a class="header-user" href="role_select.html" title="تغییر نقش">🔄 <span class="sr-only">تغییر نقش</span></a>
+    <a class="header-user" href="login.html">🚪 خروج</a>
+  </div>
+</header>
+<div class="container-with-sidebar"><nav class="sidebar" aria-label="منوی اصلی">
+  <div class="sidebar-title">منوی منشی</div>
+  <ul>
+    <li><a href="reception-index.html" class="active">📋 داشبورد</a></li>
+    <li><a href="reception-admission_new.html">➕ ثبت پذیرش جدید</a></li>
+    <li><a href="#" class="disabled-link">📅 تقویم نوبت‌ها <span class="badge badge-muted">فاز بعد</span></a></li>
+  </ul>
+</nav>
+<main class="content">
+  <h1>📋 داشبورد منشی</h1>
+  <div class="action-panel">
+    <a href="reception-admission_new.html" class="btn btn-primary">➕ ثبت پذیرش جدید</a>
+  </div>
+
+  <h2>❌ پذیرش‌های ردشده — نیازمند ارجاع مجدد (۲ مورد)</h2>
+  <div class="card">
+    <div class="table-wrap">
+      <table class="table table-card">
+        <thead><tr><th>مراجع</th><th>خدمت</th><th>درمانگر قبلی</th><th>دلیل عدم پذیرش</th><th>ارجاع مجدد</th></tr></thead>
+        <tbody>
+          <tr>
+            <td data-label="مراجع">محمد حسنی</td>
+            <td data-label="خدمت">مشاورهٔ فردی بزرگسال</td>
+            <td data-label="درمانگر قبلی">دکتر نوری</td>
+            <td data-label="دلیل"><span class="badge badge-danger">عدم تناسب تخصصی</span></td>
+            <td data-label="ارجاع مجدد">
+              <form class="input-group" data-guard>
+                <select aria-label="انتخاب درمانگر جدید">
+                  <option>-- انتخاب درمانگر --</option>
+                  <option>دکتر مریم نوری</option>
+                  <option>دکتر سعید امینی</option>
+                </select>
+                <button type="button" class="btn btn-sm btn-primary">↻ ارجاع</button>
+              </form>
+            </td>
+          </tr>
+          <tr>
+            <td data-label="مراجع">سارا جهانی</td>
+            <td data-label="خدمت">زوج‌درمانی و خانواده</td>
+            <td data-label="درمانگر قبلی">دکتر امینی</td>
+            <td data-label="دلیل"><span class="badge badge-danger">تکمیل ظرفیت</span></td>
+            <td data-label="ارجاع مجدد">
+              <form class="input-group" data-guard>
+                <select aria-label="انتخاب درمانگر جدید">
+                  <option>-- انتخاب درمانگر --</option>
+                  <option>دکتر مریم نوری</option>
+                  <option>دکتر سعید امینی</option>
+                </select>
+                <button type="button" class="btn btn-sm btn-primary">↻ ارجاع</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h2 id="recent">📌 ۲۰ پذیرش اخیر</h2>
+  <div class="card">
+    <div class="table-wrap table-scroll">
+      <table class="table table-card">
+        <thead><tr><th>مراجع</th><th>خدمت</th><th>درمانگر</th><th>تاریخ ثبت</th><th>وضعیت</th></tr></thead>
+        <tbody>
+          <tr>
+            <td data-label="مراجع">علی احمدی</td>
+            <td data-label="خدمت">مشاورهٔ فردی بزرگسال</td>
+            <td data-label="درمانگر">دکتر نوری</td>
+            <td data-label="تاریخ ثبت">۱۴۰۴/۰۷/۱۱ — ۰۹:۲۰</td>
+            <td data-label="وضعیت"><span class="status status-waiting">در انتظار درمانگر</span></td>
+          </tr>
+          <tr>
+            <td data-label="مراجع">فاطمه خسروی</td>
+            <td data-label="خدمت">زوج‌درمانی و خانواده</td>
+            <td data-label="درمانگر">دکتر امینی</td>
+            <td data-label="تاریخ ثبت">۱۴۰۴/۰۷/۱۱ — ۱۰:۰۵</td>
+            <td data-label="وضعیت"><span class="status status-active">پذیرفته شد</span></td>
+          </tr>
+          <tr>
+            <td data-label="مراجع">رضا مرادی</td>
+            <td data-label="خدمت">روان‌شناسی کودک و نوجوان</td>
+            <td data-label="درمانگر">دکتر نوری</td>
+            <td data-label="تاریخ ثبت">۱۴۰۴/۰۷/۱۱ — ۱۱:۴۰</td>
+            <td data-label="وضعیت"><span class="status status-active">پذیرفته شد</span></td>
+          </tr>
+          <tr>
+            <td data-label="مراجع">مریم سلطانی</td>
+            <td data-label="خدمت">ارزیابی و تفسیر تست بالینی</td>
+            <td data-label="درمانگر">دکتر امینی</td>
+            <td data-label="تاریخ ثبت">۱۴۰۴/۰۷/۱۰ — ۱۶:۱۵</td>
+            <td data-label="وضعیت"><span class="status status-waiting">در انتظار درمانگر</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main></div><footer class="footer">سامانهٔ مدیریت کلینیک جوما — نسخهٔ ۱.۰ (فاز ۱) | <a href="#">راهنما</a> | <a href="#">پشتیبانی</a></footer></div><script src="../public_html/assets/js/app.js"></script>
+</body>
+</html>

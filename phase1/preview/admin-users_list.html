@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>فهرست کاربران | جوما</title>
+<link rel="stylesheet" href="../public_html/assets/css/style.css">
+</head>
+<body>
+<div style="background:#2C3E50;color:#fff;padding:8px 16px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span>🔍 پیش‌نمایش استاتیک رابط کاربری — جوما فاز ۱ (داده‌ها نمونه است)</span><a href="index.html" style="color:#9FC4F0">⬅ فهرست صفحات</a></div>
+<div class="page"><header class="header">
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="menu-toggle" type="button" aria-label="باز کردن منو">☰</button>
+    <a class="header-logo" href="admin-index.html">
+      <img src="../public_html/assets/img/logo.jpg" alt="لوگوی کلینیک جوما">
+      <span>کلینیک جوما</span>
+    </a>
+  </div>
+  <div class="header-right">
+    <span class="header-role">مدیر</span>
+    <span class="header-user">⬤ علی احمدی</span>
+    <a class="header-user" href="role_select.html" title="تغییر نقش">🔄 <span class="sr-only">تغییر نقش</span></a>
+    <a class="header-user" href="login.html">🚪 خروج</a>
+  </div>
+</header>
+<div class="container-with-sidebar"><nav class="sidebar" aria-label="منوی اصلی">
+  <div class="sidebar-title">منوی مدیر</div>
+  <ul>
+    <li><a href="admin-index.html">📊 داشبورد</a></li>
+    <li><a href="admin-user_create.html">➕ ایجاد کاربر</a></li>
+    <li><a href="admin-users_list.html" class="active">👥 فهرست کاربران</a></li>
+    <li><a href="reception-index.html">📋 پذیرش‌ها (منشی)</a></li>
+    <li><a href="admin-sms_settings.html">📨 تنظیمات پیامک</a></li>
+    <li><a href="#" class="disabled-link">📂 پرونده‌ها <span class="badge badge-muted">فاز بعد</span></a></li>
+    <li><a href="#" class="disabled-link">⚙️ تنظیمات کلینیک <span class="badge badge-muted">فاز بعد</span></a></li>
+  </ul>
+</nav>
+<main class="content">
+  <h1>👥 فهرست کاربران پرسنلی</h1>
+  <div class="alert alert-success">✓ عملیات با موفقیت انجام شد.</div>
+  <div class="action-panel"><a href="admin-user_create.html" class="btn btn-primary">➕ ایجاد کاربر جدید</a></div>
+  <div class="card">
+    <div class="table-wrap">
+      <table class="table table-card">
+        <thead>
+          <tr><th>نام</th><th>نام کاربری</th><th>نقش‌ها</th><th>موبایل</th><th>وضعیت</th><th>عملیات</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td data-label="نام">علی احمدی</td>
+          <td data-label="نام کاربری"><span class="mono">admin</span></td>
+          <td data-label="نقش‌ها">مدیر</td>
+          <td data-label="موبایل"><span class="mono">09121111111</span></td>
+          <td data-label="وضعیت"><span class="status status-active">فعال</span></td>
+          <td data-label="عملیات" class="col-actions"><button class="btn btn-sm btn-danger" data-confirm="آیا از غیرفعال‌کردن این کاربر مطمئن هستید؟ جلسهٔ فعال او بلافاصله بسته می‌شود.">غیرفعال‌سازی</button></td>
+        </tr>
+        <tr>
+          <td data-label="نام">فرهاد رضایی</td>
+          <td data-label="نام کاربری"><span class="mono">farhad_r</span></td>
+          <td data-label="نقش‌ها">منشی</td>
+          <td data-label="موبایل"><span class="mono">09122222222</span></td>
+          <td data-label="وضعیت"><span class="status status-active">فعال</span></td>
+          <td data-label="عملیات" class="col-actions"><button class="btn btn-sm btn-danger" data-confirm="آیا از غیرفعال‌کردن این کاربر مطمئن هستید؟ جلسهٔ فعال او بلافاصله بسته می‌شود.">غیرفعال‌سازی</button></td>
+        </tr>
+        <tr>
+          <td data-label="نام">دکتر مریم نوری</td>
+          <td data-label="نام کاربری"><span class="mono">dr_nouri</span></td>
+          <td data-label="نقش‌ها">درمانگر</td>
+          <td data-label="موبایل"><span class="mono">09123333333</span></td>
+          <td data-label="وضعیت"><span class="status status-active">فعال</span></td>
+          <td data-label="عملیات" class="col-actions"><button class="btn btn-sm btn-danger" data-confirm="آیا از غیرفعال‌کردن این کاربر مطمئن هستید؟ جلسهٔ فعال او بلافاصله بسته می‌شود.">غیرفعال‌سازی</button></td>
+        </tr>
+        <tr>
+          <td data-label="نام">سارا کریمی</td>
+          <td data-label="نام کاربری"><span class="mono">sara_k</span></td>
+          <td data-label="نقش‌ها">منشی، روان‌سنج</td>
+          <td data-label="موبایل"><span class="mono">09124444444</span></td>
+          <td data-label="وضعیت"><span class="status status-off">غیرفعال</span></td>
+          <td data-label="عملیات" class="col-actions"><button class="btn btn-sm btn-success">فعال‌سازی</button></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main></div><footer class="footer">سامانهٔ مدیریت کلینیک جوما — نسخهٔ ۱.۰ (فاز ۱) | <a href="#">راهنما</a> | <a href="#">پشتیبانی</a></footer></div><script src="../public_html/assets/js/app.js"></script>
+</body>
+</html>

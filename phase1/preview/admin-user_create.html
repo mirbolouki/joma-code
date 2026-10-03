@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ایجاد کاربر | جوما</title>
+<link rel="stylesheet" href="../public_html/assets/css/style.css">
+</head>
+<body>
+<div style="background:#2C3E50;color:#fff;padding:8px 16px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span>🔍 پیش‌نمایش استاتیک رابط کاربری — جوما فاز ۱ (داده‌ها نمونه است)</span><a href="index.html" style="color:#9FC4F0">⬅ فهرست صفحات</a></div>
+<div class="page"><header class="header">
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="menu-toggle" type="button" aria-label="باز کردن منو">☰</button>
+    <a class="header-logo" href="admin-index.html">
+      <img src="../public_html/assets/img/logo.jpg" alt="لوگوی کلینیک جوما">
+      <span>کلینیک جوما</span>
+    </a>
+  </div>
+  <div class="header-right">
+    <span class="header-role">مدیر</span>
+    <span class="header-user">⬤ علی احمدی</span>
+    <a class="header-user" href="role_select.html" title="تغییر نقش">🔄 <span class="sr-only">تغییر نقش</span></a>
+    <a class="header-user" href="login.html">🚪 خروج</a>
+  </div>
+</header>
+<div class="container-with-sidebar"><nav class="sidebar" aria-label="منوی اصلی">
+  <div class="sidebar-title">منوی مدیر</div>
+  <ul>
+    <li><a href="admin-index.html">📊 داشبورد</a></li>
+    <li><a href="admin-user_create.html" class="active">➕ ایجاد کاربر</a></li>
+    <li><a href="admin-users_list.html">👥 فهرست کاربران</a></li>
+    <li><a href="reception-index.html">📋 پذیرش‌ها (منشی)</a></li>
+    <li><a href="admin-sms_settings.html">📨 تنظیمات پیامک</a></li>
+    <li><a href="#" class="disabled-link">📂 پرونده‌ها <span class="badge badge-muted">فاز بعد</span></a></li>
+    <li><a href="#" class="disabled-link">⚙️ تنظیمات کلینیک <span class="badge badge-muted">فاز بعد</span></a></li>
+  </ul>
+</nav>
+<main class="content">
+  <h1>➕ ایجاد کاربر پرسنل جدید</h1>
+  <div class="card">
+    <div class="card-body">
+      <form data-guard>
+        <div class="form-section-title">اطلاعات شخصی</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first_name">نام <span class="required-star">*</span></label>
+            <input type="text" id="first_name">
+          </div>
+          <div class="form-group">
+            <label for="last_name">نام خانوادگی <span class="required-star">*</span></label>
+            <input type="text" id="last_name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="mobile">شمارهٔ موبایل <span class="required-star">*</span></label>
+          <input type="tel" id="mobile" dir="ltr" placeholder="09121234567" maxlength="11" data-digits="en">
+        </div>
+        <div class="form-group">
+          <label for="nid">کد ملی (اختیاری)</label>
+          <input type="text" id="nid" dir="ltr" maxlength="10" data-digits="en">
+        </div>
+
+        <div class="form-section-title">اطلاعات حساب</div>
+        <div class="form-group">
+          <label for="uname">نام کاربری <span class="required-star">*</span></label>
+          <input type="text" id="uname" dir="ltr">
+          <span class="form-hint">فقط حروف کوچک انگلیسی، عدد و زیرخط — حداقل ۴ نویسه.</span>
+        </div>
+        <div class="form-group">
+          <label for="pass">رمز عبور اولیه <span class="required-star">*</span></label>
+          <input type="password" id="pass">
+          <div data-strength-for="pass"></div>
+          <span class="form-hint">کاربر در نخستین ورود مجبور به تغییر آن می‌شود.</span>
+        </div>
+
+        <div class="form-section-title">نقش‌ها (می‌توانید چند مورد انتخاب کنید)</div>
+        <div class="checkbox-list mb-3">
+          <label class="checkbox"><input type="checkbox"> 🧑‍💼 مدیر</label>
+          <label class="checkbox"><input type="checkbox" checked> 📋 منشی</label>
+          <label class="checkbox"><input type="checkbox"> 🩺 درمانگر</label>
+          <label class="checkbox"><input type="checkbox"> 🧪 روان‌سنج</label>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary">ایجاد کاربر</button>
+          <a href="admin-index.html" class="btn btn-secondary">انصراف</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main></div><footer class="footer">سامانهٔ مدیریت کلینیک جوما — نسخهٔ ۱.۰ (فاز ۱) | <a href="#">راهنما</a> | <a href="#">پشتیبانی</a></footer></div><script src="../public_html/assets/js/app.js"></script>
+</body>
+</html>

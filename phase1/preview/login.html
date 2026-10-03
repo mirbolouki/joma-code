@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ورود | جوما</title>
+<link rel="stylesheet" href="../public_html/assets/css/style.css">
+</head>
+<body>
+<div style="background:#2C3E50;color:#fff;padding:8px 16px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span>🔍 پیش‌نمایش استاتیک رابط کاربری — جوما فاز ۱ (داده‌ها نمونه است)</span><a href="index.html" style="color:#9FC4F0">⬅ فهرست صفحات</a></div>
+<div class="auth-page">
+  <div class="auth-brand">
+    <img src="../public_html/assets/img/logo.jpg" alt="لوگوی کلینیک جوما">
+    <h1>کلینیک جوما</h1>
+    <p>سامانهٔ مدیریت مراجعات</p>
+  </div>
+  <div class="auth-card">
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" type="button" role="tab" aria-selected="true">پرسنل</button>
+      <button class="tab disabled" type="button" role="tab" aria-selected="false" disabled>
+        مراجع <small>به‌زودی فعال می‌شود</small>
+      </button>
+    </div>
+    <form data-guard data-remember-username>
+      <div class="form-group">
+        <label for="login_identifier">نام کاربری</label>
+        <input type="text" id="login_identifier" name="login_identifier" dir="ltr" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label for="password">رمز عبور</label>
+        <input type="password" id="password" name="password" autocomplete="current-password">
+      </div>
+      <label class="checkbox">
+        <input type="checkbox" name="remember_username"> نام کاربری مرا به یاد داشته باش
+      </label>
+      <button type="button" class="btn btn-primary btn-block mt-2">ورود</button>
+      <p class="text-center mt-2"><a href="forgot-1.html" class="text-small text-muted">رمز عبور خود را فراموش کرده‌ام</a></p>
+    </form>
+
+  </div>
+  <div class="auth-footer">نسخهٔ ۱.۰ | <a href="#">تماس با پشتیبانی</a></div>
+</div>
+<script src="../public_html/assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>نصب — مرحلهٔ ۱ | جوما</title>
+<link rel="stylesheet" href="../public_html/assets/css/style.css">
+</head>
+<body>
+<div style="background:#2C3E50;color:#fff;padding:8px 16px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span>🔍 پیش‌نمایش استاتیک رابط کاربری — جوما فاز ۱ (داده‌ها نمونه است)</span><a href="index.html" style="color:#9FC4F0">⬅ فهرست صفحات</a></div>
+<div class="auth-page">
+  <div class="auth-brand">
+    <img src="../public_html/assets/img/logo.jpg" alt="لوگوی کلینیک جوما">
+    <h1>کلینیک جوما</h1>
+    <p>نصب سامانه — نسخهٔ ۱.۰</p>
+  </div>
+  <div class="auth-card auth-card-wide">
+
+    <div class="steps">
+      <div class="step active">۱) اتصال دیتابیس</div>
+      <div class="step">۲) ساخت جدول‌ها</div>
+      <div class="step">۳) مدیر سامانه</div>
+    </div>
+    <div class="alert alert-warning">
+      <strong>⚠️ هشدار امنیتی</strong>
+      این صفحه با پروتکل http باز شده است. توصیهٔ اکید می‌شود نصب را با https انجام دهید.
+      <label class="checkbox mt-1"><input type="checkbox"> با وجود هشدار، ادامه می‌دهم.</label>
+    </div>
+    <h2 style="font-size:20px;color:var(--color-primary);margin-bottom:16px">اطلاعات دیتابیس</h2>
+    <p class="text-muted text-small mb-3">این چهار مقدار را از بخش MySQL Databases در cPanel بردارید.</p>
+    <form data-guard>
+      <div class="form-group">
+        <label for="db_host">میزبان دیتابیس <span class="required-star">*</span></label>
+        <input type="text" id="db_host" value="localhost">
+        <span class="form-hint">در اغلب هاست‌های اشتراکی همان localhost است.</span>
+      </div>
+      <div class="form-group">
+        <label for="db_name">نام دیتابیس <span class="required-star">*</span></label>
+        <input type="text" id="db_name" placeholder="mirbolouki_joma">
+      </div>
+      <div class="form-group">
+        <label for="db_user">نام کاربری دیتابیس <span class="required-star">*</span></label>
+        <input type="text" id="db_user" placeholder="mirbolouki_jomauser">
+      </div>
+      <div class="form-group">
+        <label for="db_pass">رمز عبور دیتابیس <span class="required-star">*</span></label>
+        <input type="password" id="db_pass">
+      </div>
+      <div class="form-group">
+        <label for="base_url">نشانی سامانه</label>
+        <input type="url" id="base_url" value="https://my.mirbolouki.com/joma" dir="ltr">
+        <span class="form-hint">به‌صورت خودکار تشخیص داده شد؛ در صورت نیاز اصلاح کنید.</span>
+      </div>
+      <hr class="section-divider">
+      <div class="form-group">
+        <label>تنظیمات پیامک (برای بازیابی رمز عبور)</label>
+        <select id="sms_provider" data-toggle-target="#smsirBox" data-toggle-value="smsir">
+          <option value="smsir" selected>ارسال واقعی با سامانهٔ SMS.ir</option>
+          <option value="dev">حالت آزمایشی (کد فقط در فایل لاگ نوشته می‌شود)</option>
+        </select>
+      </div>
+      <div id="smsirBox" class="conditional-block">
+        <div class="form-group">
+          <label for="api_key">کلید API سامانهٔ SMS.ir</label>
+          <input type="text" id="api_key" dir="ltr">
+        </div>
+        <div class="form-group">
+          <label for="tpl">شناسهٔ قالب کد تأیید (Template ID)</label>
+          <input type="text" id="tpl" dir="ltr" data-digits="en">
+          <span class="form-hint">نام پارامتر قالب باید دقیقاً CODE باشد.</span>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary btn-block">آزمایش اتصال و ادامه ⬅</button>
+    </form>
+
+  </div>
+  <div class="auth-footer">نسخهٔ ۱.۰ | <a href="#">تماس با پشتیبانی</a></div>
+</div>
+<script src="../public_html/assets/js/app.js"></script>
+</body>
+</html>

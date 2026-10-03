@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بررسی پذیرش | جوما</title>
+<link rel="stylesheet" href="../public_html/assets/css/style.css">
+</head>
+<body>
+<div style="background:#2C3E50;color:#fff;padding:8px 16px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span>🔍 پیش‌نمایش استاتیک رابط کاربری — جوما فاز ۱ (داده‌ها نمونه است)</span><a href="index.html" style="color:#9FC4F0">⬅ فهرست صفحات</a></div>
+<div class="page"><header class="header">
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="menu-toggle" type="button" aria-label="باز کردن منو">☰</button>
+    <a class="header-logo" href="therapist-index.html">
+      <img src="../public_html/assets/img/logo.jpg" alt="لوگوی کلینیک جوما">
+      <span>کلینیک جوما</span>
+    </a>
+  </div>
+  <div class="header-right">
+    <span class="header-role">درمانگر</span>
+    <span class="header-user">⬤ دکتر نوری</span>
+    <a class="header-user" href="role_select.html" title="تغییر نقش">🔄 <span class="sr-only">تغییر نقش</span></a>
+    <a class="header-user" href="login.html">🚪 خروج</a>
+  </div>
+</header>
+<div class="container-with-sidebar"><nav class="sidebar" aria-label="منوی اصلی">
+  <div class="sidebar-title">منوی درمانگر</div>
+  <ul>
+    <li><a href="therapist-index.html" class="active">🩺 کارتابل</a></li>
+    <li><a href="therapist-index.html#cases">📂 پرونده‌های من</a></li>
+    <li><a href="#" class="disabled-link">📅 تقویم من <span class="badge badge-muted">فاز بعد</span></a></li>
+  </ul>
+</nav>
+<main class="content">
+  <h1>🔍 بررسی پذیرش</h1>
+
+  <div class="card">
+    <div class="card-header">👤 اطلاعات مراجع</div>
+    <div class="card-body">
+      <dl class="kv">
+        <dt>نام و نام خانوادگی</dt><dd>علی احمدی</dd>
+        <dt>شمارهٔ موبایل</dt><dd><span class="mono">09121111111</span></dd>
+        <dt>کد ملی</dt><dd class="text-muted">ثبت نشده</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">📋 جزئیات پذیرش</div>
+    <div class="card-body">
+      <dl class="kv">
+        <dt>خدمت درخواستی</dt><dd>مشاورهٔ فردی بزرگسال</dd>
+        <dt>دلیل مراجعه</dt><dd>اضطراب</dd>
+        <dt>تعداد همراه</dt><dd>بدون همراه</dd>
+        <dt>ثبت‌کننده</dt><dd>فرهاد رضایی (منشی)</dd>
+        <dt>تاریخ درخواست</dt><dd>۱۴۰۴/۰۷/۱۱ — ۰۹:۲۰</dd>
+        <dt>وضعیت</dt><dd><span class="status status-waiting">در انتظار تصمیم شما</span></dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">🎯 تصمیم شما</div>
+    <div class="card-body">
+      <form data-guard>
+        <label class="radio">
+          <input type="radio" name="decision" checked data-toggle-target="#acceptNote"> ✅ پذیرش مسئولیت — پرونده گشوده شود
+        </label>
+        <label class="radio">
+          <input type="radio" name="decision" data-toggle-target="#declineBox"> ❌ عدم پذیرش — بازگشت به منشی برای ارجاع مجدد
+        </label>
+
+        <div id="acceptNote" class="alert alert-info mt-2">
+          با پذیرش، یک پروندهٔ بالینی فعال به نام شما گشوده می‌شود.
+        </div>
+
+        <div id="declineBox" class="form-group conditional-block mt-2 hidden">
+          <label for="dr">دلیل عدم پذیرش <span class="required-star">*</span></label>
+          <select id="dr">
+            <option value="">-- انتخاب کنید --</option>
+            <option>عدم تناسب تخصصی</option>
+            <option>تکمیل ظرفیت</option>
+            <option>سایر</option>
+          </select>
+        </div>
+
+        <div class="btn-row mt-3">
+          <button type="button" class="btn btn-success">تأیید و ثبت تصمیم</button>
+          <a href="therapist-index.html" class="btn btn-secondary">بازگشت</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main></div><footer class="footer">سامانهٔ مدیریت کلینیک جوما — نسخهٔ ۱.۰ (فاز ۱) | <a href="#">راهنما</a> | <a href="#">پشتیبانی</a></footer></div><script src="../public_html/assets/js/app.js"></script>
+</body>
+</html>
