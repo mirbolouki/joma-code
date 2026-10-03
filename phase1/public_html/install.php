@@ -133,12 +133,12 @@ $seed_lookup_lists = array(
     'referral_reason' => array(
         'title' => 'دلیل مراجعه',
         'items' => array(
-            'rr_anxiety'     => 'اضطراب',
+            'rr_anxiety'     => 'اضطراب و نگرانی',
             'rr_depression'  => 'افسردگی',
             'rr_marital'     => 'مشکلات زناشویی',
             'rr_family'      => 'مشکلات خانوادگی',
             'rr_child'       => 'مشکلات کودک و نوجوان',
-            'rr_assessment'  => 'ارزیابی روان‌سنجی',
+            'rr_assessment'  => 'ارزیابی روان‌شناختی',
             'rr_other'       => 'سایر',
         ),
     ),
