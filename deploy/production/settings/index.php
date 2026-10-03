@@ -157,35 +157,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 if ($liveDb) {
                     $liveDb->begin_transaction();
+
+                    // Pre-check: Verify username does not already exist
+                    $stCheckAcc = $liveDb->prepare("SELECT id FROM joma_accounts WHERE login_name = ?");
+                    $stCheckAcc->bind_param('s', $username);
+                    $stCheckAcc->execute();
+                    $existAcc = $stCheckAcc->get_result()->fetch_assoc();
+                    $stCheckAcc->close();
+
+                    if ($existAcc) {
+                        throw new RuntimeException("نام کاربری «{$username}» قبلاً در سیستم ثبت شده است. لطفاً نام کاربری دیگری انتخاب کنید.");
+                    }
+
+                    // 1. Insert Person (joma_persons)
                     $pId = joma_uuid_v4();
                     $pBin = joma_uuid_to_bin($pId);
                     $parts = explode(' ', $fullName, 2);
                     $gName = $parts[0];
                     $fName = $parts[1] ?? '';
 
-                    // Insert Person
                     $st1 = $liveDb->prepare("INSERT INTO joma_persons (id, given_name, family_name, status) VALUES (?, ?, ?, 'ACTIVE')");
+                    // Note: 's' type is standard in mysqli for 16-byte raw binary UUID
                     $st1->bind_param('sss', $pBin, $gName, $fName);
-                    $st1->execute();
+                    if (!$st1->execute()) {
+                        $err = $st1->error;
+                        $st1->close();
+                        throw new RuntimeException("خطای ثبت مشخصات فردی پرسنل: " . $err);
+                    }
                     $st1->close();
 
-                    // Insert Account
+                    // 2. Insert Account (joma_accounts)
                     $accId = joma_uuid_v4();
                     $accBin = joma_uuid_to_bin($accId);
                     $hash = password_hash($password, PASSWORD_DEFAULT);
                     $st2 = $liveDb->prepare("INSERT INTO joma_accounts (id, person_id, login_name, password_hash, status) VALUES (?, ?, ?, ?, 'ACTIVE')");
                     $st2->bind_param('ssss', $accBin, $pBin, $username, $hash);
-                    $st2->execute();
+                    if (!$st2->execute()) {
+                        $err = $st2->error;
+                        $st2->close();
+                        throw new RuntimeException("خطای ایجاد حساب کاربری: " . $err);
+                    }
                     $st2->close();
 
                     // 3. Delegate Scope, Membership, and Role Assignment to Hardened Helper
-                    // Enforces composite foreign key constraint `fk_joma_009` atomically
+                    // Helper automatically throws RuntimeException on failure to trigger atomic rollback
                     $assignRes = joma_ensure_membership_and_assign_role($liveDb, $pBin, $accBin, $roleCode);
-                    if (!($assignRes['ok'] ?? false)) {
-                        throw new Exception($assignRes['message'] ?? 'خطا در انتساب نقش سازمانی.');
-                    }
 
-                    // Dedicated Per-Service Fees from Dropdowns
+                    // 4. Dedicated Per-Service Fees from Dropdowns
                     $srvIndividual = (int)($_POST['fee_individual'] ?? 850000);
                     $durIndividual = (int)($_POST['dur_individual'] ?? 45);
                     $srvCouple     = (int)($_POST['fee_couple'] ?? 1200000);
@@ -236,7 +254,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 2. Add New Clinic / Therapist Bank Account to the Master Financial Directory
     elseif (isset($_POST['save_new_bank_account'])) {
         $bName = trim($_POST['bank_select_name'] ?? 'بانک پاسارگاد');
         $bOwner = trim($_POST['bank_owner_name'] ?? '');

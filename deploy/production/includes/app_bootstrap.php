@@ -175,7 +175,7 @@ if (!function_exists('joma_safe_hold_create')) {
  */
 function joma_ensure_membership_and_assign_role(mysqli $liveDb, string $personBin, string $accountBin, string $roleCode): array {
     if (strlen($personBin) !== 16 || strlen($accountBin) !== 16) {
-        return ['ok' => false, 'code' => 'INVALID_BINARY_UUID', 'message' => 'شناسه باینری فرد یا حساب کاربری معتبر نیست.'];
+        throw new InvalidArgumentException('شناسه باینری فرد یا حساب کاربری معتبر نیست (باید ۱۶ بایت باشد).');
     }
 
     $cleanRole = strtolower(trim($roleCode));
@@ -192,38 +192,40 @@ function joma_ensure_membership_and_assign_role(mysqli $liveDb, string $personBi
     $roleLabel = $roleLabels[$cleanRole] ?? 'درمانگر بالینی';
 
     // 1. Resolve or Create Role Definition via Prepared Statement
+    $roleId = null;
     $stRole = $liveDb->prepare("SELECT id FROM joma_role_definitions WHERE code = ?");
     if (!$stRole) {
-        return ['ok' => false, 'code' => 'PREPARE_FAILED_ROLE', 'message' => 'خطای سیستمی در آماده‌سازی کوئری نقش.'];
+        throw new RuntimeException('خطای سیستمی در آماده‌سازی کوئری بررسی نقش: ' . $liveDb->error);
     }
     $stRole->bind_param('s', $cleanRole);
     $stRole->execute();
     $rRow = $stRole->get_result()->fetch_assoc();
     $stRole->close();
 
-    $roleId = null;
     if ($rRow && !empty($rRow['id'])) {
         $roleId = (int)$rRow['id'];
     } else {
         $stInsRole = $liveDb->prepare("INSERT INTO joma_role_definitions (code, label, is_active) VALUES (?, ?, 1)");
         if (!$stInsRole) {
-            return ['ok' => false, 'code' => 'PREPARE_FAILED_INS_ROLE', 'message' => 'خطای سیستمی در ایجاد نقش جدید.'];
+            throw new RuntimeException('خطای سیستمی در آماده‌سازی ایجاد نقش جدید: ' . $liveDb->error);
         }
         $stInsRole->bind_param('ss', $cleanRole, $roleLabel);
         if (!$stInsRole->execute()) {
             $err = $stInsRole->error;
             $stInsRole->close();
-            return ['ok' => false, 'code' => 'EXECUTE_FAILED_INS_ROLE', 'message' => 'عدم موفقیت در ثبت نقش سیستمی: ' . $err];
+            throw new RuntimeException('عدم موفقیت در ثبت نقش سیستمی جدید: ' . $err);
         }
         $roleId = (int)$liveDb->insert_id;
         $stInsRole->close();
     }
 
     // 2. Resolve or Create Work Scope (Center Scope) via Prepared Statement
+    // Explicit initialization of $scBin to prevent undefined variable state
+    $scBin = null;
     $scopeKind = 'CENTER';
     $stSc = $liveDb->prepare("SELECT id FROM joma_work_scopes WHERE kind = ?");
     if (!$stSc) {
-        return ['ok' => false, 'code' => 'PREPARE_FAILED_SCOPE', 'message' => 'خطای سیستمی در جستجوی دامنه کاری کلینیک.'];
+        throw new RuntimeException('خطای سیستمی در جستجوی دامنه کاری کلینیک: ' . $liveDb->error);
     }
     $stSc->bind_param('s', $scopeKind);
     $stSc->execute();
@@ -237,16 +239,20 @@ function joma_ensure_membership_and_assign_role(mysqli $liveDb, string $personBi
         $scLabel = 'کلینیک مرکزی ژوما';
         $insSc = $liveDb->prepare("INSERT INTO joma_work_scopes (id, kind, label, status) VALUES (?, ?, ?, 'ACTIVE')");
         if (!$insSc) {
-            return ['ok' => false, 'code' => 'PREPARE_FAILED_INS_SCOPE', 'message' => 'خطای سیستمی در ایجاد دامنه کاری.'];
+            throw new RuntimeException('خطای سیستمی در ایجاد دامنه کاری کلینیک: ' . $liveDb->error);
         }
         // Note: 's' type in bind_param is standard for raw 16-byte binary strings in mysqli
         $insSc->bind_param('sss', $scBin, $scopeKind, $scLabel);
         if (!$insSc->execute()) {
             $err = $insSc->error;
             $insSc->close();
-            return ['ok' => false, 'code' => 'EXECUTE_FAILED_INS_SCOPE', 'message' => 'عدم موفقیت در ثبت دامنه کاری کلینیک: ' . $err];
+            throw new RuntimeException('عدم موفقیت در ثبت دامنه کاری کلینیک: ' . $err);
         }
         $insSc->close();
+    }
+
+    if ($scBin === null || strlen($scBin) !== 16) {
+        throw new RuntimeException('خطای تعیین شناسه دامنه سازمانی کلینیک.');
     }
 
     // 3. Defensive Membership Resolution & Foreign Key Compliance (fk_joma_009)
@@ -255,7 +261,7 @@ function joma_ensure_membership_and_assign_role(mysqli $liveDb, string $personBi
     $mBin = null;
     $stMem = $liveDb->prepare("SELECT id FROM joma_memberships WHERE person_id = ? AND scope_id = ?");
     if (!$stMem) {
-        return ['ok' => false, 'code' => 'PREPARE_FAILED_MEMBERSHIP', 'message' => 'خطای سیستمی در جستجوی عضویت سازمانی.'];
+        throw new RuntimeException('خطای سیستمی در جستجوی عضویت سازمانی پرسنل: ' . $liveDb->error);
     }
     $stMem->bind_param('ss', $personBin, $scBin);
     $stMem->execute();
@@ -268,22 +274,22 @@ function joma_ensure_membership_and_assign_role(mysqli $liveDb, string $personBi
         $mBin = joma_uuid_to_bin(joma_uuid_v4());
         $insM = $liveDb->prepare("INSERT INTO joma_memberships (id, person_id, scope_id, status, valid_from) VALUES (?, ?, ?, 'ACTIVE', NOW(6))");
         if (!$insM) {
-            return ['ok' => false, 'code' => 'PREPARE_FAILED_INS_MEMBERSHIP', 'message' => 'خطای سیستمی در آماده‌سازی عضویت پرسنل.'];
+            throw new RuntimeException('خطای سیستمی در آماده‌سازی عضویت پرسنل: ' . $liveDb->error);
         }
         $insM->bind_param('sss', $mBin, $personBin, $scBin);
         if (!$insM->execute()) {
             $err = $insM->error;
             $insM->close();
-            return ['ok' => false, 'code' => 'EXECUTE_FAILED_INS_MEMBERSHIP', 'message' => 'خطای ایجاد عضویت سازمانی: ' . $err];
+            throw new RuntimeException('خطای پایگاه داده در ایجاد عضویت سازمانی پرسنل: ' . $err);
         }
         $insM->close();
     }
 
-    if ($mBin === null) {
-        return ['ok' => false, 'code' => 'MEMBERSHIP_RESOLUTION_FAILED', 'message' => 'شناسه عضویت معتبر برای فرد و دامنه تعیین نشد.'];
+    if ($mBin === null || strlen($mBin) !== 16) {
+        throw new RuntimeException('خطای امنیتی: ایجاد یا یافتن شناسه عضویت معتبر برای انتساب نقش ناموفق بود.');
     }
 
-    // 4. Check for Existing Role Assignment to avoid duplicates
+    // 4. Check for Existing Role Assignment to avoid duplicate records
     $stCheckRa = $liveDb->prepare("SELECT id FROM joma_role_assignments WHERE account_id = ? AND role_id = ? AND scope_id = ?");
     if ($stCheckRa) {
         $stCheckRa->bind_param('sis', $accountBin, $roleId, $scBin);
@@ -305,14 +311,14 @@ function joma_ensure_membership_and_assign_role(mysqli $liveDb, string $personBi
     $nowDt = date('Y-m-d H:i:s');
     $st3 = $liveDb->prepare("INSERT INTO joma_role_assignments (id, account_id, person_id, membership_id, scope_id, role_id, valid_from) VALUES (?, ?, ?, ?, ?, ?, ?)");
     if (!$st3) {
-        return ['ok' => false, 'code' => 'PREPARE_FAILED_ROLE_ASSIGNMENT', 'message' => 'خطای سیستمی در آماده‌سازی ثبت انتساب نقش.'];
+        throw new RuntimeException('خطای سیستمی در آماده‌سازی انتساب نقش: ' . $liveDb->error);
     }
     // Parameters: id (binary), account_id (binary), person_id (binary), membership_id (binary), scope_id (binary), role_id (int), valid_from (string)
     $st3->bind_param('sssssis', $raBin, $accountBin, $personBin, $mBin, $scBin, $roleId, $nowDt);
     if (!$st3->execute()) {
         $err = $st3->error;
         $st3->close();
-        return ['ok' => false, 'code' => 'EXECUTE_FAILED_ROLE_ASSIGNMENT', 'message' => 'خطای پایگاه داده در انتساب نقش: ' . $err];
+        throw new RuntimeException('خطای پایگاه داده در انتساب نقش سازمانی به پرسنل: ' . $err);
     }
     $st3->close();
 
