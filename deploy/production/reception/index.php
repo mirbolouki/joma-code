@@ -137,10 +137,14 @@ if ($liveDb) {
         }
 
         $resT = $liveDb->query("
-            SELECT p.id, p.given_name, p.family_name 
+            SELECT DISTINCT p.id, p.given_name, p.family_name 
             FROM joma_persons p
             JOIN joma_accounts a ON a.person_id = p.id
-            WHERE a.username LIKE '%therapist%' OR a.username = 'demo-therapist'
+            LEFT JOIN joma_role_assignments ra ON ra.person_id = p.id
+            LEFT JOIN joma_role_definitions rd ON rd.id = ra.role_id
+            WHERE a.login_name LIKE '%therapist%' 
+               OR a.login_name = 'demo-therapist'
+               OR rd.code = 'therapist'
         ");
         if ($resT) {
             while ($rt = $resT->fetch_assoc()) {

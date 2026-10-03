@@ -124,13 +124,17 @@ if (!function_exists('joma_accept_assignment')) {
 if (!function_exists('joma_safe_hold_create')) {
     function joma_safe_hold_create($db, array $snapshot, string $caseId, string $startsAt, string $endsAt): array {
         if (!function_exists('joma_hold_create')) {
-            return ['ok' => false, 'code' => 'HOLD_FUNCTION_NOT_FOUND'];
+            return ['ok' => false, 'code' => 'HOLD_FUNCTION_NOT_FOUND', 'message' => 'تابع joma_hold_create یافت نشد.'];
         }
 
-        $offRow = $db->query("SELECT id FROM joma_service_offerings LIMIT 1")->fetch_assoc();
+        $offRow = $db->query("SELECT id, scope_id FROM joma_service_offerings WHERE status='ACTIVE' LIMIT 1")->fetch_assoc();
         $offId = $offRow ? joma_bin_to_uuid($offRow['id']) : '00000000-0000-4000-8000-000000000001';
+        $scopeBin = $offRow ? $offRow['scope_id'] : joma_uuid_to_bin('00000000-0000-4000-8000-000000000001');
 
         $polRow = $db->query("SELECT id FROM joma_service_policy_versions WHERE status='PUBLISHED' LIMIT 1")->fetch_assoc();
+        if (!$polRow) {
+            $polRow = $db->query("SELECT id FROM joma_service_policy_versions LIMIT 1")->fetch_assoc();
+        }
         $polId = $polRow ? joma_bin_to_uuid($polRow['id']) : '00000000-0000-4000-8000-000000000001';
 
         $resRow = $db->query("SELECT id FROM joma_schedule_resources LIMIT 1")->fetch_assoc();
@@ -138,9 +142,25 @@ if (!function_exists('joma_safe_hold_create')) {
 
         $nowTs = time();
         $heldAt = gmdate('Y-m-d H:i:s.000000', $nowTs);
-        $expiresAt = gmdate('Y-m-d H:i:s.000000', $nowTs + 900); // 15 mins
+        $expiresAt = gmdate('Y-m-d H:i:s.000000', $nowTs + 900); // exactly 15 minutes
         $nowUtc = $heldAt;
         $commandId = joma_uuid_v4();
+        $cmdBin = joma_uuid_to_bin($commandId);
+
+        // Pre-insert Command Receipt to satisfy foreign key constraint fk_joma_071:
+        // FOREIGN KEY (`command_id`) REFERENCES `joma_command_receipts` (`id`)
+        $actorId = $snapshot['account']['person_id'] ?? null;
+        $actorBin = $actorId ? joma_uuid_to_bin($actorId) : null;
+        $cmdKey = hash('sha256', $commandId . 'scheduling.hold', true);
+        $cmdPayload = hash('sha256', $caseId . $startsAt . $endsAt, true);
+        $cmdName = 'scheduling.hold';
+
+        $stCmd = $db->prepare("INSERT INTO joma_command_receipts (id, scope_id, actor_person_id, command_name, idempotency_key, payload_hash, status, completed_at) VALUES (?, ?, ?, ?, ?, ?, 'SUCCEEDED', ?)");
+        if ($stCmd) {
+            $stCmd->bind_param('sssssss', $cmdBin, $scopeBin, $actorBin, $cmdName, $cmdKey, $cmdPayload, $nowUtc);
+            @$stCmd->execute();
+            $stCmd->close();
+        }
 
         $sUtc = gmdate('Y-m-d H:i:s.000000', strtotime($startsAt));
         $eUtc = gmdate('Y-m-d H:i:s.000000', strtotime($endsAt));
