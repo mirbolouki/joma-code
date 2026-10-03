@@ -303,14 +303,9 @@ try {
 
 // 3.3: Author-Only Private Note Security & Penetration Test (Using joma_private_note_references)
 try {
-    // Resilient fallback: ensure caseBin is valid even if test 3.1 failed
-    $activeCaseBin = $caseBin;
-    if ($activeCaseBin === null) {
-        $cRow = $liveDb->query("SELECT id FROM joma_clinical_cases WHERE status='ACTIVE' ORDER BY opened_at DESC LIMIT 1")->fetch_assoc();
-        $activeCaseBin = $cRow ? $cRow['id'] : null;
-    }
-    if ($activeCaseBin === null) {
-        throw new Exception('هیچ پرونده بالینی معتبری برای ثبت یادداشت محرمانه یافت نشد.');
+    // Strict Dependency Check: Test 7 requires the exact clinical case created in Test 5
+    if ($caseBin === null) {
+        throw new Exception('DEPENDENCY FAILURE: پرونده بالینی معتبر از تست ۵ افتتاح نشده است (case_id is NULL)');
     }
 
     $noteId = joma_uuid_v4();
@@ -318,7 +313,7 @@ try {
     $opaqueRef = random_bytes(32);
 
     $stNote = $liveDb->prepare("INSERT INTO joma_private_note_references (id, case_id, author_person_id, storage_mode, opaque_author_reference) VALUES (?, ?, ?, 'SERVER_CIPHERTEXT', ?)");
-    $stNote->bind_param('ssss', $nBin, $activeCaseBin, $pBin, $opaqueRef);
+    $stNote->bind_param('ssss', $nBin, $caseBin, $pBin, $opaqueRef);
     $stNote->execute();
     $stNote->close();
 
@@ -345,23 +340,18 @@ try {
 $reportVersionId = null;
 $rvBin = null;
 try {
+    // Strict Dependency Check: Test 8 requires the exact clinical case created in Test 5
+    if ($caseBin === null) {
+        throw new Exception('DEPENDENCY FAILURE: پرونده بالینی معتبر از تست ۵ افتتاح نشده است (case_id is NULL)');
+    }
+
     $liveDb->begin_transaction();
-    
-    // Resilient fallback: ensure caseBin is valid even if test 3.1 failed
-    $activeCaseBin = $caseBin;
-    if ($activeCaseBin === null) {
-        $cRow = $liveDb->query("SELECT id FROM joma_clinical_cases WHERE status='ACTIVE' ORDER BY opened_at DESC LIMIT 1")->fetch_assoc();
-        $activeCaseBin = $cRow ? $cRow['id'] : null;
-    }
-    if ($activeCaseBin === null) {
-        throw new Exception('پرونده بالینی جهت الصاق نتایج آزمون روان‌سنجی یافت نشد.');
-    }
 
     // 1. Ensure Assessment Record (joma_assessments)
     $assessmentId = joma_uuid_v4();
     $asBin = joma_uuid_to_bin($assessmentId);
     $insAs = $liveDb->prepare("INSERT INTO joma_assessments (id, case_id, subject_person_id, instrument_reference, status_code) VALUES (?, ?, ?, 'YSQ-S3', 'COMPLETED')");
-    $insAs->bind_param('sss', $asBin, $activeCaseBin, $cpBin);
+    $insAs->bind_param('sss', $asBin, $caseBin, $cpBin);
     $insAs->execute();
     $insAs->close();
 
@@ -369,7 +359,7 @@ try {
     $reportId = joma_uuid_v4();
     $repBin = joma_uuid_to_bin($reportId);
     $insRep = $liveDb->prepare("INSERT INTO joma_assessment_reports (id, assessment_id, case_id) VALUES (?, ?, ?)");
-    $insRep->bind_param('sss', $repBin, $asBin, $activeCaseBin);
+    $insRep->bind_param('sss', $repBin, $asBin, $caseBin);
     $insRep->execute();
     $insRep->close();
 
@@ -382,7 +372,7 @@ try {
                   "تفسیر اولیه: طرحواره‌های محرومیت عاطفی و رهاشدگی در محدوده بالا فعال هستند.";
 
     $stmtR = $liveDb->prepare("INSERT INTO joma_report_versions (id, report_id, case_id, version_no, author_person_id, uploaded_by_person_id, report_text, status) VALUES (?, ?, ?, 1, ?, ?, ?, 'REVIEWED')");
-    $stmtR->bind_param('ssssss', $rvBin, $repBin, $activeCaseBin, $pBin, $pBin, $reportText);
+    $stmtR->bind_param('ssssss', $rvBin, $repBin, $caseBin, $pBin, $pBin, $reportText);
     $stmtR->execute();
     $stmtR->close();
 
@@ -402,7 +392,7 @@ try {
     $insPubCmd->close();
 
     $insPub = $liveDb->prepare("INSERT INTO joma_report_publications (id, report_version_id, case_id, published_by_person_id, channel, published_at, command_id) VALUES (?, ?, ?, ?, 'PORTAL', ?, ?)");
-    $insPub->bind_param('ssssss', $pubBin, $rvBin, $activeCaseBin, $pBin, $nowPub, $pubCmdBin);
+    $insPub->bind_param('ssssss', $pubBin, $rvBin, $caseBin, $pBin, $nowPub, $pubCmdBin);
     $insPub->execute();
     $insPub->close();
 
