@@ -1,0 +1,15 @@
+# جوما — مسدودسازی دسترسی مستقیم از وب به فایل‌های داخلی
+# فراخوانی این فایل‌ها از داخل PHP (require/include) همچنان کار می‌کند.
+
+<IfModule mod_authz_core.c>
+    # Apache 2.4 و بالاتر
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    # Apache 2.2 و پایین‌تر
+    Order allow,deny
+    Deny from all
+</IfModule>
+
+# غیرفعال‌کردن فهرست‌شدن محتوای پوشه
+Options -Indexes

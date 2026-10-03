@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>راهنمای نصب سامانهٔ جوما — فاز ۱</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>📘 راهنمای کامل نصب — سامانهٔ جوما، فاز ۱</h1>
+<p>این راهنما برای کسی نوشته شده که <strong>هیچ دانش برنامه‌نویسی ندارد</strong>. هیچ‌جا نیاز به ترمینال، SSH، Composer یا ویرایش کد نیست.</p>
+<p><strong>زمان لازم:</strong> حدود ۲۰ دقیقه.</p>
+<hr>
+<h2>✅ قبل از شروع، این‌ها را آماده داشته باشید</h2>
+<table><thead><tr><th>مورد</th><th>از کجا</th></tr></thead><tbody><tr><td>نام کاربری و رمز cPanel</td><td>از شرکت هاستینگ</td></tr><tr><td>فایل <code>فاز۱_جوما_نسخه۱.۰.zip</code></td><td>همین بسته</td></tr><tr><td>کلید API سامانهٔ SMS.ir</td><td>پنل <a href="https://sms.ir">SMS.ir</a> ← بخش «توسعه‌دهندگان»</td></tr><tr><td>شناسهٔ قالب کد تأیید</td><td>پنل SMS.ir ← ارسال سریع/وب‌سرویس ← قالب‌ها</td></tr><tr><td>یک شمارهٔ موبایل برای مدیر</td><td>شمارهٔ خودتان</td></tr></tbody></table>
+<blockquote>اگر هنوز کلید SMS.ir ندارید، اشکالی ندارد: در مرحلهٔ نصب گزینهٔ «حالت آزمایشی» را انتخاب کنید و بعداً از داخل سامانه آن را فعال کنید.</blockquote>
+<hr>
+<h2>گام ۱ — ساخت دیتابیس</h2>
+<ol><li>وارد <strong>cPanel</strong> شوید.</li><li>در کادر جست‌وجوی بالا بنویسید <code>MySQL</code> و روی <strong>MySQL® Databases</strong> کلیک کنید.</li><li>در بخش <strong>Create New Database</strong> یک نام بنویسید، مثلاً <code>joma</code> و دکمهٔ <strong>Create Database</strong> را بزنید.</li></ol>
+<ul><li>cPanel خودش پیشوند حساب شما را اضافه می‌کند؛ نام نهایی چیزی شبیه <code>username_joma</code> می‌شود. <strong>این نام کامل را یادداشت کنید.</strong></li></ul>
+<ol><li>پایین‌تر، در <strong>MySQL Users → Add New User</strong>:</li></ol>
+<ul><li>نام کاربری: مثلاً <code>jomauser</code></li><li>رمز: روی <strong>Password Generator</strong> بزنید و رمز ساخته‌شده را <strong>در جایی امن یادداشت کنید</strong>.</li><li><strong>Create User</strong> را بزنید.</li></ul>
+<ol><li>پایین‌تر، در <strong>Add User To Database</strong>: کاربر و دیتابیسی که ساختید را انتخاب و <strong>Add</strong> را بزنید.</li><li>در صفحهٔ بعد، تیک <strong>ALL PRIVILEGES</strong> را بزنید و <strong>Make Changes</strong> را کلیک کنید.</li></ol>
+<p>در پایان این گام باید چهار چیز را یادداشت کرده باشید:</p>
+<pre><code>میزبان (Host):        localhost
+نام دیتابیس:          username_joma
+نام کاربری دیتابیس:    username_jomauser
+رمز دیتابیس:          ××××××××</code></pre>
+<hr>
+<h2>گام ۲ — آپلود فایل‌ها</h2>
+<ol><li>فایل ZIP را روی کامپیوتر خود باز (Extract) کنید.</li><li>در cPanel وارد <strong>File Manager</strong> شوید.</li><li>وارد پوشهٔ <strong><code>public_html</code></strong> شوید.</li></ol>
+<ul><li>اگر می‌خواهید سامانه روی خودِ دامنه باشد (<code>https://example.com</code>) → همین‌جا بمانید.</li><li>اگر می‌خواهید در زیرپوشه باشد (<code>https://example.com/joma</code>) → پوشه‌ای به نام <code>joma</code> بسازید و واردش شوید.</li></ul>
+<ol><li>روی <strong>Upload</strong> کلیک کنید و <strong>تمام محتویات پوشهٔ <code>public_html</code> بستهٔ جوما</strong> را آپلود کنید.</li></ol>
+<blockquote><strong>روش ساده‌تر و سریع‌تر:</strong> از پوشهٔ <code>public_html</code> بسته، یک فایل ZIP بسازید، همان یک فایل را آپلود کنید، سپس در File Manager روی آن راست‌کلیک کرده و <strong>Extract</strong> را بزنید. بعد فایل ZIP را حذف کنید.</blockquote>
+<h3>بررسی اینکه درست آپلود شده</h3>
+<p>در File Manager باید این‌ها را ببینید: <code>install.php</code>، <code>login.php</code>، <code>health.php</code> و پوشه‌های <code>admin</code>، <code>reception</code>، <code>therapist</code>، <code>includes</code>، <code>templates</code>، <code>assets</code>، <code>database</code>، <code>storage</code>.</p>
+<blockquote>⚠️ فایل‌های <code>.htaccess</code> مخفی‌اند. در File Manager از منوی <strong>Settings</strong> گزینهٔ <strong>Show Hidden Files (dotfiles)</strong> را تیک بزنید تا دیده شوند. وجود این فایل‌ها برای امنیت ضروری است.</blockquote>
+<h3>تنظیم دسترسی‌ها</h3>
+<p>روی پوشهٔ <code>storage/logs</code> راست‌کلیک کنید ← <strong>Change Permissions</strong> ← مقدار <strong>۷۵۵</strong>. همین مقدار برای پوشهٔ <code>includes</code> هم لازم است. <strong>هرگز ۷۷۷ نگذارید.</strong></p>
+<hr>
+<h2>گام ۳ — اجرای نصب‌کننده</h2>
+<p>در مرورگر، نشانی زیر را باز کنید (به‌جای نشانی نمونه، نشانی خودتان را بگذارید):</p>
+<pre><code>https://example.com/install.php</code></pre>
+<h3>مرحلهٔ ۱ — اتصال دیتابیس</h3>
+<p>فرم را با همان چهار مقداری که در گام ۱ یادداشت کردید پر کنید:</p>
+<table><thead><tr><th>فیلد</th><th>مقدار</th></tr></thead><tbody><tr><td>میزبان دیتابیس</td><td><code>localhost</code></td></tr><tr><td>نام دیتابیس</td><td><code>username_joma</code></td></tr><tr><td>نام کاربری دیتابیس</td><td><code>username_jomauser</code></td></tr><tr><td>رمز عبور دیتابیس</td><td>رمزی که ساختید</td></tr><tr><td>نشانی سامانه</td><td>به‌صورت خودکار پر می‌شود؛ فقط بررسی کنید درست باشد</td></tr></tbody></table>
+<p>سپس بخش <strong>تنظیمات پیامک</strong>:</p>
+<ul><li>اگر کلید SMS.ir دارید → «ارسال واقعی با سامانهٔ SMS.ir» را انتخاب و کلید API و شناسهٔ قالب را وارد کنید.</li><li>اگر ندارید → «حالت آزمایشی» را انتخاب کنید.</li></ul>
+<p>دکمهٔ <strong>«آزمایش اتصال و ادامه»</strong> را بزنید.</p>
+<blockquote>اگر پیام «اتصال به دیتابیس برقرار نشد» دیدید: املای نام دیتابیس و نام کاربری را با پیشوند حساب (<code>username_</code>) دوباره بررسی کنید.  اگر پیام «پوشهٔ includes قابل نوشتن نیست» دیدید: دکمهٔ <strong>«دانلود فایل تنظیمات آماده»</strong> را بزنید، فایل <code>config.php</code> دانلود‌شده را در File Manager داخل پوشهٔ <code>includes</code> آپلود کنید و بعد دکمهٔ «ادامه» را بزنید. (نیازی به باز کردن یا ویرایش آن فایل نیست.)</blockquote>
+<h3>مرحلهٔ ۲ — ساخت جدول‌ها</h3>
+<p>فقط دکمهٔ <strong>«ساخت جدول‌ها»</strong> را بزنید. سامانه خودش ۱۱ جدول و داده‌های اولیه (دلیل‌های مراجعه، دلیل‌های عدم پذیرش و ۵ نوع خدمت) را می‌سازد. جدولی از نتیجه نمایش داده می‌شود.</p>
+<h3>مرحلهٔ ۳ — ساخت حساب مدیر</h3>
+<table><thead><tr><th>فیلد</th><th>توضیح</th></tr></thead><tbody><tr><td>نام و نام خانوادگی</td><td>به فارسی</td></tr><tr><td>شمارهٔ موبایل</td><td>با <code>09</code> شروع شود — کد بازیابی رمز به همین شماره می‌آید</td></tr><tr><td>نام کاربری</td><td>فقط حروف کوچک انگلیسی، عدد و زیرخط؛ مثلاً <code>admin</code></td></tr><tr><td>رمز عبور</td><td>حداقل ۸ نویسه، شامل حرف و عدد</td></tr></tbody></table>
+<p>دکمهٔ <strong>«پایان نصب»</strong> را بزنید. پیام موفقیت و فهرست کارهای باقی‌مانده نمایش داده می‌شود.</p>
+<hr>
+<h2>گام ۴ — نخستین ورود</h2>
+<ol><li>به <code>https://example.com/login.php</code> بروید.</li><li>نام کاربری و رمز مدیر را وارد کنید.</li><li>سامانه شما را به صفحهٔ <strong>تغییر اجباری رمز</strong> می‌برد. رمز جدیدی انتخاب کنید.</li><li>داشبورد مدیر باز می‌شود. 🎉</li></ol>
+<hr>
+<h2>گام ۵ — پاک‌سازی و بررسی سلامت</h2>
+<ol><li><strong>خودآزمون:</strong> در همان مرورگری که با حساب مدیر وارد شده‌اید، نشانی <code>https://example.com/health.php</code> را باز کنید. همهٔ ردیف‌ها باید سبز باشند.</li></ol>
+<ul><li><em>(این صفحه برای افراد واردنشده فقط بین ساعت ۰۱:۰۰ تا ۰۲:۰۰ بامداد به وقت تهران باز می‌شود؛ این یک محدودیت امنیتی عمدی است.)</em></li></ul>
+<ol><li>در File Manager فایل <strong><code>install.php</code></strong> را حذف کنید.</li><li>پس از اطمینان از سلامت، فایل <strong><code>health.php</code></strong> را هم حذف کنید.</li></ol>
+<hr>
+<h2>گام ۶ — ساخت کاربران و شروع کار</h2>
+<ol><li>داشبورد مدیر ← <strong>➕ ایجاد کاربر جدید</strong></li><li>یک <strong>منشی</strong> بسازید؛ نقش «منشی» را تیک بزنید.</li><li>یک <strong>درمانگر</strong> بسازید؛ نقش «درمانگر» را تیک بزنید.</li><li>پس از هر ساخت، کادر زرد <strong>نام کاربری و رمز اولیه</strong> را نشان می‌دهد. آن را یادداشت کنید — <strong>فقط همین یک‌بار نمایش داده می‌شود</strong> و حضوری به شخص تحویل دهید.</li><li>حالا منشی می‌تواند از <strong>➕ ثبت پذیرش جدید</strong> استفاده کند.</li></ol>
+<hr>
+<h2>❓ مشکلات رایج</h2>
+<table><thead><tr><th>نشانه</th><th>علت و راه‌حل</th></tr></thead><tbody><tr><td>«سامانه قبلاً نصب شده است»</td><td>فایل <code>install.lock</code> وجود دارد. اگر واقعاً می‌خواهید از نو نصب کنید، باید آن فایل، فایل <code>includes/config.php</code> و تمام جدول‌های دیتابیس حذف شوند.</td></tr><tr><td>«سامانه هنوز نصب نشده است»</td><td>فایل <code>includes/config.php</code> ساخته نشده؛ <code>install.php</code> را اجرا کنید.</td></tr><tr><td>صفحهٔ سفید</td><td>معمولاً نسخهٔ PHP قدیمی است. در cPanel → <strong>MultiPHP Manager</strong> نسخه را روی ۷.۴ یا بالاتر بگذارید.</td></tr><tr><td>قلم فارسی درست نیست</td><td>پوشهٔ <code>assets/fonts</code> کامل آپلود نشده است.</td></tr><tr><td>کد پیامک نمی‌آید</td><td>از صفحهٔ «تنظیمات پیامک» دکمهٔ «ارسال پیامک آزمایشی» را بزنید. اگر خطا داد، کلید API و شناسهٔ قالب را بررسی کنید. نام پارامتر قالب باید <code>CODE</code> باشد.</td></tr><tr><td>در حالت آزمایشی کد را کجا ببینم؟</td><td>File Manager ← <code>storage/logs/sms_debug.log</code></td></tr><tr><td>صفحهٔ خطا با کد <code>REF-xxxx</code></td><td>جزئیات فنی در <code>storage/logs/error_تاریخ.log</code> است؛ همان کد را به پشتیبانی بدهید.</td></tr><tr><td>هاست من Nginx است</td><td>فایل‌های <code>.htaccess</code> روی Nginx کار نمی‌کنند. از پشتیبانی هاست بخواهید دسترسی مستقیم وب به پوشه‌های <code>includes</code>، <code>database</code>، <code>templates</code> و <code>storage</code> را ببندد.</td></tr></tbody></table>
+<hr>
+<h2>🔄 به‌روزرسانی در آینده</h2>
+<p>برای فازهای بعدی، فایل‌های جدید روی فایل‌های قبلی آپلود می‌شوند؛ فایل <code>includes/config.php</code> شما <strong>دست‌نخورده</strong> باقی می‌ماند. پیش از هر به‌روزرسانی، از دیتابیس (cPanel → phpMyAdmin → Export) و از پوشهٔ سامانه پشتیبان بگیرید.</p>
+</div>
+</body>
+</html>
