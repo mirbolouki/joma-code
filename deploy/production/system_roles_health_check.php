@@ -242,6 +242,15 @@ try {
     $cmdBin = joma_uuid_to_bin(joma_uuid_v4());
     $nowUtc = date('Y-m-d H:i:s.000000');
     
+    // Insert command receipt (Schema constraint: fk_joma_033 references joma_command_receipts.id)
+    $cmdKey = hash('sha256', $acceptId . 'acceptance.accept', true);
+    $cmdPayload = hash('sha256', 'Clinical Acceptance Test', true);
+    $cmdName = 'acceptance.accept';
+    $insCmd = $liveDb->prepare("INSERT INTO joma_command_receipts (id, scope_id, actor_person_id, command_name, idempotency_key, payload_hash, status, completed_at) VALUES (?, ?, ?, ?, ?, ?, 'SUCCEEDED', ?)");
+    $insCmd->bind_param('sssssss', $cmdBin, $scBin, $pBin, $cmdName, $cmdKey, $cmdPayload, $nowUtc);
+    $insCmd->execute();
+    $insCmd->close();
+
     // Insert responsibility acceptance
     $insAcc = $liveDb->prepare("INSERT INTO joma_responsibility_acceptances (id, admission_id, assignment_id, therapist_person_id, actor_person_id, command_id, accepted_at) VALUES (?, ?, ?, ?, ?, ?, ?)");
     $insAcc->bind_param('sssssss', $acceptBin, $adBin, $taBin, $pBin, $pBin, $cmdBin, $nowUtc);
@@ -275,7 +284,7 @@ try {
     $results[] = record_test('درمانگر بالینی (Therapist)', 'تایید پذیرش بالینی و افتتاح اتمیک پرونده (Clinical Case)', true, "پرونده بالینی به شماره {$testCaseId} متصل به رابطه درمانی افتتاح گردید.");
 } catch (Throwable $e) {
     $liveDb->rollback();
-    $results[] = record_test('درمانگر بالینی (Therapist)', 'تایید پذیرش بالینی و افتتاح اتمیک پرونده (Clinical Case)', false, $e->getMessage(), 'حذف ستون غیرموجود scope_id از INSERT INTO joma_clinical_cases');
+    $results[] = record_test('درمانگر بالینی (Therapist)', 'تایید پذیرش بالینی و افتتاح اتمیک پرونده (Clinical Case)', false, $e->getMessage(), 'ثبت پیشین رسید فرمان در joma_command_receipts جهت تامین قید fk_joma_033');
 }
 
 // 3.2: Session Clock In/Out & Fee Calculation
@@ -363,6 +372,15 @@ try {
     $pubCmdBin = joma_uuid_to_bin(joma_uuid_v4());
     $nowPub = date('Y-m-d H:i:s.000000');
 
+    // Insert command receipt for publication (Schema constraint: fk_joma_137 references joma_command_receipts.id)
+    $pubKey = hash('sha256', $pubId . 'publication.publish_report', true);
+    $pubPayload = hash('sha256', 'Report Publication Test', true);
+    $pubCmdName = 'publication.publish_report';
+    $insPubCmd = $liveDb->prepare("INSERT INTO joma_command_receipts (id, scope_id, actor_person_id, command_name, idempotency_key, payload_hash, status, completed_at) VALUES (?, ?, ?, ?, ?, ?, 'SUCCEEDED', ?)");
+    $insPubCmd->bind_param('sssssss', $pubCmdBin, $scBin, $pBin, $pubCmdName, $pubKey, $pubPayload, $nowPub);
+    $insPubCmd->execute();
+    $insPubCmd->close();
+
     $insPub = $liveDb->prepare("INSERT INTO joma_report_publications (id, report_version_id, case_id, published_by_person_id, channel, published_at, command_id) VALUES (?, ?, ?, ?, 'PORTAL', ?, ?)");
     $insPub->bind_param('ssssss', $pubBin, $rvBin, $caseBin, $pBin, $nowPub, $pubCmdBin);
     $insPub->execute();
@@ -370,7 +388,7 @@ try {
 
     $audId = joma_uuid_v4();
     $audBin = joma_uuid_to_bin($audId);
-    $insAud = $liveDb->prepare("INSERT INTO joma_report_publication_audiences (id, report_publication_id, recipient_person_id, access_subject_person_id, scope_id, basis_kind) VALUES (?, ?, ?, ?, ?, 'PATIENT')");
+    $insAud = $liveDb->prepare("INSERT INTO joma_report_publication_audiences (id, publication_id, recipient_person_id, access_subject_person_id, scope_id, basis_kind) VALUES (?, ?, ?, ?, ?, 'DIRECT_PERSON')");
     $insAud->bind_param('sssss', $audBin, $pubBin, $cpBin, $cpBin, $scBin);
     $insAud->execute();
     $insAud->close();
@@ -379,7 +397,7 @@ try {
     $results[] = record_test('روان‌سنج و وب‌هوک (Psychometrist / Webhook)', 'دریافت وب‌هوک نتایج آزمون از test.mirbolouki.com و الصاق به پرونده', true, 'کارنامه آزمون با کلیدهای اجباری report_id و joma_assessment_reports به پرونده متصل و با موفقیت ثبت شد.');
 } catch (Throwable $e) {
     $liveDb->rollback();
-    $results[] = record_test('روان‌سنج و وب‌هوک (Psychometrist / Webhook)', 'دریافت وب‌هوک نتایج آزمون از test.mirbolouki.com و الصاق به پرونده', false, $e->getMessage(), 'تامین والد joma_assessment_reports برای joma_report_versions');
+    $results[] = record_test('روان‌سنج و وب‌هوک (Psychometrist / Webhook)', 'دریافت وب‌هوک نتایج آزمون از test.mirbolouki.com و الصاق به پرونده', false, $e->getMessage(), 'تامین والد joma_assessment_reports و تطبیق ستون publication_id با قید ck_report_publication_audiences_1');
 }
 
 // -------------------------------------------------------------
@@ -390,7 +408,7 @@ try {
     $stmtPrt = $liveDb->prepare("
         SELECT rv.id, rv.report_text, rv.status, rp.published_at
         FROM joma_report_publications rp
-        JOIN joma_report_publication_audiences rpa ON rpa.report_publication_id = rp.id
+        JOIN joma_report_publication_audiences rpa ON rpa.publication_id = rp.id
         JOIN joma_report_versions rv ON rv.id = rp.report_version_id
         WHERE rpa.recipient_person_id = ? AND rp.channel = 'PORTAL'
         LIMIT 1
@@ -406,7 +424,7 @@ try {
 
     $results[] = record_test('مراجع و پورتال (Patient)', 'احراز هویت پیامکی مراجع و مشاهده کارنامه آزمون منتشرشده', true, 'مراجع پس از گیت امنیتی وارد پورتال شده و کارنامه رسمی آزمون روان‌سنجی خود را مشاهده کرد.');
 } catch (Throwable $e) {
-    $results[] = record_test('مراجع و پورتال (Patient)', 'احراز هویت پیامکی مراجع و مشاهده کارنامه آزمون منتشرشده', false, $e->getMessage(), 'بررسی ارتباط جدول joma_report_publication_audiences با پورتال');
+    $results[] = record_test('مراجع و پورتال (Patient)', 'احراز هویت پیامکی مراجع و مشاهده کارنامه آزمون منتشرشده', false, $e->getMessage(), 'اتصال صحیح کلید publication_id به rp.id در جدول joma_report_publication_audiences');
 }
 
 $allPass = true;
