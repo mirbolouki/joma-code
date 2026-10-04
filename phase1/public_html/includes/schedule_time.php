@@ -228,3 +228,58 @@ function local_date_range($from_date, $to_date)
     }
     return $out;
 }
+
+/* ═════════════ انتخاب تاریخ بدون تایپ ═════════════
+ *  قاعدهٔ رابط کاربری: کاربر هیچ تاریخی را تایپ نمی‌کند؛ فقط از فهرست
+ *  انتخاب می‌کند. مقدار گزینه، تاریخ شمسی با ارقام لاتین است تا تابع
+ *  jalali_input_to_gregorian() بدون تغییر همچنان کار کند.
+ */
+
+/** میلادی Y-m-d → شمسی «1405/07/12» با ارقام لاتین (مقدار فنی گزینه) */
+function jalali_value($date)
+{
+    if (!$date) {
+        return '';
+    }
+    $p = explode('-', substr($date, 0, 10));
+    if (count($p) !== 3) {
+        return '';
+    }
+    $j = gregorian_to_jalali((int)$p[0], (int)$p[1], (int)$p[2]);
+    return sprintf('%04d/%02d/%02d', $j[0], $j[1], $j[2]);
+}
+
+/** میلادی Y-m-d → «پنجشنبه ۱۲ مهر ۱۴۰۵» (برچسب خواندنی گزینه) */
+function jalali_long_label($date)
+{
+    $p = explode('-', substr($date, 0, 10));
+    if (count($p) !== 3) {
+        return '';
+    }
+    $j = gregorian_to_jalali((int)$p[0], (int)$p[1], (int)$p[2]);
+    $weekday = jalali_weekday_name(date('l', mktime(12, 0, 0, (int)$p[1], (int)$p[2], (int)$p[0])));
+    return $weekday . ' ' . to_persian_digits($j[2]) . ' ' . jalali_month_name($j[1])
+         . ' ' . to_persian_digits($j[0]);
+}
+
+/**
+ * فهرست گزینه‌های تاریخ برای یک <select>.
+ * خروجی: آرایه‌ای از array('value','gregorian','label')
+ */
+function jalali_date_choices($from_date, $days_count)
+{
+    $out = array();
+    $d = $from_date;
+    $today = clinic_today();
+    for ($i = 0; $i <= (int)$days_count; $i++) {
+        $label = jalali_long_label($d);
+        if ($d === $today) {
+            $label .= ' (امروز)';
+        } elseif ($d === date_add_days($today, 1)) {
+            $label .= ' (فردا)';
+        }
+        $out[] = array('value' => jalali_value($d), 'gregorian' => $d, 'label' => $label);
+        $d = date_add_days($d, 1);
+    }
+    return $out;
+}

@@ -25,17 +25,18 @@ if (!phase2_ready($db)) {
 $me = (int)$_SESSION['person_id'];
 
 $today = clinic_today();
-$from_j = isset($_GET['from']) ? trim((string)$_GET['from']) : gregorian_to_jalali_input($today);
-$to_j   = isset($_GET['to'])   ? trim((string)$_GET['to'])   : gregorian_to_jalali_input(date_add_days($today, 7));
+$from_j = isset($_GET['from']) ? trim((string)$_GET['from']) : jalali_value($today);
+$to_j   = isset($_GET['to'])   ? trim((string)$_GET['to'])   : jalali_value(date_add_days($today, 7));
+$date_choices = jalali_date_choices(date_add_days($today, -60), 120);
 
 $from_g = jalali_input_to_gregorian($from_j);
 $to_g   = jalali_input_to_gregorian($to_j);
 $notice = '';
-if ($from_g === null) { $from_g = $today; $from_j = gregorian_to_jalali_input($today); }
-if ($to_g === null || $to_g < $from_g) { $to_g = date_add_days($from_g, 7); $to_j = gregorian_to_jalali_input($to_g); }
+if ($from_g === null) { $from_g = $today; $from_j = jalali_value($today); }
+if ($to_g === null || $to_g < $from_g) { $to_g = date_add_days($from_g, 7); $to_j = jalali_value($to_g); }
 if (date_diff_days($from_g, $to_g) > 60) {
     $to_g = date_add_days($from_g, 60);
-    $to_j = gregorian_to_jalali_input($to_g);
+    $to_j = jalali_value($to_g);
     $notice = 'بازهٔ نمایش به ۶۰ روز محدود شد.';
 }
 
@@ -82,9 +83,23 @@ require __DIR__ . '/../templates/header.php';
   <div class="card-body">
     <form method="get" action="calendar.php" class="form-inline">
       <label for="from">از تاریخ</label>
-      <input type="text" dir="ltr" id="from" name="from" value="<?php echo e($from_j); ?>">
+      <select id="from" name="from">
+        <?php foreach ($date_choices as $dc) { ?>
+          <option value="<?php echo e($dc['value']); ?>"
+            <?php echo ((string)$from_j === $dc['value']) ? 'selected' : ''; ?>>
+            <?php echo e($dc['label']); ?>
+          </option>
+        <?php } ?>
+      </select>
       <label for="to">تا تاریخ</label>
-      <input type="text" dir="ltr" id="to" name="to" value="<?php echo e($to_j); ?>">
+      <select id="to" name="to">
+        <?php foreach ($date_choices as $dc) { ?>
+          <option value="<?php echo e($dc['value']); ?>"
+            <?php echo ((string)$to_j === $dc['value']) ? 'selected' : ''; ?>>
+            <?php echo e($dc['label']); ?>
+          </option>
+        <?php } ?>
+      </select>
       <button type="submit" class="btn btn-primary">نمایش</button>
       <a class="btn btn-secondary" href="absences.php">🏖️ اعلام عدم حضور</a>
     </form>
@@ -98,7 +113,7 @@ require __DIR__ . '/../templates/header.php';
 <?php foreach ($by_day as $day => $items) { ?>
 <div class="card day-card">
   <div class="card-header">
-    <?php echo e(to_persian_digits(gregorian_to_jalali_input($day))); ?>
+    <?php echo e(jalali_long_label($day)); ?>
     — <?php echo to_persian_digits(count($items)); ?> نوبت
   </div>
   <div class="card-body">

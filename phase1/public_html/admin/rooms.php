@@ -132,9 +132,14 @@ require __DIR__ . '/../templates/header.php';
 
       <div class="form-row">
         <label for="capacity">ظرفیت (اطلاعاتی)</label>
-        <input type="text" inputmode="numeric" id="capacity" name="capacity"
-               value="<?php echo e($form['capacity']); ?>"
-               class="<?php echo isset($errors['capacity']) ? 'is-invalid' : ''; ?>">
+        <select id="capacity" name="capacity"
+                class="<?php echo isset($errors['capacity']) ? 'is-invalid' : ''; ?>">
+          <?php for ($c = 1; $c <= 20; $c++) { ?>
+            <option value="<?php echo $c; ?>"
+              <?php echo ((string)$form['capacity'] === (string)$c) ? 'selected' : ''; ?>>
+              <?php echo to_persian_digits($c); ?> نفر</option>
+          <?php } ?>
+        </select>
         <?php if (isset($errors['capacity'])) { ?><span class="field-error"><?php echo e($errors['capacity']); ?></span><?php } ?>
       </div>
 

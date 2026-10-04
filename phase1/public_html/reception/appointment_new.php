@@ -30,6 +30,8 @@ $warnings = array();
 $results = array();
 $admission = null;
 $slots = array();
+$slots_reason = '';
+$date_choices = array();
 $hold = null;
 $hold_price_rial = null;
 
@@ -42,6 +44,7 @@ $form = array(
 
 try {
     $rooms = rooms_fetch_active($db);
+    $date_choices = jalali_date_choices(clinic_today(), BOOKING_HORIZON_DAYS);
 } catch (Exception $ex) {
     $ref = log_system_error('APPT_ROOMS', $ex);
     render_error_page($ref);
@@ -103,7 +106,14 @@ try {
             throw new Exception('این پذیرش رد شده است؛ ابتدا باید ارجاع مجدد شود.');
         }
         if ($form['jalali_date'] === '') {
-            $form['jalali_date'] = gregorian_to_jalali_input(clinic_today());
+            /* پیش‌فرض هوشمند: اگر ساعت کاری امروز برای این مدت جلسه تمام شده،
+               مستقیماً «فردا» پیشنهاد می‌شود تا کاربر با فهرست خالی روبه‌رو نشود. */
+            $default_date = clinic_today();
+            $last_start = CLINIC_DAY_END_HOUR * 60 - (int)$admission['default_duration_minutes'];
+            if (clock_to_minutes(clinic_now_time()) > $last_start) {
+                $default_date = date_add_days($default_date, 1);
+            }
+            $form['jalali_date'] = jalali_value($default_date);
         }
     }
 
@@ -115,6 +125,10 @@ try {
         $duration = (int)$admission['default_duration_minutes'];
         $slots = bookable_slots($db, (int)$admission['referred_therapist_person_id'],
             $local_date, $duration);
+        if (count($slots) === 0) {
+            $slots_reason = slots_empty_reason($db,
+                (int)$admission['referred_therapist_person_id'], $local_date, $duration);
+        }
     }
 
     /* ── گام ۴: ساخت قفل موقت ────────────────────────────────────── */
@@ -303,9 +317,15 @@ require __DIR__ . '/../templates/header.php';
       <input type="hidden" name="action" value="slots">
       <input type="hidden" name="admission_id" value="<?php echo e($admission['id']); ?>">
       <input type="hidden" name="mobile_number" value="<?php echo e($form['mobile_number']); ?>">
-      <label for="jalali_date">تاریخ (شمسی)</label>
-      <input type="text" dir="ltr" id="jalali_date" name="jalali_date"
-             value="<?php echo e($form['jalali_date']); ?>" placeholder="1404/07/12" required>
+      <label for="jalali_date">تاریخ</label>
+      <select id="jalali_date" name="jalali_date" required>
+        <?php foreach ($date_choices as $dc) { ?>
+          <option value="<?php echo e($dc['value']); ?>"
+            <?php echo ($form['jalali_date'] === $dc['value']) ? 'selected' : ''; ?>>
+            <?php echo e($dc['label']); ?>
+          </option>
+        <?php } ?>
+      </select>
       <label for="room_id">اتاق</label>
       <select id="room_id" name="room_id" required>
         <option value="">— انتخاب اتاق —</option>
@@ -330,11 +350,22 @@ require __DIR__ . '/../templates/header.php';
 
 <?php if ($admission && ($action === 'slots' || ($action === 'hold' && $general_error !== ''))) { ?>
 <div class="card">
-  <div class="card-header">زمان‌های آزاد <?php echo e(to_persian_digits($form['jalali_date'])); ?></div>
+  <div class="card-header">زمان‌های آزاد —
+    <?php
+      $chosen_label = to_persian_digits($form['jalali_date']);
+      foreach ($date_choices as $dc) {
+          if ($dc['value'] === $form['jalali_date']) { $chosen_label = $dc['label']; }
+      }
+      echo e($chosen_label);
+    ?>
+  </div>
   <div class="card-body">
     <?php if (count($slots) === 0) { ?>
-      <p class="empty-state">در این تاریخ زمان آزادی وجود ندارد
-        (ممکن است درمانگر مرخصی باشد یا همهٔ ساعت‌ها پر شده باشند).</p>
+      <div class="alert alert-warning">
+        <strong>در این تاریخ زمان آزادی نیست.</strong><br>
+        <?php echo e($slots_reason !== '' ? $slots_reason
+              : 'لطفاً تاریخ دیگری را از فهرست انتخاب کنید.'); ?>
+      </div>
     <?php } else { ?>
       <div class="slot-grid">
         <?php foreach ($slots as $slot) { ?>

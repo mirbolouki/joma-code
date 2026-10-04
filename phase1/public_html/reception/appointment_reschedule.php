@@ -33,6 +33,7 @@ try {
     $appt = appointment_find_by_public_id($db, $public_id);
     $rooms = rooms_fetch_active($db);
     $cancel_reasons = lookup_items_fetch_active($db, 'cancellation_reason');
+    $date_choices = jalali_date_choices(clinic_today(), BOOKING_HORIZON_DAYS);
 } catch (Exception $ex) {
     $ref = log_system_error('RESCHEDULE_LOAD', $ex);
     render_error_page($ref);
@@ -47,8 +48,9 @@ if (!$appt) {
     exit;
 }
 
+$appt_local_date = substr(utc_to_local($appt['appointment_start_utc']), 0, 10);
 $form = array(
-    'jalali_date' => gregorian_to_jalali_input(substr(utc_to_local($appt['appointment_start_utc']), 0, 10)),
+    'jalali_date' => jalali_value($appt_local_date < clinic_today() ? clinic_today() : $appt_local_date),
     'room_id'     => $appt['room_id'],
     'reason_id'   => '',
 );
@@ -68,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $local_date = jalali_input_to_gregorian($form['jalali_date']);
         if ($local_date === null) {
-            throw new Exception('تاریخ را به قالب ۱۴۰۴/۰۷/۱۲ وارد کنید.');
+            throw new Exception('تاریخ انتخاب‌شده معتبر نیست.');
         }
 
         if ($action === 'slots') {
@@ -133,9 +135,15 @@ require __DIR__ . '/../templates/header.php';
       <?php echo csrf_field(); ?>
       <input type="hidden" name="action" value="slots">
       <input type="hidden" name="appointment_public_id" value="<?php echo e($appt['public_id']); ?>">
-      <label for="jalali_date">تاریخ (شمسی)</label>
-      <input type="text" dir="ltr" id="jalali_date" name="jalali_date"
-             value="<?php echo e($form['jalali_date']); ?>" required>
+      <label for="jalali_date">تاریخ</label>
+      <select id="jalali_date" name="jalali_date">
+        <?php foreach ($date_choices as $dc) { ?>
+          <option value="<?php echo e($dc['value']); ?>"
+            <?php echo ((string)$form['jalali_date'] === $dc['value']) ? 'selected' : ''; ?>>
+            <?php echo e($dc['label']); ?>
+          </option>
+        <?php } ?>
+      </select>
       <label for="room_id">اتاق</label>
       <select id="room_id" name="room_id" required>
         <?php foreach ($rooms as $room) { ?>
@@ -176,8 +184,12 @@ require __DIR__ . '/../templates/header.php';
       </div>
       <p class="form-hint">با انتخاب زمان تازه، نوبت قبلی لغو و نوبت تازه در همان لحظه ثبت می‌شود.
         اگر ثبت نوبت تازه ممکن نباشد، هیچ تغییری انجام نخواهد شد.</p>
-    <?php } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') { ?>
-      <p class="empty-state">در این تاریخ زمان آزادی وجود ندارد.</p>
+    <?php } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $general_error === '') { ?>
+      <div class="alert alert-warning">
+        <strong>در این تاریخ زمان آزادی نیست.</strong><br>
+        <?php echo e(slots_empty_reason($db, (int)$appt['therapist_person_id'],
+              jalali_input_to_gregorian($form['jalali_date']), (int)$appt['duration_minutes'])); ?>
+      </div>
     <?php } ?>
   </div>
 </div>

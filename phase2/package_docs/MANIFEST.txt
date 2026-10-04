@@ -1,4 +1,4 @@
-فهرست فایل‌های بستهٔ ارتقا به فاز ۲ — نسخهٔ ۲.۰.۰
+فهرست فایل‌های بستهٔ ارتقا به فاز ۲ — نسخهٔ ۲.۰.۱
 تاریخ ساخت: ۱۴۰۵/۰۷/۱۲ (2026-10-04)
 
 path                                                                bytes  sha256
@@ -12,7 +12,7 @@ public_html/logout.php                                                585  da8e7
 public_html/role_select.php                                          3632  38e7e76bfbfb2b112e7c1557441a543498c100376e8471bd2ca249421aaf07ec
 public_html/upgrade_phase2.php                                      15071  10ec0d2417d720289d7ee3040f6f0e83adb8da5beeb6d059879ae8887c3a6e44
 public_html/admin/index.php                                          3809  459f9140396a8396d799236f6f1876dce317277a6a61e440b5042fa4bb964897
-public_html/admin/rooms.php                                          9523  0c65a6b14de1776275952d921b9ed84e54412bc9f9d19bb83c66f6ce0e70792f
+public_html/admin/rooms.php                                          9727  4cd4c40fc30f64d1b951051ecd0885a60e01ee345eafa2160993d769e3cb9cf5
 public_html/admin/sms_settings.php                                   8986  c616b17e94790540c02ea8bbec87002c1630558dae8ab31ae989f55f764ba38d
 public_html/admin/tariffs.php                                       10340  f54bf439145838bcfca03f7a6345158a500715fd8256b72d48fb364e9a0acd39
 public_html/admin/user_create.php                                   12864  829822b2b21acc309e77e8c2048a6b47d9d8900d27a06f95bda585ee0836162e
@@ -30,7 +30,7 @@ public_html/database/phase2_schema.sql                               7369  e6a16
 public_html/includes/.htaccess                                        520  bde7bf99d49dd0609aaec4aee65f2152c855ca7d886a431ec760bee8fc524c0b
 public_html/includes/account_functions.php                           4765  1e9e8fb8e2daaa2e6508ce47aa18969e2b9bbe7a7d047de5b8588cad5203d574
 public_html/includes/admission_functions.php                         9250  7ecbb4de9d1d3a9c6b3ceaac166eef935fa880393044b89ea771dc3ac0a17f4b
-public_html/includes/appointment_functions.php                      41143  c72546835d95c5db8545c3b0568e2ec637f88e455015a51bd6ca6739ff82e291
+public_html/includes/appointment_functions.php                      43251  8263248378e593923221239d054ee5d91f9b4973b4440bab0861083c28864ebf
 public_html/includes/audit_functions.php                             2343  cfea3b9a1025215ad62171c36b88738981be170ec416adfab15e5bc0ed4587c3
 public_html/includes/auth.php                                        8958  9c04ac76ec0e6a3e483af603107caeb65204454c021485c1cc4d72b69071d64e
 public_html/includes/bootstrap.php                                   2669  f0378da91613e9a408e48264f759a6d6f7900a21aeb8c7ecd866077c572307fe
@@ -43,15 +43,15 @@ public_html/includes/lookup_functions.php                            2351  a00ff
 public_html/includes/otp_functions.php                               7884  ff5424a7547496acd8e21b379fc6ed8e4fdd0b56cf70a0b5e408984453902e44
 public_html/includes/person_functions.php                            2276  9a63f3b1e0282e67cb95d139980a9bd4e8a098e892f21b0c253471ff7125bd20
 public_html/includes/room_functions.php                              5842  b8276de87a6dbada9edec4835653830ffb0f7f06a8c61e26950ab95f557cfb72
-public_html/includes/schedule_time.php                               7892  d7b0e4a5a0575ce4e23767566298664c0731323349ce4d045c9e5f577a68e083
+public_html/includes/schedule_time.php                               9989  7587a16f41ce784bdd76002aef78eb4798e3a308d190ebad8ed4943c2145f1af
 public_html/includes/sms.php                                         8396  13be427d4ed1bb98db15d7565ee1c7e17637d3e8fb4df43d7185acc41785dadb
 public_html/includes/staff_functions.php                             4342  eaf2c3befd106042c38492f64e65173811d3870b46401ed51299857e956decfa
 public_html/includes/tariff_functions.php                            7923  1fd4198b8848c0d51cfbacf2765f79a5ca3520f93ed72d55e1a752bf2a9b0117
 public_html/includes/validate.php                                    4619  1ba9188b511fc9f3b861cba3fb5dca38417badd28660058b461dff091485e80c
 public_html/reception/admission_new.php                             16298  6e16b61b40a748d94561e797425ba0493b528e7bfb6f7e9df3a72ce0bd92df05
-public_html/reception/appointment_new.php                           17769  549e7ccf4f5801cec7089fe6b725dfad85aa0afd56794d7bb7b2a3ee274f4242
-public_html/reception/appointment_reschedule.php                     8992  ce89f3411e17c4d96e620fd6bcac07efca5858f1cf91eae826e4f491baa546c7
-public_html/reception/appointments.php                              11720  9bf2d764179f1002355dde2ae36b420720bef8a8eb4a5f7c138d5858319b4a68
+public_html/reception/appointment_new.php                           19079  70ec93d53c10ba95153cb2e0f4a903d7c152d1eaaa885b798f9d6d4f8282d4bd
+public_html/reception/appointment_reschedule.php                     9575  b29fe6d6ebe8d83afd3fe9cd595d9b901ac23c90b111eba7e3533c4fb3ca8972
+public_html/reception/appointments.php                              12160  a11aef1604221bfd5b8bab3dd69e5b11b62a0f57d7abf65b29c93189079ee98a
 public_html/reception/index.php                                      6406  6a085a22550d99a6594ba9f3f07d907876cede740f464ce23e6dd63e232a9f5c
 public_html/storage/logs/.htaccess                                    520  bde7bf99d49dd0609aaec4aee65f2152c855ca7d886a431ec760bee8fc524c0b
 public_html/templates/.htaccess                                       520  bde7bf99d49dd0609aaec4aee65f2152c855ca7d886a431ec760bee8fc524c0b
@@ -61,15 +61,17 @@ public_html/templates/error_generic.php                              1514  83b66
 public_html/templates/footer.php                                      839  162d9e1600dd227ef2451bffb6fb3186f9bdf6ebeb2088aca40ae46169d8c6d6
 public_html/templates/header.php                                     3379  6f232b61d2609dbd1d14b78801b25a0a1635aed4309787936c6ff905c2bc61e8
 public_html/templates/sidebar.php                                    4909  5368a5fe4fa114d0ec2e330be87e60931cbb03165fef32b90874433aca78bfc5
-public_html/therapist/absences.php                                   8707  2bb51ff808aa7a72f9646a21dc33fb0745796aad67e1752a50d6b8b3be89c9c0
+public_html/therapist/absences.php                                   9141  445ad5bc74e22ca55fc1131d58dc34ba1ff8b440a2d5697dc9406aa0a060b05a
 public_html/therapist/admission_review.php                           7781  7c0308ba82fb1a04ca97562f506bdd8fd9cae5cff931ec94a7b9cf814903a8cc
-public_html/therapist/calendar.php                                   6025  89365d6f9f7f0ca95723b8ad9892159a3c48fff68a6bac383c8e0e08a4b1cea0
+public_html/therapist/calendar.php                                   6465  75d4be1f5c869d65064e2ae195422fa7c89a7d88388079c2e10b3598face5e3e
 public_html/therapist/index.php                                      4003  9cae1e0ec19988c79fd14e265a8c23896cefa25e2044d6c5450a55d4f69c1a46
 public_html/therapist/tariffs_view.php                               3253  083a20c35647956ddb602fefb874550d9c4fa383e9c89d527d4fc15b85e65863
 مستندات/INSTALLATION_GUIDE_PHASE2_FA.html                           17114  02e52d07ebb17d55b426832765eab9f36a8cf8b2945b3ed55b19a466896df6dd
-مستندات/PHASE2_FINAL_DECISIONS.md                                   13601  c359b09a0ad2d8320b6591f62c9c9a9805a535c39bdb30f32f93fea8e4aea487
-مستندات/PHASE2_TEST_REPORT_FA.md                                    10411  45b965803ed61d5cb7455541ea1dc956a000f6c564900b2f7d19d997acd9a6b7
+مستندات/PHASE2_COMPLETION_REPORT_FA.html                            34655  3d3c19fef966c8ad32c795774435e84442ffafaa69a90bd604c6ff6363b651ea
+مستندات/PHASE2_COMPLETION_REPORT_FA.md                              27014  4037a5dbbe831bc60e7f372492c3f61cfeadea4f9b632b416e0c0da5f4930fd2
+مستندات/PHASE2_FINAL_DECISIONS.md                                   13601  0a6e9a3b6b155b5fec6e0f158a3bea8575537dca7d9e0a6eaeb230721151111f
+مستندات/PHASE2_TEST_REPORT_FA.md                                    13016  2de5819d28d45e230693bf6a835d90ba331cce8a7d5e51db1267b450562e4858
 مستندات/README_FA.md                                                 1515  20f3c8ec6f2143d3b961b0c1fe3b97cf553a0fe8c5bea4d25383d4c9e9f78552
-مستندات/VERSION.txt                                                   790  61e2c9a96786a3ad97a845c75483cd7c1bb40d05017a0f665096239ca2559472
+مستندات/VERSION.txt                                                  1985  dd5f6c2c7d1890bfc17fc3d1194bc3260569c1c0eb48c7e1579719f0e6fe88c0
 --------------------------------------------------------------------------------------------------------------------------------------------
-تعداد فایل: 68    مجموع حجم: 888325 بایت (0.85 مگابایت)
+تعداد فایل: 70    مجموع حجم: 961410 بایت (0.92 مگابایت)

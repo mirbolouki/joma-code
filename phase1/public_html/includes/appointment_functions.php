@@ -959,3 +959,43 @@ function appointments_count_today($db, $therapist_person_id = null)
     $row = db_select_one($db, $sql, $types, $params);
     return $row ? (int)$row['cnt'] : 0;
 }
+
+/**
+ * چرا در این روز زمان آزادی نیست؟ (پیام دقیق به‌جای جملهٔ مبهم)
+ * فقط زمانی صدا زده می‌شود که bookable_slots() آرایهٔ خالی برگردانده باشد.
+ */
+function slots_empty_reason($db, $therapist_person_id, $local_date, $duration_minutes)
+{
+    $today = clinic_today();
+    $duration_minutes = (int)$duration_minutes;
+
+    if ($local_date < $today) {
+        return 'این تاریخ گذشته است؛ تاریخ دیگری انتخاب کنید.';
+    }
+    if (date_diff_days($today, $local_date) > BOOKING_HORIZON_DAYS) {
+        return 'حداکثر تا ' . to_persian_digits(BOOKING_HORIZON_DAYS)
+             . ' روز آینده می‌توان نوبت ثبت کرد؛ تاریخ نزدیک‌تری انتخاب کنید.';
+    }
+
+    $absence = absence_rule_matching($db, $therapist_person_id, $local_date);
+    if ($absence) {
+        return 'درمانگر در این تاریخ حضور ندارد'
+             . (!empty($absence['reason_label']) ? ' (' . $absence['reason_label'] . ')' : '')
+             . '؛ تاریخ دیگری انتخاب کنید.';
+    }
+
+    /* امروز است و ساعت کاری عملاً تمام شده */
+    if ($local_date === $today) {
+        $now_min = clock_to_minutes(clinic_now_time());
+        $last_start = CLINIC_DAY_END_HOUR * 60 - $duration_minutes;
+        if ($now_min > $last_start) {
+            return 'ساعات کاری امروز برای یک جلسهٔ '
+                 . to_persian_digits($duration_minutes) . ' دقیقه‌ای به پایان رسیده است '
+                 . '(آخرین شروع ممکن: ' . to_persian_digits(minutes_to_clock($last_start))
+                 . ' و اکنون ' . to_persian_digits(clinic_now_time())
+                 . ' است). لطفاً «فردا» یا روزی دیگر را انتخاب کنید.';
+        }
+    }
+
+    return 'همهٔ ساعت‌های کاری این روز پر شده یا هم‌اکنون توسط کاربر دیگری در حال رزرو است.';
+}

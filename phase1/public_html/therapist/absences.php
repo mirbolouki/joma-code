@@ -23,10 +23,12 @@ $actor_role_code = $_SESSION['active_role_code'];
 
 $general_error = '';
 $affected = array();
-$form = array('from' => '', 'to' => '', 'reason_id' => '', 'repeating' => '');
+$form = array('from' => jalali_value(clinic_today()), 'to' => jalali_value(clinic_today()),
+              'reason_id' => '', 'repeating' => '');
 
 try {
     $reasons = lookup_items_fetch_active($db, 'absence_reason');
+    $date_choices = jalali_date_choices(clinic_today(), 365);
 } catch (Exception $ex) {
     $ref = log_system_error('ABSENCE_REASONS', $ex);
     render_error_page($ref);
@@ -44,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $from_g = jalali_input_to_gregorian($form['from']);
             $to_g = jalali_input_to_gregorian($form['to']);
             if ($from_g === null || $to_g === null) {
-                throw new Exception('تاریخ‌ها را به قالب ۱۴۰۴/۰۷/۱۲ وارد کنید.');
+                throw new Exception('تاریخ‌های انتخاب‌شده معتبر نیستند.');
             }
             $out = absence_rule_create($db, $me, $from_g, $to_g,
                 ($form['reason_id'] !== '' ? (int)$form['reason_id'] : null),
@@ -118,13 +120,23 @@ require __DIR__ . '/../templates/header.php';
       <input type="hidden" name="action" value="create">
       <div class="form-row">
         <label for="from">از تاریخ <span class="required-star">*</span></label>
-        <input type="text" dir="ltr" id="from" name="from" value="<?php echo e($form['from']); ?>"
-               placeholder="1404/07/12" required>
+        <select id="from" name="from" required>
+          <?php foreach ($date_choices as $dc) { ?>
+            <option value="<?php echo e($dc['value']); ?>"
+              <?php echo ($form['from'] === $dc['value']) ? 'selected' : ''; ?>>
+              <?php echo e($dc['label']); ?></option>
+          <?php } ?>
+        </select>
       </div>
       <div class="form-row">
         <label for="to">تا تاریخ <span class="required-star">*</span></label>
-        <input type="text" dir="ltr" id="to" name="to" value="<?php echo e($form['to']); ?>"
-               placeholder="1404/07/15" required>
+        <select id="to" name="to" required>
+          <?php foreach ($date_choices as $dc) { ?>
+            <option value="<?php echo e($dc['value']); ?>"
+              <?php echo ($form['to'] === $dc['value']) ? 'selected' : ''; ?>>
+              <?php echo e($dc['label']); ?></option>
+          <?php } ?>
+        </select>
       </div>
       <div class="form-row">
         <label for="reason_id">دلیل</label>
@@ -163,8 +175,8 @@ require __DIR__ . '/../templates/header.php';
           <tbody>
           <?php foreach ($rules as $r) { ?>
             <tr>
-              <td data-label="از"><?php echo e(to_persian_digits(gregorian_to_jalali_input($r['start_date']))); ?></td>
-              <td data-label="تا"><?php echo e(to_persian_digits(gregorian_to_jalali_input($r['end_date']))); ?></td>
+              <td data-label="از"><?php echo e(jalali_long_label($r['start_date'])); ?></td>
+              <td data-label="تا"><?php echo e(jalali_long_label($r['end_date'])); ?></td>
               <td data-label="دلیل"><?php echo $r['reason_label'] !== null ? e($r['reason_label']) : '—'; ?></td>
               <td data-label="تکرار">
                 <span class="badge <?php echo (int)$r['is_repeating'] === 1 ? 'badge-primary' : 'badge-muted'; ?>">
