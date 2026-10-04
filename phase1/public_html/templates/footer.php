@@ -2,18 +2,21 @@
 /* جوما — پاورقی مشترک */
 $asset_base = defined('APP_BASE_URL') ? APP_BASE_URL : '';
 if (!isset($layout)) { $layout = 'app'; }
+$joma_version_label = (isset($GLOBALS['db']) && function_exists('phase2_ready') && phase2_ready($GLOBALS['db']))
+    ? 'نسخهٔ ۲.۰ (فاز ۲ — نوبت‌دهی و تقویم)'
+    : 'نسخهٔ ۱.۰ (فاز ۱)';
 ?>
 <?php if ($layout === 'auth') { ?>
   </div>
   <div class="auth-footer">
-    سامانهٔ مدیریت کلینیک جوما — نسخهٔ ۱.۰ (فاز ۱)
+    سامانهٔ مدیریت کلینیک جوما — <?php echo e($joma_version_label); ?>
   </div>
 </div>
 <?php } else { ?>
     </main>
   </div>
   <footer class="footer">
-    سامانهٔ مدیریت کلینیک جوما — نسخهٔ ۱.۰ (فاز ۱)
+    سامانهٔ مدیریت کلینیک جوما — <?php echo e($joma_version_label); ?>
   </footer>
 </div>
 <?php } ?>

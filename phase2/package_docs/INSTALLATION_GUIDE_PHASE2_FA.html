@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>راهنمای ارتقا به فاز ۲ — سامانهٔ جوما</title>
+<style>
+  :root{
+    --primary:#2E5090; --secondary:#5B9BD5; --success:#27AE60;
+    --warning:#F39C12; --danger:#E74C3C; --bg:#F5F7FA;
+    --text:#2C3E50; --border:#ECF0F1; --muted:#7F8C8D;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:0 16px 60px;
+    font-family:Tahoma,"Segoe UI",Arial,sans-serif;
+    font-size:16px; line-height:2; color:var(--text); background:var(--bg);
+  }
+  .wrap{max-width:900px;margin:0 auto}
+  header{
+    background:var(--primary); color:#fff; margin:0 -16px 24px;
+    padding:36px 16px; text-align:center;
+  }
+  header h1{margin:0 0 8px;font-size:26px}
+  header p{margin:0;opacity:.9;font-size:15px}
+  h2{
+    margin:36px 0 12px; padding-bottom:8px; font-size:21px; color:var(--primary);
+    border-bottom:3px solid var(--secondary);
+  }
+  h3{margin:24px 0 8px;font-size:18px;color:var(--primary)}
+  .card{
+    background:#fff;border:1px solid var(--border);border-radius:6px;
+    padding:20px;margin:16px 0;box-shadow:0 2px 8px rgba(0,0,0,.1);
+  }
+  .box{border-radius:6px;padding:16px 20px;margin:16px 0;border-right:6px solid}
+  .danger{background:#FDEDEC;border-color:var(--danger)}
+  .warn{background:#FEF5E7;border-color:var(--warning)}
+  .ok{background:#E9F7EF;border-color:var(--success)}
+  .info{background:#EAF2FB;border-color:var(--secondary)}
+  code,.path{
+    font-family:Consolas,"Courier New",monospace;direction:ltr;display:inline-block;
+    background:#F4F6F7;border:1px solid var(--border);border-radius:4px;
+    padding:1px 7px;font-size:14px;
+  }
+  pre{
+    direction:ltr;text-align:left;background:#2C3E50;color:#ECF0F1;
+    padding:14px 18px;border-radius:6px;overflow-x:auto;font-size:14px;line-height:1.8;
+  }
+  table{width:100%;border-collapse:collapse;margin:14px 0;background:#fff}
+  th,td{border:1px solid var(--border);padding:10px 12px;text-align:right;font-size:15px}
+  th{background:var(--primary);color:#fff}
+  tr:nth-child(even) td{background:#FAFBFC}
+  ol,ul{padding-right:24px}
+  li{margin-bottom:8px}
+  .step{
+    display:inline-block;width:32px;height:32px;line-height:32px;text-align:center;
+    background:var(--primary);color:#fff;border-radius:50%;margin-left:8px;font-weight:bold;
+  }
+  .no{color:var(--danger);font-weight:bold}
+  .yes{color:var(--success);font-weight:bold}
+  footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);
+    text-align:center;color:var(--muted);font-size:14px}
+  @media print{body{background:#fff}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>🧩 راهنمای ارتقا به فاز ۲</h1>
+  <p>سامانهٔ مدیریت کلینیک روان‌شناسی جوما — نسخهٔ ۲.۰.۰ — نوبت‌دهی و تقویم</p>
+  <p>این راهنما کاملاً آفلاین است؛ برای خواندنش به اینترنت نیاز ندارید.</p>
+</header>
+
+<div class="box danger">
+  <strong>⚠️ پیش از هر کاری این سه جمله را بخوانید:</strong>
+  <ol style="margin-bottom:0">
+    <li>کد فاز ۲ <strong>روی هیچ سروری اجرا و آزمایش نشده است</strong>. فهرست آزمون‌هایی که
+      باید خودتان انجام دهید در فایل <code>PHASE2_TEST_REPORT_FA.md</code> آمده است.</li>
+    <li>پیش از ارتقا، حتماً از <strong>پایگاه داده</strong> و <strong>فایل‌ها</strong> پشتیبان بگیرید.</li>
+    <li>بهترین زمان ارتقا، ساعتی است که کسی با سامانه کار نمی‌کند.</li>
+  </ol>
+</div>
+
+<h2>فهرست کارها در یک نگاه</h2>
+<div class="card">
+<ol>
+  <li>پشتیبان‌گیری از پایگاه داده و از پوشهٔ سامانه</li>
+  <li>بازکردن فایل ZIP روی رایانهٔ خودتان</li>
+  <li>بارگذاری محتویات پوشهٔ <code>public_html</code> روی هاست (جایگزینی فایل‌های قدیمی)</li>
+  <li>باز کردن نشانی <code>/upgrade_phase2.php</code> و زدن دکمهٔ ارتقا</li>
+  <li>حذف فایل <code>upgrade_phase2.php</code> از هاست</li>
+  <li>تعریف اتاق‌ها و تعرفه‌ها</li>
+  <li>انجام آزمون‌های پس از ارتقا</li>
+</ol>
+</div>
+
+<h2><span class="step">۱</span>پشتیبان‌گیری (این مرحله اختیاری نیست)</h2>
+
+<h3>الف) پشتیبان پایگاه داده</h3>
+<div class="card">
+<ol>
+  <li>وارد <strong>cPanel</strong> شوید.</li>
+  <li>در بخش Databases روی <strong>phpMyAdmin</strong> کلیک کنید.</li>
+  <li>از ستون سمت چپ، نام پایگاه دادهٔ جوما را انتخاب کنید.</li>
+  <li>از نوار بالا روی <strong>Export</strong> کلیک کنید.</li>
+  <li>گزینهٔ <strong>Quick</strong> و قالب <strong>SQL</strong> را بگذارید و <strong>Go</strong> را بزنید.</li>
+  <li>فایل دانلودشده را در جایی مطمئن نگه دارید. نامش را با تاریخ امروز عوض کنید.</li>
+</ol>
+</div>
+
+<h3>ب) پشتیبان فایل‌ها</h3>
+<div class="card">
+<ol>
+  <li>در cPanel وارد <strong>File Manager</strong> شوید.</li>
+  <li>روی پوشهٔ سامانه (معمولاً <code>public_html</code>) راست‌کلیک کنید و
+      <strong>Compress</strong> را بزنید.</li>
+  <li>فایل فشردهٔ ساخته‌شده را دانلود کنید و نگه دارید.</li>
+</ol>
+</div>
+
+<h2><span class="step">۲</span>باز کردن بستهٔ ارتقا</h2>
+<div class="card">
+<p>فایل ZIP را روی رایانهٔ خودتان باز کنید. داخل آن دو چیز می‌بینید:</p>
+<table>
+  <tr><th>نام</th><th>چیست؟</th><th>آیا باید روی هاست برود؟</th></tr>
+  <tr><td><code>public_html/</code></td><td>فایل‌های برنامه</td><td class="yes">بله</td></tr>
+  <tr><td><code>مستندات/</code></td><td>همین راهنما و سندهای فنی</td><td class="no">خیر — فقط برای خودتان</td></tr>
+</table>
+<div class="box warn">
+  پوشهٔ <code>مستندات</code> را هرگز روی فضای وب بارگذاری نکنید.
+</div>
+</div>
+
+<h2><span class="step">۳</span>بارگذاری روی هاست</h2>
+<div class="card">
+<p><strong>مسیر دقیق مقصد:</strong> همان پوشه‌ای که هم‌اکنون فایل <code>login.php</code>
+در آن قرار دارد. در بیشتر هاست‌ها این مسیر است:</p>
+<pre>/home/&lt;نام کاربری شما&gt;/public_html/</pre>
+<p>اگر سامانه را در زیرپوشه نصب کرده‌اید، مثلاً:</p>
+<pre>/home/&lt;نام کاربری شما&gt;/public_html/joma/</pre>
+
+<h3>روش ساده با File Manager</h3>
+<ol>
+  <li>محتویات داخل پوشهٔ <code>public_html</code> بسته را (نه خود پوشه را) در یک فایل
+      ZIP تازه فشرده کنید.</li>
+  <li>در cPanel وارد File Manager شوید و به مسیر مقصد بروید.</li>
+  <li>دکمهٔ <strong>Upload</strong> را بزنید و فایل ZIP را بفرستید.</li>
+  <li>پس از پایان، روی فایل راست‌کلیک کنید و <strong>Extract</strong> را بزنید.</li>
+  <li>وقتی پرسید فایل‌های تکراری جایگزین شوند یا نه، <strong>Replace / Overwrite</strong> را انتخاب کنید.</li>
+  <li>فایل ZIP را از هاست پاک کنید.</li>
+</ol>
+</div>
+
+<div class="box danger">
+  <h3 style="margin-top:0">🚫 این فایل‌ها هرگز نباید جایگزین یا پاک شوند</h3>
+  <table>
+    <tr><th>فایل</th><th>چرا</th></tr>
+    <tr><td><code>includes/config.php</code></td><td>رمز پایگاه دادهٔ شما در آن است. در بستهٔ ارتقا هم وجود ندارد، پس نگران نباشید.</td></tr>
+    <tr><td><code>install.lock</code></td><td>نشانهٔ «نصب انجام شده». نبودش سامانه را دوباره به حالت نصب می‌برد.</td></tr>
+    <tr><td><code>storage/logs/</code></td><td>گزارش‌های سامانه. فقط فایل <code>.htaccess</code> داخلش جایگزین می‌شود.</td></tr>
+  </table>
+  <p style="margin-bottom:0">همچنین توجه کنید: <strong>فایل <code>install.php</code> عمداً در بستهٔ
+  ارتقا نیست</strong> تا به‌هیچ‌وجه امکان نصب دوباره و پاک شدن داده‌ها پیش نیاید.</p>
+</div>
+
+<h2><span class="step">۴</span>اجرای ارتقا</h2>
+<div class="card">
+<ol>
+  <li>با حساب <strong>مدیر</strong> وارد سامانه شوید. (اگر وارد نباشید، صفحهٔ ارتقا
+      اصلاً باز نمی‌شود.)</li>
+  <li>در نوار کناری روی <strong>🧩 ارتقا به فاز ۲</strong> کلیک کنید، یا مستقیماً
+      این نشانی را باز کنید:</li>
+</ol>
+<pre>https://&lt;دامنهٔ شما&gt;/upgrade_phase2.php</pre>
+<ol start="3">
+  <li>فهرست جدول‌ها را می‌بینید که همه «ساخته نشده» هستند. دکمهٔ
+      <strong>🚀 اجرای ارتقا</strong> را بزنید.</li>
+</ol>
+
+<div class="box ok">
+  <strong>✅ نتیجهٔ مورد انتظار</strong><br>
+  کادر سبز «ارتقا با موفقیت انجام شد» و گزارشی که در آن پنج جدول
+  <code>rooms</code>، <code>therapist_service_tariffs</code>،
+  <code>therapist_absence_rules</code>، <code>appointments</code> و
+  <code>appointment_holds</code> با برچسب «انجام شد» دیده می‌شوند، به‌علاوهٔ دو
+  فهرست مرجع «دلیل عدم حضور» و «دلیل لغو نوبت».
+</div>
+
+<div class="box warn">
+  <strong>اگر کادر قرمز دیدید چه کنم؟</strong><br>
+  پیام خطا را بخوانید. چون MySQL ساخت جدول را به‌صورت خودکار برنمی‌گرداند، ممکن
+  است بخشی از جدول‌ها ساخته شده باشند. این مشکلی ایجاد نمی‌کند: پس از رفع ایراد
+  (مثلاً کمبود دسترسی کاربر پایگاه داده) دوباره همان دکمه را بزنید؛ برنامه
+  گام‌های انجام‌شده را تکرار نمی‌کند و از همان‌جا ادامه می‌دهد.
+  نسخهٔ <code>2.0.0</code> فقط وقتی ثبت می‌شود که <em>همهٔ</em> گام‌ها موفق باشند.
+</div>
+</div>
+
+<h2><span class="step">۵</span>حذف فایل ارتقا (مهم)</h2>
+<div class="card">
+<p>پس از دیدن پیام موفقیت:</p>
+<ol>
+  <li>به File Manager بروید.</li>
+  <li>فایل <code>upgrade_phase2.php</code> را پیدا کنید.</li>
+  <li>آن را <strong>Delete</strong> کنید.</li>
+</ol>
+<p>همچنین اگر فایل <code>health.php</code> را لازم ندارید، می‌توانید آن را هم حذف کنید.
+در این نسخه <code>health.php</code> فقط برای مدیرِ واردشده باز می‌شود و دسترسی ناشناس
+به آن به‌کلی بسته شده است.</p>
+</div>
+
+<h2><span class="step">۶</span>آماده‌سازی اولیه</h2>
+<div class="card">
+<p>سامانه عمداً هیچ «اتاق نمونه» نمی‌سازد. پیش از نخستین نوبت:</p>
+<ol>
+  <li>با حساب مدیر وارد شوید.</li>
+  <li><strong>🏠 اتاق‌ها</strong> → اتاق‌های واقعی کلینیک را ثبت کنید.
+      (ظرفیت فقط اطلاعاتی است و هرگز جلوی ثبت نوبت را نمی‌گیرد.)</li>
+  <li><strong>💰 تعرفه‌ها</strong> → برای هر درمانگر، مبلغ هر خدمت را به
+      <strong>تومان</strong> وارد کنید. اگر تعرفه‌ای ثبت نکنید، نوبت باز هم ثبت
+      می‌شود ولی مبلغش خالی می‌ماند.</li>
+</ol>
+</div>
+
+<h2><span class="step">۷</span>آزمون‌های پس از ارتقا</h2>
+<div class="card">
+<p>این‌ها را حتماً خودتان انجام دهید. فهرست کامل‌تر در
+<code>PHASE2_TEST_REPORT_FA.md</code> است.</p>
+<table>
+  <tr><th>#</th><th>آزمون</th><th>نتیجهٔ درست</th></tr>
+  <tr><td>۱</td><td>ورود با نام کاربری و رمز</td><td>مثل قبل کار کند</td></tr>
+  <tr><td>۲</td><td>تعویض نقش</td><td>مثل قبل کار کند</td></tr>
+  <tr><td>۳</td><td>ثبت یک پذیرش جدید</td><td>مثل قبل کار کند</td></tr>
+  <tr><td>۴</td><td>ثبت یک نوبت آزمایشی</td><td>نوبت ساخته شود و در تقویم دیده شود</td></tr>
+  <tr><td>۵</td><td>همان نوبت را دوباره «تثبیت» کنید</td><td>پیام «نوبت تکراری ساخته نشد»</td></tr>
+  <tr><td>۶</td><td>جابه‌جایی نوبت به ساعتی دیگر</td><td>نوبت تازه ساخته و قبلی لغو شود</td></tr>
+  <tr><td>۷</td><td>لغو نوبت با انتخاب دلیل</td><td>وضعیت «لغوشده» شود</td></tr>
+  <tr><td>۸</td><td>ورود با حساب درمانگر و باز کردن <code>/admin/tariffs.php</code></td><td>صفحهٔ «دسترسی مجاز نیست»</td></tr>
+  <tr><td>۹</td><td>باز کردن <code>/health.php</code> بدون ورود</td><td>صفحهٔ «دسترسی مجاز نیست»</td></tr>
+  <tr><td>۱۰</td><td>باز کردن <code>/database/phase2_schema.sql</code> در مرورگر</td><td>خطای ۴۰۳؛ محتوا دیده نشود</td></tr>
+</table>
+</div>
+
+<h2>🔙 بازگشت به وضعیت قبل (Rollback)</h2>
+<div class="card">
+<p>اگر تصمیم گرفتید ارتقا را برگردانید:</p>
+<ol>
+  <li><strong>فایل‌ها:</strong> پشتیبان فشردهٔ مرحلهٔ ۱-ب را روی هاست بارگذاری و
+      جایگزین کنید.</li>
+  <li><strong>پایگاه داده:</strong> در phpMyAdmin پایگاه داده را انتخاب کنید،
+      به <strong>Import</strong> بروید و فایل پشتیبان مرحلهٔ ۱-الف را وارد کنید.</li>
+</ol>
+<div class="box danger">
+  <strong>هشدار:</strong> بازگرداندن پشتیبان پایگاه داده، همهٔ تغییرهای پس از
+  لحظهٔ پشتیبان‌گیری را از بین می‌برد (از جمله پذیرش‌های تازه). پیش از این کار،
+  حتماً یک پشتیبان تازهٔ دیگر هم بگیرید تا راه بازگشت داشته باشید.
+</div>
+<p>اگر فقط می‌خواهید بخش نوبت‌دهی موقتاً دیده نشود، نیازی به حذف چیزی نیست؛ کافی
+است از ثبت نوبت استفاده نکنید. <strong>حذف دستی جدول‌ها را انجام ندهید</strong>؛
+این کار برگشت‌ناپذیر است.</p>
+</div>
+
+<h2>❓ مشکلات رایج</h2>
+<div class="card">
+<table>
+  <tr><th>نشانه</th><th>علت محتمل</th><th>راه‌حل</th></tr>
+  <tr>
+    <td>صفحهٔ ارتقا باز نمی‌شود و به صفحهٔ ورود می‌روم</td>
+    <td>با نقش مدیر وارد نشده‌اید</td>
+    <td>خروج و ورود دوباره با حساب مدیر؛ اگر چند نقش دارید، نقش «مدیر» را انتخاب کنید</td>
+  </tr>
+  <tr>
+    <td>خطای «ساخت جدول ناموفق بود»</td>
+    <td>کاربر پایگاه داده اجازهٔ CREATE ندارد</td>
+    <td>در cPanel → MySQL Databases، کاربر را با گزینهٔ ALL PRIVILEGES به پایگاه داده متصل کنید</td>
+  </tr>
+  <tr>
+    <td>منوی «تقویم نوبت‌ها» دیده نمی‌شود</td>
+    <td>ارتقا هنوز اجرا نشده</td>
+    <td>مرحلهٔ ۴ را انجام دهید</td>
+  </tr>
+  <tr>
+    <td>هنگام ثبت نوبت می‌گوید اتاق فعالی نیست</td>
+    <td>هنوز اتاقی تعریف نکرده‌اید</td>
+    <td>مرحلهٔ ۶ را انجام دهید</td>
+  </tr>
+  <tr>
+    <td>صفحه‌ها بدون شکل و رنگ نمایش داده می‌شوند</td>
+    <td>فایل CSS به‌درستی جایگزین نشده</td>
+    <td>فایل <code>assets/css/style.css</code> را دوباره بارگذاری کنید و یک‌بار
+        با Ctrl+F5 صفحه را تازه کنید</td>
+  </tr>
+</table>
+</div>
+
+<footer>
+  سامانهٔ مدیریت کلینیک روان‌شناسی جوما — بستهٔ ارتقا به فاز ۲، نسخهٔ ۲.۰.۰<br>
+  تاریخ ساخت بسته: ۱۴۰۵/۰۷/۱۲
+</footer>
+
+</div>
+</body>
+</html>

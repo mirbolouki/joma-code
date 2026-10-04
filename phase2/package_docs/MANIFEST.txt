@@ -1,0 +1,75 @@
+فهرست فایل‌های بستهٔ ارتقا به فاز ۲ — نسخهٔ ۲.۰.۰
+تاریخ ساخت: ۱۴۰۵/۰۷/۱۲ (2026-10-04)
+
+path                                                                bytes  sha256
+--------------------------------------------------------------------------------------------------------------------------------------------
+public_html/change_password_forced.php                               4284  04017c65821150df6360838ade533838ed6e61fe1f55e525a68e04ad8e37bc86
+public_html/forgot_password_staff.php                                8862  3cbfb45351072c7f8a5e04614275ed76863d30498011a36ecbf3823604a2db89
+public_html/health.php                                              10257  7033435cdd34e443b2479c11586beb5f2e780cf014a85fdef8e0f3f61351daac
+public_html/index.php                                                1036  5ccc493ab60ffd4f0a4f35ad9c550552fdfb1453a780b987c3e57660febe604e
+public_html/login.php                                                3679  681561f6cdfef29171bf71d25b004b9b5745343790caeef8b3567bf0266eec8f
+public_html/logout.php                                                585  da8e771b23643431653ea0b6b318e3603b910c149fb735741117372f97a4fc92
+public_html/role_select.php                                          3632  38e7e76bfbfb2b112e7c1557441a543498c100376e8471bd2ca249421aaf07ec
+public_html/upgrade_phase2.php                                      15071  10ec0d2417d720289d7ee3040f6f0e83adb8da5beeb6d059879ae8887c3a6e44
+public_html/admin/index.php                                          3809  459f9140396a8396d799236f6f1876dce317277a6a61e440b5042fa4bb964897
+public_html/admin/rooms.php                                          9523  0c65a6b14de1776275952d921b9ed84e54412bc9f9d19bb83c66f6ce0e70792f
+public_html/admin/sms_settings.php                                   8986  c616b17e94790540c02ea8bbec87002c1630558dae8ab31ae989f55f764ba38d
+public_html/admin/tariffs.php                                       10340  f54bf439145838bcfca03f7a6345158a500715fd8256b72d48fb364e9a0acd39
+public_html/admin/user_create.php                                   12864  829822b2b21acc309e77e8c2048a6b47d9d8900d27a06f95bda585ee0836162e
+public_html/admin/users_list.php                                     5574  cab884a03d645f03d8925dac82bd932fd37c7dffd6dba5c7bb19ca4bac872fa1
+public_html/assets/css/style.css                                    30859  a9540965025bfb2c836e8109d7e88f1d6e523e8735b2deca34fb962a338db003
+public_html/assets/fonts/Vazirmatn-Bold.woff2                       51020  836fae7d42d83faa249bc00e0099592be98a1fa260d22d82f269b6091e585627
+public_html/assets/fonts/Vazirmatn-LICENSE.txt                       4391  17e355067c8284f47743a1ee3b1ef7ff684ff0601eda357f9353b10b3016ab31
+public_html/assets/fonts/Vazirmatn-Regular.woff2                    50684  e382101336c6eb32cfb31381c027d02d2e0354bad08f6a395d4088beb3db3d91
+public_html/assets/img/joma-owl-mirbolouki.jpg                     149877  4935a3908aebd7885e07fd60ccca28e4a1a5d6e3810c389c53dd655d8c6d2ce2
+public_html/assets/img/logo.jpg                                    177156  ee637c90a5dcdd1b8b22fd23fef77763e128c06b70fcec01e35f98987c3e9cf9
+public_html/assets/js/app.js                                        15950  f6d64595c359e8583eeb0e6e568e6bf6f4f218fbbb932cbd7261b00d92a11ee7
+public_html/database/.htaccess                                        520  bde7bf99d49dd0609aaec4aee65f2152c855ca7d886a431ec760bee8fc524c0b
+public_html/database/phase1_schema.sql                               7308  a48194952eff099e7a225be9f9b075c3efe53ad8d6ccda3a555dcf294c6c37e7
+public_html/database/phase2_schema.sql                               7369  e6a16d2fe2b90eca7a93661c35fd4bb72154da94a39a6c2e27f0026a1570bceb
+public_html/includes/.htaccess                                        520  bde7bf99d49dd0609aaec4aee65f2152c855ca7d886a431ec760bee8fc524c0b
+public_html/includes/account_functions.php                           4765  1e9e8fb8e2daaa2e6508ce47aa18969e2b9bbe7a7d047de5b8588cad5203d574
+public_html/includes/admission_functions.php                         9250  7ecbb4de9d1d3a9c6b3ceaac166eef935fa880393044b89ea771dc3ac0a17f4b
+public_html/includes/appointment_functions.php                      41143  c72546835d95c5db8545c3b0568e2ec637f88e455015a51bd6ca6739ff82e291
+public_html/includes/audit_functions.php                             2343  cfea3b9a1025215ad62171c36b88738981be170ec416adfab15e5bc0ed4587c3
+public_html/includes/auth.php                                        8958  9c04ac76ec0e6a3e483af603107caeb65204454c021485c1cc4d72b69071d64e
+public_html/includes/bootstrap.php                                   2669  f0378da91613e9a408e48264f759a6d6f7900a21aeb8c7ecd866077c572307fe
+public_html/includes/case_functions.php                              5119  d9de3bc22e1ff8f56217d4276917fdf8015476e4414814b5af4e5370b45669bc
+public_html/includes/config.php.example                              4086  c87798af9518df5a877e809b8e0251f99f53af323290545d7d9fa7e54db0d3de
+public_html/includes/db.php                                          4402  bcd9f76a3b12a6c9cbb527abfcd3cbfcbcb16e1763e0f0349cccc18e3955ae1b
+public_html/includes/helpers.php                                     6010  ed14dcad0fa4bbb6eae8342f711aba407513f5e67e79206f017af34273b89a57
+public_html/includes/jalali.php                                      6362  b5fb6bb0a809ffae057dbb2b84ac5fe226837f95019984b3c558e6c759628fa2
+public_html/includes/lookup_functions.php                            2351  a00ff56b0f3bb2027be4f4a4e39203e2891bb9ac4ae57356413a72240b99e4fc
+public_html/includes/otp_functions.php                               7884  ff5424a7547496acd8e21b379fc6ed8e4fdd0b56cf70a0b5e408984453902e44
+public_html/includes/person_functions.php                            2276  9a63f3b1e0282e67cb95d139980a9bd4e8a098e892f21b0c253471ff7125bd20
+public_html/includes/room_functions.php                              5842  b8276de87a6dbada9edec4835653830ffb0f7f06a8c61e26950ab95f557cfb72
+public_html/includes/schedule_time.php                               7892  d7b0e4a5a0575ce4e23767566298664c0731323349ce4d045c9e5f577a68e083
+public_html/includes/sms.php                                         8396  13be427d4ed1bb98db15d7565ee1c7e17637d3e8fb4df43d7185acc41785dadb
+public_html/includes/staff_functions.php                             4342  eaf2c3befd106042c38492f64e65173811d3870b46401ed51299857e956decfa
+public_html/includes/tariff_functions.php                            7923  1fd4198b8848c0d51cfbacf2765f79a5ca3520f93ed72d55e1a752bf2a9b0117
+public_html/includes/validate.php                                    4619  1ba9188b511fc9f3b861cba3fb5dca38417badd28660058b461dff091485e80c
+public_html/reception/admission_new.php                             16298  6e16b61b40a748d94561e797425ba0493b528e7bfb6f7e9df3a72ce0bd92df05
+public_html/reception/appointment_new.php                           17769  549e7ccf4f5801cec7089fe6b725dfad85aa0afd56794d7bb7b2a3ee274f4242
+public_html/reception/appointment_reschedule.php                     8992  ce89f3411e17c4d96e620fd6bcac07efca5858f1cf91eae826e4f491baa546c7
+public_html/reception/appointments.php                              11720  9bf2d764179f1002355dde2ae36b420720bef8a8eb4a5f7c138d5858319b4a68
+public_html/reception/index.php                                      6406  6a085a22550d99a6594ba9f3f07d907876cede740f464ce23e6dd63e232a9f5c
+public_html/storage/logs/.htaccess                                    520  bde7bf99d49dd0609aaec4aee65f2152c855ca7d886a431ec760bee8fc524c0b
+public_html/templates/.htaccess                                       520  bde7bf99d49dd0609aaec4aee65f2152c855ca7d886a431ec760bee8fc524c0b
+public_html/templates/403.php                                         819  9afe4c78f4e232aaca24f4e0e7510ec3b64c14b286167d3b6e575b7c1db087b1
+public_html/templates/404.php                                         652  d752cf6d1c6c18ab4e72ea6d09a0aafe7f10270124be3aedde96273df1156bba
+public_html/templates/error_generic.php                              1514  83b66d4061cdbf7877d9d068ec92899afa284847ee8bcb788385887ad0dc0b5a
+public_html/templates/footer.php                                      839  162d9e1600dd227ef2451bffb6fb3186f9bdf6ebeb2088aca40ae46169d8c6d6
+public_html/templates/header.php                                     3379  6f232b61d2609dbd1d14b78801b25a0a1635aed4309787936c6ff905c2bc61e8
+public_html/templates/sidebar.php                                    4909  5368a5fe4fa114d0ec2e330be87e60931cbb03165fef32b90874433aca78bfc5
+public_html/therapist/absences.php                                   8707  2bb51ff808aa7a72f9646a21dc33fb0745796aad67e1752a50d6b8b3be89c9c0
+public_html/therapist/admission_review.php                           7781  7c0308ba82fb1a04ca97562f506bdd8fd9cae5cff931ec94a7b9cf814903a8cc
+public_html/therapist/calendar.php                                   6025  89365d6f9f7f0ca95723b8ad9892159a3c48fff68a6bac383c8e0e08a4b1cea0
+public_html/therapist/index.php                                      4003  9cae1e0ec19988c79fd14e265a8c23896cefa25e2044d6c5450a55d4f69c1a46
+public_html/therapist/tariffs_view.php                               3253  083a20c35647956ddb602fefb874550d9c4fa383e9c89d527d4fc15b85e65863
+مستندات/INSTALLATION_GUIDE_PHASE2_FA.html                           17114  02e52d07ebb17d55b426832765eab9f36a8cf8b2945b3ed55b19a466896df6dd
+مستندات/PHASE2_FINAL_DECISIONS.md                                   13601  c359b09a0ad2d8320b6591f62c9c9a9805a535c39bdb30f32f93fea8e4aea487
+مستندات/PHASE2_TEST_REPORT_FA.md                                    10411  45b965803ed61d5cb7455541ea1dc956a000f6c564900b2f7d19d997acd9a6b7
+مستندات/README_FA.md                                                 1515  20f3c8ec6f2143d3b961b0c1fe3b97cf553a0fe8c5bea4d25383d4c9e9f78552
+مستندات/VERSION.txt                                                   790  61e2c9a96786a3ad97a845c75483cd7c1bb40d05017a0f665096239ca2559472
+--------------------------------------------------------------------------------------------------------------------------------------------
+تعداد فایل: 68    مجموع حجم: 888325 بایت (0.85 مگابایت)
