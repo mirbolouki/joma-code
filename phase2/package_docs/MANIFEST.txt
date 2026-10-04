@@ -58,7 +58,7 @@ public_html/templates/.htaccess                                       520  bde7b
 public_html/templates/403.php                                         819  9afe4c78f4e232aaca24f4e0e7510ec3b64c14b286167d3b6e575b7c1db087b1
 public_html/templates/404.php                                         652  d752cf6d1c6c18ab4e72ea6d09a0aafe7f10270124be3aedde96273df1156bba
 public_html/templates/error_generic.php                              1514  83b66d4061cdbf7877d9d068ec92899afa284847ee8bcb788385887ad0dc0b5a
-public_html/templates/footer.php                                      839  162d9e1600dd227ef2451bffb6fb3186f9bdf6ebeb2088aca40ae46169d8c6d6
+public_html/templates/footer.php                                      845  34c89064f0239330db93b9b45d9d634e783e935c0c1e2378dcd1cee2f04f2da4
 public_html/templates/header.php                                     3379  6f232b61d2609dbd1d14b78801b25a0a1635aed4309787936c6ff905c2bc61e8
 public_html/templates/sidebar.php                                    4909  5368a5fe4fa114d0ec2e330be87e60931cbb03165fef32b90874433aca78bfc5
 public_html/therapist/absences.php                                   9141  445ad5bc74e22ca55fc1131d58dc34ba1ff8b440a2d5697dc9406aa0a060b05a
@@ -74,4 +74,4 @@ public_html/therapist/tariffs_view.php                               3253  083a2
 مستندات/README_FA.md                                                 1515  20f3c8ec6f2143d3b961b0c1fe3b97cf553a0fe8c5bea4d25383d4c9e9f78552
 مستندات/VERSION.txt                                                  1985  dd5f6c2c7d1890bfc17fc3d1194bc3260569c1c0eb48c7e1579719f0e6fe88c0
 --------------------------------------------------------------------------------------------------------------------------------------------
-تعداد فایل: 70    مجموع حجم: 962355 بایت (0.92 مگابایت)
+تعداد فایل: 70    مجموع حجم: 962361 بایت (0.92 مگابایت)
