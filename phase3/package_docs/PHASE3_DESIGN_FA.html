@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>سند طراحی فاز ۳ — جوما</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>سند طراحی فاز ۳ — پروندهٔ بالینی (یادداشت محرمانه)</h1>
+<p><strong>سامانهٔ مدیریت کلینیک روان‌شناسی جوما</strong></p>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>وضعیت سند</td><td><strong>پیش‌نویس — در انتظار تأیید مالک</strong></td></tr><tr><td>تاریخ تنظیم</td><td>۱۴۰۵/۰۷/۱۲ (2026-10-04)</td></tr><tr><td>پایهٔ ساخت</td><td>فاز ۲ نسخهٔ ۲.۰.۱ (مستقر و تأییدشده)</td></tr><tr><td>نسخهٔ هدف</td><td>۳.۰.۰</td></tr><tr><td>شاخهٔ مخزن</td><td><code>arena/01a102a8-joma-code</code></td></tr><tr><td>مرجع بالادستی</td><td>پیوست الف (ADR-002، ADR-004، ADR-009 اصلاحیه)، پیوست ب، پیوست ج و د</td></tr></tbody></table>
+<blockquote>⚠️ <strong>هیچ کدی بر اساس این سند نوشته نشده است.</strong> طبق تصمیم مالک، ابتدا طراحی تأیید می‌شود، سپس کدنویسی آغاز می‌شود.</blockquote>
+<hr>
+<h2>۱. چهار تصمیم مالک — مبنای این سند</h2>
+<p>در تاریخ ۱۴۰۵/۰۷/۱۲ چهار پرسش کلیدی مطرح و پاسخ داده شد:</p>
+<table><thead><tr><th>#</th><th>پرسش</th><th>تصمیم مالک</th></tr></thead><tbody><tr><td>۱</td><td>رمزنگاری یادداشت محرمانه (ADR-002)</td><td><strong>بدون رمزنگاری.</strong> فقط کنترل دسترسی سخت‌گیرانه در لایهٔ نرم‌افزار</td></tr><tr><td>۲</td><td>چه کسی یادداشت را می‌خواند</td><td><strong>فقط درمانگر نویسنده.</strong> هیچ‌کس دیگر — نه مدیر، نه منشی، نه درمانگر بعدی</td></tr><tr><td>۳</td><td>بایگانی و بازگشایی پرونده (ADR-009 اصلاحیه)</td><td><strong>به فاز بعد موکول شد.</strong> فاز ۳ فقط یادداشت است</td></tr><tr><td>۴</td><td>ترتیب کار</td><td><strong>ابتدا سند طراحی، سپس کدنویسی</strong></td></tr></tbody></table>
+<p><strong>پیامد تصمیم ۳:</strong> جدول <code>clinical_case_status_events</code> در این فاز ساخته <strong>نمی‌شود</strong>. فاز ۳ فقط <strong>یک جدول</strong> اضافه می‌کند، نه دو. ستون <code>clinical_cases.status</code> از پیش مقدار <code>ARCHIVED</code> را در <code>ENUM</code> دارد ولی در فاز ۳ هیچ مسیری آن را تغییر نمی‌دهد.</p>
+<hr>
+<h2>۲. دامنهٔ فاز ۳ — دقیقاً چه چیزی ساخته می‌شود</h2>
+<h3>۲.۱ داخل دامنه</h3>
+<ul><li>ثبت یادداشت محرمانه توسط درمانگر روی پرونده‌های خودش</li><li>مشاهدهٔ یادداشت‌های خودِ نویسنده، به ترتیب زمانی</li><li>ویرایش یادداشت در یک پنجرهٔ زمانی محدود (بند ۵.۳)</li><li>ابطال منطقی یادداشت (بدون حذف فیزیکی)</li><li>صفحهٔ «پروندهٔ بالینی» برای درمانگر، شامل خلاصهٔ مراجع، پذیرش و نوبت‌های او</li><li>فعال شدن دکمهٔ «مشاهده پرونده» که از فاز ۱ غیرفعال بود</li><li>ثبت کامل حسابرسی برای هر اقدام روی یادداشت</li></ul>
+<h3>۲.۲ خارج از دامنه — صریحاً ساخته نمی‌شود</h3>
+<table><thead><tr><th>مورد</th><th>دلیل</th></tr></thead><tbody><tr><td>رمزنگاری یادداشت</td><td>تصمیم ۱ مالک</td></tr><tr><td>بایگانی و بازگشایی پرونده</td><td>تصمیم ۳ مالک</td></tr><tr><td>دسترسی اضطراری مدیر (break-glass)</td><td>تصمیم ۲ مالک</td></tr><tr><td>فرم‌های بالینی و فرم‌ساز</td><td>فاز ۴</td></tr><tr><td>پورتال مراجع</td><td>فاز ۴</td></tr><tr><td>گزارش‌گیری و وب‌هوک سامانهٔ تست</td><td>فاز ۵</td></tr><tr><td>ویرایشگر متن غنی، پیوست فایل، تصویر</td><td>خارج از نیاز اعلام‌شده؛ در صورت نیاز باید جداگانه تأیید شود</td></tr></tbody></table>
+<hr>
+<h2>۳. جدول تازه — یک جدول، هفدهمین جدول سامانه</h2>
+<pre><code>CREATE TABLE confidential_notes (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    public_id VARCHAR(30) NOT NULL UNIQUE,
+    clinical_case_id BIGINT UNSIGNED NOT NULL,
+    author_person_id BIGINT UNSIGNED NOT NULL,
+    body MEDIUMTEXT NOT NULL,
+    session_date DATE NULL,
+    appointment_id BIGINT UNSIGNED NULL,
+    is_void TINYINT(1) NOT NULL DEFAULT 0,
+    void_reason VARCHAR(255) NULL,
+    created_at_utc DATETIME NOT NULL,
+    updated_at_utc DATETIME NULL,
+    edit_count INT UNSIGNED NOT NULL DEFAULT 0,
+    CONSTRAINT fk_notes_case FOREIGN KEY (clinical_case_id)
+        REFERENCES clinical_cases(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT fk_notes_author FOREIGN KEY (author_person_id)
+        REFERENCES persons(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT fk_notes_appointment FOREIGN KEY (appointment_id)
+        REFERENCES appointments(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    KEY idx_notes_case_author (clinical_case_id, author_person_id, is_void),
+    KEY idx_notes_author_created (author_person_id, created_at_utc)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;</code></pre>
+<p><strong>نکات طراحی:</strong></p>
+<table><thead><tr><th>ستون</th><th>توضیح</th></tr></thead><tbody><tr><td><code>public_id</code></td><td>پیشوند <code>cn_</code> طبق ADR-001؛ تنها شناسه‌ای که در URL و فرم دیده می‌شود</td></tr><tr><td><code>author_person_id</code></td><td><strong>ستون حاکم بر دسترسی.</strong> هر پرس‌وجوی خواندن بدون استثنا این ستون را شرط می‌گذارد</td></tr><tr><td><code>appointment_id</code></td><td>اختیاری — اتصال یادداشت به یک جلسهٔ مشخص از فاز ۲. <code>NULL</code> یعنی یادداشت آزاد</td></tr><tr><td><code>session_date</code></td><td>تاریخ جلسه به وقت تهران. ممکن است با تاریخ ثبت یادداشت فرق کند</td></tr><tr><td><code>is_void</code></td><td>ابطال منطقی. هیچ <code>DELETE</code> فیزیکی وجود ندارد</td></tr><tr><td><code>edit_count</code></td><td>شمارندهٔ ویرایش؛ در رابط کاربری نمایش داده می‌شود تا تغییر یادداشت پنهان نماند</td></tr><tr><td><code>*_utc</code></td><td>طبق قاعدهٔ ثابت پروژه: ذخیره UTC، نمایش <code>Asia/Tehran</code></td></tr></tbody></table>
+<p><strong>پیشوند <code>public_id</code> جدید:</strong> <code>cn_</code></p>
+<hr>
+<h2>۴. مدل دسترسی — سخت‌گیرانه‌ترین بخش سامانه</h2>
+<h3>۴.۱ ماتریس دسترسی</h3>
+<table><thead><tr><th>نقش</th><th>ساخت یادداشت</th><th>خواندن یادداشت</th><th>ویرایش</th><th>ابطال</th></tr></thead><tbody><tr><td><strong>درمانگر — روی پروندهٔ خودش</strong></td><td>✅</td><td>✅ فقط یادداشت‌هایی که <strong>خودش</strong> نوشته</td><td>✅ در پنجرهٔ مجاز</td><td>✅</td></tr><tr><td><strong>درمانگر — پروندهٔ دیگری</strong></td><td>❌</td><td>❌</td><td>❌</td><td>❌</td></tr><tr><td><strong>مدیر</strong></td><td>❌</td><td>❌</td><td>❌</td><td>❌</td></tr><tr><td><strong>منشی</strong></td><td>❌</td><td>❌</td><td>❌</td><td>❌</td></tr><tr><td><strong>روان‌سنج</strong></td><td>❌</td><td>❌</td><td>❌</td><td>❌</td></tr><tr><td><strong>مراجع</strong></td><td>❌</td><td>❌</td><td>❌</td><td>❌</td></tr></tbody></table>
+<p>این ماتریس مستقیماً از <strong>ADR-004</strong> می‌آید: وراثت اختیارات مدیر از منشی <strong>هرگز به حوزهٔ دادهٔ بالینی تسری نمی‌یابد</strong>.</p>
+<h3>۴.۲ قاعدهٔ پیاده‌سازی — بدون استثنا</h3>
+<p>هر پرس‌وجوی خواندن یادداشت باید <strong>هر دو شرط</strong> را هم‌زمان داشته باشد:</p>
+<pre><code>WHERE clinical_case_id = ?        -- پرونده
+  AND author_person_id = ?        -- و نویسنده = کاربر واردشده</code></pre>
+<p>شرط دوم از <code>$_SESSION[&#x27;person_id&#x27;]</code> می‌آید، <strong>نه از پارامتر ورودی کاربر</strong>. هیچ تابعی نوشته نمی‌شود که یادداشت را فقط با <code>public_id</code> و بدون شرط نویسنده برگرداند — حتی برای استفادهٔ داخلی. این یک قاعدهٔ معماری است، نه سلیقه.</p>
+<p>افزون بر آن، پیش از هر اقدام بررسی می‌شود که <code>clinical_cases.responsible_therapist_person_id</code> برابر کاربر واردشده باشد.</p>
+<h3>۴.۳ حسابرسی</h3>
+<table><thead><tr><th>کد</th><th>زمان ثبت</th></tr></thead><tbody><tr><td><code>NOTE_CREATED</code></td><td>ثبت یادداشت تازه</td></tr><tr><td><code>NOTE_UPDATED</code></td><td>ویرایش</td></tr><tr><td><code>NOTE_VOIDED</code></td><td>ابطال</td></tr><tr><td><code>NOTE_VIEWED</code></td><td>باز کردن صفحهٔ یادداشت‌های یک پرونده</td></tr><tr><td><code>NOTE_ACCESS_DENIED</code></td><td>هر تلاش ناموفق برای دسترسی به یادداشت دیگری</td></tr></tbody></table>
+<blockquote><strong>متن یادداشت هرگز در <code>audit_log</code> نوشته نمی‌شود.</strong> فقط <code>public_id</code>، شناسهٔ پرونده و طول متن ثبت می‌شود. در غیر این صورت کنترل دسترسی بی‌معنا می‌شد، چون مدیر <code>audit_log</code> را می‌بیند.</blockquote>
+<hr>
+<h2>۵. قواعد رفتاری</h2>
+<h3>۵.۱ پیش‌شرط ثبت یادداشت</h3>
+<p>یادداشت فقط روی پرونده‌ای ثبت می‌شود که وضعیت آن <code>ACTIVE</code> و درمانگر مسئولش کاربر واردشده باشد.</p>
+<h3>۵.۲ اتصال اختیاری به نوبت</h3>
+<p>درمانگر می‌تواند یادداشت را به یکی از نوبت‌های گذشتهٔ همان مراجع با همان درمانگر متصل کند. فهرست نوبت‌ها از فاز ۲ خوانده می‌شود و فقط نوبت‌های <code>COMPLETED</code> قابل انتخاب‌اند. انتخاب از <strong>فهرست کشویی</strong> است — طبق الزام ثابت پروژه هیچ تاریخی تایپ نمی‌شود.</p>
+<h3>۵.۳ پنجرهٔ ویرایش</h3>
+<p>یادداشت تا <strong>۲۴ ساعت</strong> پس از ثبت قابل ویرایش است. پس از آن فقط ابطال ممکن است و درمانگر باید یادداشت تازه بنویسد.</p>
+<blockquote>دلیل: یادداشت بالینی یک سند است. ویرایش نامحدود گذشته، ارزش سندیت را از بین می‌برد. عدد ۲۴ ساعت یک <strong>قاعدهٔ کسب‌وکار</strong> است و در صورت نظر متفاوت مالک تغییر می‌کند.</blockquote>
+<h3>۵.۴ ابطال</h3>
+<p>ابطال نیازمند ذکر دلیل است. یادداشت باطل‌شده در فهرست با نشان «باطل‌شده» و متن محوشده دیده می‌شود، اما از پایگاه داده حذف نمی‌شود.</p>
+<h3>۵.۵ اعتبارسنجی متن</h3>
+<p>حداقل ۱۰ و حداکثر ۲۰٬۰۰۰ نویسه. ذخیره با <code>prepared statement</code>، نمایش با <code>htmlspecialchars</code> طبق قواعد امنیتی ثابت پروژه.</p>
+<hr>
+<h2>۶. صفحه‌های تازه</h2>
+<table><thead><tr><th>مسیر</th><th>نقش</th><th>کارکرد</th></tr></thead><tbody><tr><td><code>therapist/case_view.php</code></td><td>درمانگر</td><td>نمای پرونده: مشخصات مراجع، اطلاعات پذیرش، نوبت‌های او، و فهرست یادداشت‌های خودِ درمانگر</td></tr><tr><td><code>therapist/note_new.php</code></td><td>درمانگر</td><td>فرم ثبت یادداشت تازه</td></tr><tr><td><code>therapist/note_edit.php</code></td><td>درمانگر</td><td>ویرایش در پنجرهٔ ۲۴ ساعته + ابطال با دلیل</td></tr></tbody></table>
+<p><strong>تغییر در صفحهٔ موجود:</strong> در <code>therapist/index.php</code> دکمهٔ «مشاهده پرونده» که از فاز ۱ غیرفعال بود، فعال می‌شود و به <code>case_view.php</code> می‌رود.</p>
+<p>رابط کاربری کاملاً از پیوست ج و د پیروی می‌کند: راست‌به‌چپ، ۱۰۰٪ فارسی، پایهٔ ۱۶ پیکسل، همان پالت رنگ، نوار کناری سمت راست، یک <code>style.css</code>، بدون هیچ ورودی تایپی برای تاریخ.</p>
+<hr>
+<h2>۷. بسته و ارتقا</h2>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>فایل ارتقا</td><td><code>upgrade_phase3.php</code> — نیازمند مدیر واردشده + POST + CSRF</td></tr><tr><td>نسخهٔ Migration</td><td><code>3.0.0</code>، فقط پس از تأیید موفقیت همهٔ گام‌ها ثبت می‌شود</td></tr><tr><td>اجرای دوباره</td><td>باید بی‌خطر باشد: نه جدول تکراری، نه داده تکراری</td></tr><tr><td>فایل‌های محافظت‌شده</td><td><code>config.php</code>، <code>install.lock</code> و تنظیمات پیامک هرگز بازنویسی نمی‌شوند</td></tr><tr><td><code>install.php</code></td><td>در بسته قرار نمی‌گیرد</td></tr><tr><td>پس از ارتقا</td><td>فایل <code>upgrade_phase3.php</code> باید توسط مالک حذف شود</td></tr><tr><td>نشانگر نسخه</td><td>پاورقی «نسخهٔ ۳.۰» را نشان می‌دهد (درس گرفته‌شده از نقص D3 فاز ۲)</td></tr></tbody></table>
+<p>MySQL در تغییرات ساختاری تراکنشی نیست؛ بنابراین مانند فاز ۲، سند بازیابی از خرابی نیمه‌کاره همراه بسته خواهد بود.</p>
+<hr>
+<h2>۸. ریسک‌های پذیرفته‌شده — صادقانه</h2>
+<p>این سه مورد پیامد مستقیم تصمیم‌های ۱ و ۲ مالک‌اند. ساخته‌شدنشان ممکن نیست؛ فقط باید آگاهانه پذیرفته شوند.</p>
+<table><thead><tr><th>#</th><th>ریسک</th><th>توضیح</th><th>کاهش‌دهنده</th></tr></thead><tbody><tr><td><strong>P1</strong></td><td><strong>نسخهٔ پشتیبان پایگاه داده حاوی متن خام یادداشت است</strong></td><td>چون رمزنگاری نداریم، هر فایل <code>.sql</code> پشتیبان، یادداشت‌های بالینی را به‌صورت خوانا دارد. اگر این فایل روی رایانهٔ شخصی، ایمیل یا فضای ابری قرار گیرد، محرمانگی از بین رفته است</td><td>رویهٔ مکتوب نگهداری پشتیبان؛ هرگز دانلود روی دستگاه مشترک؛ حذف پس از استفاده</td></tr><tr><td><strong>P2</strong></td><td><strong>کنترل دسترسی فقط در لایهٔ نرم‌افزار است</strong></td><td>هر کسی که به phpMyAdmin یا کاربر پایگاه داده دسترسی داشته باشد — از جمله خودِ مدیر سامانه و پشتیبانی هاست — می‌تواند یادداشت‌ها را بخواند. جملهٔ «مدیر یادداشت را نمی‌بیند» فقط دربارهٔ <strong>داخل سامانهٔ جوما</strong> درست است</td><td>محدود نگه‌داشتن دسترسی cPanel؛ شفاف بودن این محدودیت برای درمانگران</td></tr><tr><td><strong>P3</strong></td><td><strong>گسست تداوم درمان</strong></td><td>با قاعدهٔ «فقط نویسنده»، اگر مراجع به درمانگر دیگری ارجاع شود یا درمانگر از کلینیک برود، یادداشت‌های پیشین برای هیچ‌کس قابل خواندن نیست. داده باقی می‌ماند ولی عملاً غیرقابل استفاده است</td><td>باید آگاهانه پذیرفته شود. اگر روزی لازم شد، نیازمند تصمیم تازهٔ مالک است</td></tr></tbody></table>
+<blockquote><strong>P3 مهم‌ترین نکته‌ای است که از شما می‌خواهم دوباره دربارهٔ آن فکر کنید.</strong> پیاده‌سازی «فقط نویسنده» کاملاً ممکن است و طبق خواستهٔ شما انجام می‌شود؛ اما پیامد عملی‌اش این است که سابقهٔ درمانی با رفتن یک درمانگر عملاً از دسترس خارج می‌شود. تغییر این تصمیم <strong>بعداً</strong> هزینهٔ فنی ندارد (فقط شرط پرس‌وجو عوض می‌شود)، ولی یادداشت‌هایی که با این فرض نوشته شده‌اند، با انتظار محرمانگی مطلق نوشته شده‌اند و بازکردن بعدی دسترسی، نقض آن انتظار است.</blockquote>
+<hr>
+<h2>۹. آزمون‌های الزامی فاز ۳</h2>
+<p>طبق رویهٔ فاز ۲، این آزمون‌ها باید <strong>واقعاً اجرا</strong> شوند. بررسی نحوی کد اجرا نیست و هیچ آزمون اجرانشده‌ای «قبول» اعلام نخواهد شد.</p>
+<table><thead><tr><th>#</th><th>آزمون</th><th>انتظار</th></tr></thead><tbody><tr><td><strong>N1</strong></td><td>درمانگر الف یادداشت می‌نویسد؛ درمانگر ب با دستکاری <code>public_id</code> در URL تلاش می‌کند بخواند</td><td>رد با پیام «دسترسی مجاز نیست» + ثبت <code>NOTE_ACCESS_DENIED</code></td></tr><tr><td><strong>N2</strong></td><td>مدیر مستقیماً آدرس صفحهٔ یادداشت را باز می‌کند</td><td>رد؛ وراثت نقش نباید راه دهد</td></tr><tr><td><strong>N3</strong></td><td>منشی همان کار را می‌کند</td><td>رد</td></tr><tr><td><strong>N4</strong></td><td>ویرایش یادداشت ۲۵ ساعته</td><td>رد با پیام روشن؛ فقط ابطال ممکن</td></tr><tr><td><strong>N5</strong></td><td>ابطال یادداشت</td><td>از دید پنهان نمی‌شود، با نشان «باطل‌شده» می‌ماند؛ در پایگاه داده باقی است</td></tr><tr><td><strong>N6</strong></td><td>اتصال یادداشت به نوبت یک مراجع دیگر با دستکاری فرم</td><td>رد</td></tr><tr><td><strong>N7</strong></td><td>متن یادداشت در <code>audit_log</code> جست‌وجو شود</td><td>یافت نشود</td></tr><tr><td><strong>N8</strong></td><td>اجرای دوبارهٔ <code>upgrade_phase3.php</code></td><td>بدون خطا، بدون جدول یا دادهٔ تکراری</td></tr><tr><td><strong>N9</strong></td><td>سلامت فاز ۱ و ۲ پس از ارتقا</td><td>ورود، تعویض نقش، پذیرش، نوبت‌دهی و تقویم دست‌نخورده</td></tr></tbody></table>
+<blockquote><strong>یادآوری:</strong> محیط توسعه PHP و MySQL ندارد، بنابراین مانند فاز ۲ این آزمون‌ها فقط روی سرور قابل اجرا هستند. ریسک <code>R8</code> فاز ۲ (نبود محیط Staging) همچنان باز است و برای <code>N8</code> ضروری خواهد بود.</blockquote>
+<hr>
+<h2>۱۰. آنچه هنوز باید تأیید شود</h2>
+<p>پیش از شروع کدنویسی، این موارد نیازمند تأیید یا اصلاح مالک‌اند:</p>
+<table><thead><tr><th>#</th><th>موضوع</th><th>پیشنهاد من</th><th>نیازمند تصمیم شما</th></tr></thead><tbody><tr><td>۱</td><td>پنجرهٔ ویرایش ۲۴ ساعته</td><td>۲۴ ساعت</td><td>تأیید یا تغییر عدد</td></tr><tr><td>۲</td><td>حداکثر طول یادداشت</td><td>۲۰٬۰۰۰ نویسه</td><td>تأیید</td></tr><tr><td>۳</td><td>پذیرش ریسک‌های P1، P2 و P3</td><td>مستندسازی و پذیرش آگاهانه</td><td>تأیید صریح لازم است</td></tr><tr><td>۴</td><td>آیا درمانگر هنگام ارجاع مجدد باید هشدار ببیند که یادداشت‌هایش برای درمانگر بعدی نامرئی می‌شود؟</td><td>بله، یک پیام اطلاع‌رسانی</td><td>تأیید</td></tr><tr><td>۵</td><td>فهرست دلیل ابطال: متن آزاد یا فهرست قابل‌ویرایش <code>lookup_items</code>؟</td><td>فهرست قابل‌ویرایش، هماهنگ با الگوی ADR-010</td><td>تأیید</td></tr></tbody></table>
+<hr>
+<p><strong>این سند پس از تأیید مالک به <code>PHASE3_FINAL_DECISIONS.md</code> تبدیل و مبنای کدنویسی خواهد شد.</strong></p>
+</div>
+</body>
+</html>
