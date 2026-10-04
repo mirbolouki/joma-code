@@ -96,32 +96,111 @@ function ins_build_config($v)
 }
 
 /** اجرای فایل SQL: جداسازی دستورها با سمی‌کالن انتهای خط */
-function ins_run_sql_file($link, $path)
+/**
+ * متن SQL را به دستورهای مستقل می‌شکند.
+ * کامنت‌های  -- ،  #  و  /* *&#47;  حذف می‌شوند و نقطه‌ویرگول داخل
+ * رشته یا نام‌های بک‌تیک‌دار به‌اشتباه جداکننده در نظر گرفته نمی‌شود.
+ * پایان‌خط ویندوزی/مک و BOM هم یکدست می‌شوند.
+ */
+function ins_split_sql($sql)
 {
-    $sql = file_get_contents($path);
-    if ($sql === false) {
-        throw new Exception('فایل اسکیما خوانده نشد.');
+    if (substr($sql, 0, 3) === "\xEF\xBB\xBF") {
+        $sql = substr($sql, 3);
     }
-    /* حذف خطوط توضیحی */
-    $lines = preg_split('/\R/', $sql);
-    $clean = array();
-    foreach ($lines as $line) {
-        $trim = ltrim($line);
-        if ($trim === '' || strpos($trim, '--') === 0) {
+    $sql = str_replace(array("\r\n", "\r"), "\n", $sql);
+
+    $out = array();
+    $buf = '';
+    $len = strlen($sql);
+    $i = 0;
+    $in_single = false;
+    $in_double = false;
+    $in_tick = false;
+
+    while ($i < $len) {
+        $ch = $sql[$i];
+        $next = ($i + 1 < $len) ? $sql[$i + 1] : '';
+
+        if (!$in_single && !$in_double && !$in_tick) {
+            /* کامنت خطی:  --  یا  # */
+            $dash_comment = ($ch === '-' && $next === '-'
+                && ($i + 2 >= $len || $sql[$i + 2] === ' ' || $sql[$i + 2] === "\t" || $sql[$i + 2] === "\n"));
+            if ($dash_comment || $ch === '#') {
+                while ($i < $len && $sql[$i] !== "\n") {
+                    $i++;
+                }
+                continue;
+            }
+            /* کامنت بلوکی */
+            if ($ch === '/' && $next === '*') {
+                $i += 2;
+                while ($i + 1 < $len && !($sql[$i] === '*' && $sql[$i + 1] === '/')) {
+                    $i++;
+                }
+                $i += 2;
+                continue;
+            }
+            if ($ch === ';') {
+                $out[] = $buf;
+                $buf = '';
+                $i++;
+                continue;
+            }
+        }
+
+        if ($ch === '\\' && ($in_single || $in_double)) {
+            $buf .= $ch;
+            $i++;
+            if ($i < $len) {
+                $buf .= $sql[$i];
+                $i++;
+            }
             continue;
         }
-        $clean[] = $line;
+        if ($ch === "'" && !$in_double && !$in_tick) {
+            $in_single = !$in_single;
+        } elseif ($ch === '"' && !$in_single && !$in_tick) {
+            $in_double = !$in_double;
+        } elseif ($ch === '`' && !$in_single && !$in_double) {
+            $in_tick = !$in_tick;
+        }
+        $buf .= $ch;
+        $i++;
     }
-    $statements = explode(";\n", implode("\n", $clean) . "\n");
+    $out[] = $buf;
+
+    $clean = array();
+    foreach ($out as $s) {
+        $s = trim($s);
+        if ($s !== '') {
+            $clean[] = $s;
+        }
+    }
+    return $clean;
+}
+
+function ins_run_sql_file($link, $path)
+{
+    $sql = @file_get_contents($path);
+    if ($sql === false) {
+        throw new Exception('فایل اسکیما خوانده نشد: ' . $path);
+    }
+    $statements = ins_split_sql($sql);
+    if (count($statements) === 0) {
+        throw new Exception('فایل اسکیما خالی است یا درست خوانده نشد.');
+    }
 
     $count = 0;
     foreach ($statements as $stmt) {
-        $stmt = trim($stmt);
-        if ($stmt === '' || $stmt === ';') {
-            continue;
-        }
         if (!mysqli_query($link, $stmt)) {
-            throw new Exception('خطا در اجرای دستور دیتابیس: ' . mysqli_error($link));
+            $snippet = preg_replace('/\s+/', ' ', $stmt);
+            if (function_exists('mb_substr')) {
+                $snippet = mb_substr($snippet, 0, 120, 'UTF-8');
+            } else {
+                $snippet = substr($snippet, 0, 120);
+            }
+            throw new Exception('خطا در اجرای دستور دیتابیس: ' . mysqli_error($link)
+                . ' | دستور: ' . $snippet);
         }
         $count++;
     }
@@ -256,13 +335,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             @mysqli_query($link, "SET time_zone = '+00:00'");
             try {
                 $existing = mysqli_query($link, "SHOW TABLES LIKE 'persons'");
-                if ($existing && mysqli_num_rows($existing) > 0) {
+                $tables_exist = ($existing && mysqli_num_rows($existing) > 0);
+                $skip_schema = (isset($_POST['skip_schema']) && $_POST['skip_schema'] === '1');
+
+                if ($tables_exist && !$skip_schema) {
                     throw new Exception('جدول‌های سامانه از قبل در این دیتابیس وجود دارند. '
-                        . 'لطفاً یک دیتابیس خالی بسازید یا جدول‌های قبلی را حذف کنید.');
+                        . 'اگر آن‌ها را خودتان با phpMyAdmin از روی فایل database/phase1_schema.sql '
+                        . 'ساخته‌اید، گزینهٔ «جدول‌ها از قبل ساخته شده‌اند» را تیک بزنید؛ '
+                        . 'در غیر این صورت همهٔ جدول‌های دیتابیس را حذف کنید و دوباره تلاش کنید.');
+                }
+                if (!$tables_exist && $skip_schema) {
+                    throw new Exception('گزینهٔ «جدول‌ها از قبل ساخته شده‌اند» تیک خورده، '
+                        . 'ولی جدولی در دیتابیس پیدا نشد. تیک را بردارید.');
                 }
 
-                $count = ins_run_sql_file($link, $SCHEMA_PATH);
-                $step2_report[] = array('ساخت جدول‌های سامانه', $count . ' دستور اجرا شد');
+                if ($skip_schema) {
+                    $step2_report[] = array('ساخت جدول‌های سامانه', 'رد شد — جدول‌ها از قبل موجود بودند');
+                    @mysqli_query($link, "DELETE FROM lookup_items");
+                    @mysqli_query($link, "DELETE FROM lookup_lists");
+                    @mysqli_query($link, "DELETE FROM service_types");
+                    @mysqli_query($link, "DELETE FROM migrations");
+                } else {
+                    $count = ins_run_sql_file($link, $SCHEMA_PATH);
+                    $step2_report[] = array('ساخت جدول‌های سامانه', $count . ' دستور اجرا شد');
+                }
 
                 $now = gmdate('Y-m-d H:i:s');
 
@@ -539,6 +635,11 @@ $base_for_assets = 'assets';
       <form method="post" action="install.php?step=2" data-guard>
         <?php echo ins_csrf_field(); ?>
         <input type="hidden" name="action" value="step2">
+        <label class="checkbox mb-3">
+          <input type="checkbox" name="skip_schema" value="1">
+          جدول‌ها از قبل ساخته شده‌اند (فایل <span class="mono">phase1_schema.sql</span> را خودم
+          در phpMyAdmin وارد کرده‌ام) — فقط داده‌های اولیه ثبت شود
+        </label>
         <button type="submit" class="btn btn-primary btn-block">ساخت جدول‌ها ⬅</button>
       </form>
 
