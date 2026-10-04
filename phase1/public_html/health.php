@@ -5,9 +5,8 @@
  *  وضعیت فنی نصب را بررسی می‌کند. پس از اطمینان از سلامت نصب،
  *  می‌توانید این فایل را از هاست حذف کنید.
  *
- *  قاعدهٔ دسترسی (طبق تصمیم مالک سامانه):
- *    • اگر با نقش «مدیر» وارد شده باشید → همیشه در دسترس است
- *    • در غیر این صورت → فقط بین ساعت ۰۱:۰۰ تا ۰۲:۰۰ به وقت تهران
+ *  قاعدهٔ دسترسی: فقط «مدیرِ واردشده». دسترسی ناشناس وجود ندارد
+ *  (اصلاحیهٔ امنیتی فاز ۲ — محدودیت ساعتی جای احراز هویت را نمی‌گیرد).
  * ═══════════════════════════════════════════════════════════════════ */
 
 error_reporting(E_ALL);
@@ -24,22 +23,17 @@ if ($config_exists) {
     date_default_timezone_set('UTC');
 }
 
-/* ── کنترل پنجرهٔ زمانی دسترسی ──────────────────────────────────── */
+/* ── کنترل دسترسی: فقط مدیرِ واردشده ──────────────────────────── */
 if (!$is_admin) {
-    $tz = new DateTimeZone($config_exists && defined('APP_TIMEZONE') ? APP_TIMEZONE : 'Asia/Tehran');
-    $local_hour = (int)(new DateTime('now', $tz))->format('G');
-    if ($local_hour !== 1) {
-        http_response_code(403);
-        header('Content-Type: text/html; charset=utf-8');
-        echo '<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8">'
-           . '<title>خودآزمون جوما</title></head><body style="font-family:Tahoma;padding:40px;text-align:center">'
-           . '<h2>🔒 این صفحه در این ساعت در دسترس نیست</h2>'
-           . '<p>برای مشاهدهٔ خودآزمون، ابتدا با حساب «مدیر» وارد سامانه شوید '
-           . 'و سپس همین نشانی را باز کنید.</p>'
-           . '<p style="color:#7F8C8D">(دسترسی بدون ورود، فقط بین ساعت ۰۱:۰۰ تا ۰۲:۰۰ به وقت تهران ممکن است.)</p>'
-           . '</body></html>';
-        exit;
-    }
+    http_response_code(403);
+    header('Content-Type: text/html; charset=utf-8');
+    echo '<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8">'
+       . '<title>خودآزمون جوما</title></head><body style="font-family:Tahoma;padding:40px;text-align:center">'
+       . '<h2>🔒 دسترسی مجاز نیست</h2>'
+       . '<p>این صفحه فقط برای «مدیر»ِ واردشده به سامانه در دسترس است.</p>'
+       . '<p><a href="login.php">ورود به سامانه</a></p>'
+       . '</body></html>';
+    exit;
 }
 
 /* ── اجرای بررسی‌ها ─────────────────────────────────────────────── */

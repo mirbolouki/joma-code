@@ -10,7 +10,8 @@
 
 if (!defined('CLINIC_DAY_START_HOUR')) { define('CLINIC_DAY_START_HOUR', 9); }
 if (!defined('CLINIC_DAY_END_HOUR'))   { define('CLINIC_DAY_END_HOUR', 20); }
-if (!defined('HOLD_HORIZON_DAYS'))     { define('HOLD_HORIZON_DAYS', 30); }
+if (!defined('BOOKING_HORIZON_DAYS'))  { define('BOOKING_HORIZON_DAYS', 30); }
+if (!defined('HOLD_TTL_SECONDS'))      { define('HOLD_TTL_SECONDS', 300); }
 if (!defined('CANCEL_LOCK_MINUTES'))   { define('CANCEL_LOCK_MINUTES', 30); }
 if (!defined('SLOT_STEP_MINUTES'))     { define('SLOT_STEP_MINUTES', 15); }
 
