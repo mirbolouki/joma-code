@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>گزارش پایان فاز ۲ — سامانهٔ جوما</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>گزارش پایان فاز ۲ و درخواست مجوز ورود به فاز ۳</h1>
+<p><strong>پروژه:</strong> سامانهٔ مدیریت کلینیک روان‌شناسی جوما <strong>فاز:</strong> ۲ — نوبت‌دهی و تقویم <strong>نسخه:</strong> ۲.۰.۰ (Migration <code>2.0.0</code>) <strong>تاریخ گزارش:</strong> ۱۴۰۵/۰۷/۱۲ — ۲۰۲۶/۱۰/۰۴ <strong>مخزن:</strong> <code>mirbolouki/joma-code</code> · شاخهٔ <code>arena/01a102a8-joma-code</code> · آخرین کامیت <code>358dc73</code> <strong>مخاطب:</strong> مدیر توسعهٔ نرم‌افزار <strong>موضوع:</strong> اخذ مجوز گذر از دروازهٔ فاز ۲ به فاز ۳</p>
+<hr>
+<h2>۱. خلاصهٔ مدیریتی</h2>
+<p>فاز ۲ <strong>توسعه‌یافته، تحویل‌شده و روی سرور عملیاتی <code>my.mirbolouki.com</code> نصب شده است.</strong> ارتقا روی نصب زندهٔ فاز ۱ اجرا شد، پنج جدول تازه ساخته شد و سامانه هم‌اکنون در حال استفادهٔ واقعی است: اتاق‌ها تعریف شده‌اند، تعرفهٔ درمانگر ثبت شده و نخستین نوبت واقعی با موفقیت ثبت شده است.</p>
+<p><strong>اما این گزارش توصیهٔ «تأیید بی‌قیدوشرط» نمی‌دهد.</strong></p>
+<p>از ۱۰ آزمون الزامی مصوب، <strong>۴ مورد روی سرور واقعی انجام و تأیید شده</strong> و <strong>۶ مورد هنوز اجرا نشده‌اند</strong> — همگی در حوزهٔ هم‌زمانی، انقضا و اتمی بودن تراکنش‌ها؛ یعنی دقیقاً همان جاهایی که خطا در آن‌ها بی‌سروصدا و پرهزینه است.</p>
+<blockquote><strong>توصیهٔ صریح:</strong> مجوز ورود به فاز ۳ <strong>مشروط</strong> صادر شود؛ به‌شرط تکمیل ۶ آزمون باقی‌مانده در هفتهٔ نخست فاز ۳، پیش از آنکه کد تازه‌ای روی این لایه سوار شود. دلیل: فاز ۳ روی جدول <code>appointments</code> بنا می‌شود و اصلاح یک نقص هم‌زمانی پس از انباشت داده و کد وابسته، چند برابر گران‌تر است.</blockquote>
+<hr>
+<h2>۲. دامنهٔ تحویل‌شده</h2>
+<h3>۲.۱ آمار تحویل</h3>
+<table><thead><tr><th>شاخص</th><th>مقدار</th></tr></thead><tbody><tr><td>فایل تازه یا بازنویسی‌شده در فاز ۲</td><td>۱۴</td></tr><tr><td>خطوط کد فاز ۲ (PHP + SQL)</td><td>۳٬۶۱۶</td></tr><tr><td>مجموع خطوط PHP سامانه</td><td>۸٬۴۸۳</td></tr><tr><td>مجموع فایل‌های PHP</td><td>۵۰</td></tr><tr><td>CSS / JS</td><td>۱٬۴۳۴ / ۳۷۸ خط</td></tr><tr><td>توابع تازهٔ لایهٔ منطق</td><td>۶۷</td></tr><tr><td>جدول تازهٔ پایگاه داده</td><td>۵ (مجموع: ۱۶)</td></tr><tr><td>کد رویداد تازه در <code>audit_log</code></td><td>۱۸</td></tr><tr><td>کامیت</td><td>۴</td></tr><tr><td>حجم بستهٔ تحویلی</td><td>۵۶۵ کیلوبایت (۶۸ فایل)</td></tr></tbody></table>
+<h3>۲.۲ قابلیت‌های تحویل‌شده</h3>
+<table><thead><tr><th>حوزه</th><th>قابلیت</th><th>وضعیت</th></tr></thead><tbody><tr><td>زیرساخت</td><td>ارتقادهندهٔ امن و تکرارپذیر (<code>upgrade_phase2.php</code>)</td><td>✅</td></tr><tr><td>مدیر</td><td>مدیریت اتاق‌ها (ایجاد، ویرایش، فعال/غیرفعال)</td><td>✅</td></tr><tr><td>مدیر</td><td>مدیریت تعرفهٔ خدمات هر درمانگر</td><td>✅</td></tr><tr><td>منشی</td><td>ثبت نوبت در چهار گام با قفل موقت</td><td>✅</td></tr><tr><td>منشی</td><td>تقویم نوبت‌ها با فیلتر بازه، درمانگر و وضعیت</td><td>✅</td></tr><tr><td>منشی</td><td>جابه‌جایی اتمیک نوبت</td><td>✅</td></tr><tr><td>منشی</td><td>لغو با دلیل اجباری، ثبت انجام‌شده و عدم مراجعه</td><td>✅</td></tr><tr><td>درمانگر</td><td>تقویم شخصی (فقط نوبت‌های خودش)</td><td>✅</td></tr><tr><td>درمانگر</td><td>اعلام بازهٔ عدم حضور با امکان تکرار سالانه</td><td>✅</td></tr><tr><td>درمانگر</td><td>مشاهدهٔ تعرفهٔ خود (فقط‌خواندنی)</td><td>✅</td></tr><tr><td>عمومی</td><td>شمارش معکوس قفل موقت، تقویم شمسی، واکنش‌گرایی موبایل</td><td>✅</td></tr></tbody></table>
+<hr>
+<h2>۳. انحراف از نقشهٔ راه اولیه — و دلیل آن</h2>
+<p>در میانهٔ فاز، مالک سامانه یک <strong>اصلاحیهٔ الزام‌آور</strong> صادر کرد که سه تصمیم معماری پیش‌نویس اول را لغو کرد. کد <strong>بازنویسی</strong> شد، نه وصله‌کاری. این مهم‌ترین رویداد مدیریتی فاز ۲ است و باید در تصمیم‌گیری شما لحاظ شود.</p>
+<table><thead><tr><th>موضوع</th><th>پیش‌نویس اول (لغو شد)</th><th>وضعیت نهایی (پیاده‌سازی‌شده)</th></tr></thead><tbody><tr><td>ماهیت <code>appointment_holds</code></td><td>جدول اعلام «برنامهٔ حضور هفتگی درمانگر»</td><td><strong>قفل موقت رزرو با عمر ۳۰۰ ثانیه</strong></td></tr><tr><td>تداخل اتاق</td><td>مسدودسازی در صورت عبور از ظرفیت</td><td><strong>همیشه فقط هشدار؛ ظرفیت هرگز مانع نیست</strong></td></tr><tr><td>مالکیت تعرفه</td><td>درمانگر می‌نویسد، مدیر ناظر</td><td><strong>مدیر می‌نویسد، درمانگر فقط می‌خواند</strong></td></tr><tr><td>اتاق پیش‌فرض درمانگر</td><td>ستون روی <code>persons</code> یا جدول ششم</td><td><strong>به‌کلی حذف شد؛ اتاق در هر رزرو انتخاب می‌شود</strong></td></tr></tbody></table>
+<p><strong>درس قابل انتقال به فاز ۳:</strong> پیش‌نویس فنی اولیه مفاهیم دامنه را اشتباه مدل کرده بود («قفل تراکنشی» با «در دسترس بودن منبع» خلط شده بود). پیشنهاد می‌شود دروازهٔ آغاز فاز ۳ شامل یک جلسهٔ تأیید واژگان دامنه با مالک سامانه، <strong>پیش از</strong> شروع کدنویسی باشد.</p>
+<p>همچنین ۹ نقص فنی در سند نقشهٔ راه شناسایی و اصلاح شد، از جمله: رشته‌های نوع نادرست در <code>bind_param</code>، نحو SQLite/Postgres در داده‌های اولیه، <code>ON DELETE CASCADE</code>، ارجاع به ستون ناموجود <code>admissions.responsible_therapist_person_id</code>، ارزیابی ساعات کاری در UTC به‌جای تهران، و فرض نادرستِ امکان تعریف «قید دیتابیسی» برای قفل ۳۰ دقیقه‌ای لغو.</p>
+<hr>
+<h2>۴. معماری — نکات کلیدی برای بازبینی فنی</h2>
+<h3>۴.۱ پروتکل مشترک هم‌زمانی</h3>
+<p>هر سه مسیر نوشتن (ایجاد قفل، تثبیت نوبت، جابه‌جایی) دقیقاً یک الگو را اجرا می‌کنند:</p>
+<pre><code>شروع تراکنش
+  └─ SELECT ... FROM persons WHERE id = ? FOR UPDATE   ← قفل ردیف شخصِ درمانگر
+     └─ بازبینی تداخل: نوبت‌های فعال + قفل‌های معتبر + قواعد عدم حضور
+        └─ عملیات
+           └─ ثبت در audit_log
+              └─ Commit            (در هر خطا: Rollback کامل)</code></pre>
+<p>قفل عمداً روی <strong>ردیف درمانگر</strong> است، نه ردیف پذیرش؛ زیرا دو پذیرش متفاوت می‌توانند هم‌زمان برای یک درمانگر رزرو شوند و قفل سطح‌پذیرش جلوی آن را نمی‌گیرد.</p>
+<h3>۴.۲ محاسبهٔ زمان قابل رزرو</h3>
+<p>هیچ جدول «برنامهٔ حضور» وجود ندارد. زمان آزاد به‌صورت محاسباتی به‌دست می‌آید:</p>
+<pre><code>ساعات کاری (۹ تا ۲۰ تهران)  ∩  نبودِ عدم حضور
+∩  نداشتن نوبت فعال  ∩  نبودِ قفل موقت معتبر</code></pre>
+<h3>۴.۳ تصمیم‌های قابل دفاع</h3>
+<table><thead><tr><th>تصمیم</th><th>دلیل</th></tr></thead><tbody><tr><td>انقضای تنبل قفل‌ها به‌جای Cron</td><td>هاست اشتراکی تضمین اجرای Cron ندارد</td></tr><tr><td>تثبیت تکرارپذیر (Idempotent)</td><td>ارسال دوبارهٔ فرم نوبت دوم نمی‌سازد</td></tr><tr><td>فریز مبلغ روی نوبت</td><td>تغییر بعدی تعرفه سوابق مالی را دستکاری نمی‌کند</td></tr><tr><td>ذخیره UTC، نمایش تهران</td><td>هیچ محاسبهٔ دستی ۳٫۵ ساعتی در کد نیست</td></tr><tr><td>نبودِ حذف فیزیکی در هیچ جدول</td><td>قابلیت ردیابی کامل؛ ۱۹ کلید خارجی <code>RESTRICT</code>، صفر <code>CASCADE</code></td></tr><tr><td>مدت جلسه از <code>service_types</code></td><td>هیچ عدد ثابت ۶۰ دقیقه‌ای در کد نیست</td></tr></tbody></table>
+<hr>
+<h2>۵. امنیت</h2>
+<table><thead><tr><th>مورد</th><th>وضعیت</th></tr></thead><tbody><tr><td><strong>اصلاح نقص:</strong> <code>health.php</code> دسترسی ناشناس داشت</td><td>✅ برطرف شد — اکنون فقط مدیرِ واردشده؛ پنجرهٔ زمانی ۰۱:۰۰–۰۲:۰۰ حذف شد</td></tr><tr><td><code>upgrade_phase2.php</code></td><td>نیازمند نشست فعال مدیر + <code>POST</code> + توکن CSRF</td></tr><tr><td>تفکیک دسترسی درمانگر</td><td>شناسهٔ درمانگر از نشست خوانده می‌شود، نه از پارامتر نشانی</td></tr><tr><td>ارث‌بری نقش</td><td>مدیر اختیارات <strong>اداری</strong> منشی را دارد؛ هرگز اختیارات <strong>بالینی</strong> را نه</td></tr><tr><td>ثبت رویداد</td><td>نقش فعال واقعی ثبت می‌شود؛ کار مدیر به نام منشی نوشته نمی‌شود</td></tr><tr><td>تزریق SQL</td><td>همهٔ پرس‌وجوها Prepared Statement</td></tr><tr><td>افشای خطا</td><td>هیچ جزئیات فنی به کاربر نمی‌رسد؛ فقط کد پیگیری <code>REF-xxxx</code></td></tr></tbody></table>
+<hr>
+<h2>۶. وضعیت استقرار</h2>
+<table><thead><tr><th>رویداد</th><th>نتیجه</th></tr></thead><tbody><tr><td>بارگذاری بسته روی هاست</td><td>✅ انجام شد</td></tr><tr><td>اجرای <code>upgrade_phase2.php</code></td><td>✅ موفق — پنج جدول ساخته شد</td></tr><tr><td>ثبت نسخهٔ <code>2.0.0</code> در <code>migrations</code></td><td>✅</td></tr><tr><td>تعریف اتاق‌های واقعی کلینیک</td><td>✅ انجام شد</td></tr><tr><td>ثبت تعرفهٔ درمانگر</td><td>✅ انجام شد</td></tr><tr><td>ثبت نخستین نوبت واقعی</td><td>✅ موفق</td></tr></tbody></table>
+<p><strong>تأیید ضمنی:</strong> موفقیت این مراحل نشان می‌دهد که اسکیما، لایهٔ دسترسی به داده، تبدیل تاریخ شمسی، محاسبهٔ زمان‌های آزاد، تبدیل منطقهٔ زمانی، چرخهٔ قفل موقت تا تثبیت، و واسط کاربری همگی در <strong>مسیر موفق (Happy Path)</strong> کار می‌کنند.</p>
+<hr>
+<h2>۷. وضعیت آزمون — صادقانه</h2>
+<h3>۷.۱ بررسی‌های ایستای ماشینی (۱۰ از ۱۰ انجام شد)</h3>
+<table><thead><tr><th>بررسی</th><th>نتیجه</th></tr></thead><tbody><tr><td>صحت نحوی PHP (<code>php-parser</code>)</td><td>۵۰ فایل، <strong>۰ خطا</strong></td></tr><tr><td>صحت نحوی JavaScript</td><td><strong>۰ خطا</strong></td></tr><tr><td>تطابق رشتهٔ نوع با تعداد پارامتر در <code>bind_param</code></td><td><strong>۰ ناهماهنگی</strong></td></tr><tr><td>تابع تعریف‌نشده</td><td><strong>۰ مورد</strong></td></tr><tr><td><code>ON DELETE CASCADE</code></td><td><strong>۰</strong> (در برابر ۱۹ مورد <code>RESTRICT</code>)</td></tr><tr><td>مدت ثابت ۶۰ دقیقه در منطق نوبت</td><td><strong>۰ مورد</strong></td></tr><tr><td>ارجاع به ستون ناموجود</td><td><strong>۰ مورد</strong></td></tr><tr><td>محاسبهٔ دستی +۳٫۵ ساعت</td><td><strong>۰ مورد</strong></td></tr><tr><td>خواندن <code>capacity</code> در منطق رزرو</td><td><strong>۰ مورد</strong></td></tr><tr><td><code>FOR UPDATE</code> روی ردیف درمانگر در مسیرهای نوشتن</td><td><strong>۳ از ۳</strong></td></tr></tbody></table>
+<blockquote>بررسی ایستا اثبات نمی‌کند کد درست <strong>کار می‌کند</strong>؛ فقط نشان می‌دهد کد همان را <strong>می‌گوید</strong> که باید.</blockquote>
+<h3>۷.۲ ده آزمون الزامی روی سرور واقعی</h3>
+<table><thead><tr><th>#</th><th>آزمون</th><th>وضعیت</th></tr></thead><tbody><tr><td>T1</td><td>رزرو هم‌زمان یک بازه توسط دو کاربر → فقط یکی موفق</td><td>🔲 <strong>اجرا نشده</strong></td></tr><tr><td>T2</td><td>دو درمانگر در یک اتاق → فقط هشدار، هر دو ثبت شوند</td><td>🔲 <strong>اجرا نشده</strong></td></tr><tr><td>T3</td><td>انقضای قفل ۳۰۰ ثانیه‌ای → آزادسازی زمان و رد تثبیت</td><td>🔲 <strong>اجرا نشده</strong></td></tr><tr><td>T4</td><td>تثبیت تکراری → نوبت دوم ساخته نشود</td><td>🔲 <strong>اجرا نشده</strong></td></tr><tr><td>T5</td><td>ریاضی ۴۵ و ۶۰ دقیقه و مرز پایان روز</td><td>🔲 <strong>اجرا نشده</strong></td></tr><tr><td>T6</td><td>رزرو داخل بازهٔ عدم حضور → رد شود</td><td>🔲 <strong>اجرا نشده</strong></td></tr><tr><td>T7</td><td>جابه‌جایی ناموفق → نوبت اصلی دست‌نخورده بماند</td><td>🔲 <strong>اجرا نشده</strong></td></tr><tr><td>T8</td><td>درمانگر نتواند تقویم دیگری یا صفحهٔ تعرفهٔ مدیر را ببیند</td><td>✅ <strong>تأییدشده</strong></td></tr><tr><td>T9</td><td>اجرای دوبارهٔ ارتقا بی‌خطر باشد</td><td>🟡 <strong>نیمه</strong> — اجرای نخست موفق؛ اجرای دوم آزموده نشده</td></tr><tr><td>T10</td><td>سالم ماندن قابلیت‌های فاز ۱</td><td>🟡 <strong>نیمه</strong> — ورود، ثبت پذیرش و ثبت نوبت کار می‌کنند؛ تعویض نقش و غیرفعال‌سازی آنی آزموده نشده</td></tr></tbody></table>
+<p><strong>جمع‌بندی: ۱ تأییدشده · ۲ نیمه‌تأیید · ۷ اجرا نشده.</strong></p>
+<p><em>(افزون بر این، بررسی امنیتی «دسترسی ناشناس به <code>health.php</code> مسدود باشد» روی سرور واقعی انجام و تأیید شد.)</em></p>
+<h3>۷.۳ چرا آزمون‌ها در محیط ساخت اجرا نشدند؟</h3>
+<p>محیط ساخت <strong>PHP و MySQL ندارد</strong> و دسترسی به مخزن بسته‌ها بسته است (<code>apt-get update</code> با خطای شبکه شکست خورد). بنابراین هیچ اجرای خودکاری ممکن نبود و تمام آزمون‌ها باید دستی روی سرور انجام شوند.</p>
+<p><strong>این یک بدهی فنی سازمانی است، نه یک انتخاب مهندسی.</strong></p>
+<hr>
+<h2>۸. ریسک‌های باز</h2>
+<table><thead><tr><th>#</th><th>ریسک</th><th>اثر</th><th>احتمال</th><th>کاهش‌دهنده</th></tr></thead><tbody><tr><td>R1</td><td>موتور جدول <code>persons</code> در فاز ۱ ممکن است InnoDB نباشد؛ در آن صورت <code>FOR UPDATE</code> بی‌اثر است و رزرو هم‌زمان می‌تواند نوبت تکراری بسازد</td><td><strong>بحرانی</strong></td><td>کم</td><td>یک پرس‌وجوی <code>SHOW TABLE STATUS</code> پاسخ قطعی می‌دهد — ۲ دقیقه کار</td></tr><tr><td>R2</td><td>نبودِ آزمون هم‌زمانی (T1–T4)</td><td>بالا</td><td>متوسط</td><td>اجرای دستی با دو مرورگر — حدود ۳۰ دقیقه</td></tr><tr><td>R3</td><td>DDL در MySQL تراکنش‌پذیر نیست؛ ارتقای نیمه‌کاره</td><td>متوسط</td><td>کم</td><td>ارتقادهنده گام‌به‌گام و با بررسی وجود نوشته شده؛ اجرای دوباره بی‌خطر است</td></tr><tr><td>R4</td><td>نبودِ هرگونه آزمون خودکار (Unit/Integration)</td><td>بالا در بلندمدت</td><td>قطعی</td><td>پیشنهاد بند ۱۰</td></tr><tr><td>R5</td><td>هیچ سنجش کارایی انجام نشده</td><td>کم</td><td>—</td><td>هیچ ادعای عددی در مستندات نشده است</td></tr></tbody></table>
+<hr>
+<h2>۹. خارج از دامنهٔ فاز ۲ (آگاهانه انجام نشد)</h2>
+<p>برنامهٔ حضور هفتگی درمانگر · اتاق پیش‌فرض درمانگر · مسدودسازی بر پایهٔ ظرفیت اتاق · پیامک یادآوری نوبت · پرداخت و صورتحساب · نوبت‌گیری توسط خود مراجع · حذف فیزیکی رکورد.</p>
+<p>نقطهٔ اتصال فاز ۴ (تخصیص فرم‌های اولیه) در کد <strong>نشانه‌گذاری</strong> شده است — در لحظهٔ «تثبیت نخستین نوبت یک پذیرش» — بدون ساخت هیچ جدولی.</p>
+<hr>
+<h2>۱۰. درخواست مجوز ورود به فاز ۳</h2>
+<h3>۱۰.۱ آنچه درخواست می‌شود</h3>
+<p>صدور <strong>مجوز مشروط</strong> برای آغاز فاز ۳.</p>
+<h3>۱۰.۲ شروط پیشنهادی</h3>
+<table><thead><tr><th>#</th><th>شرط</th><th>مهلت پیشنهادی</th></tr></thead><tbody><tr><td>C1</td><td>بررسی موتور ذخیره‌سازی جدول <code>persons</code> و اطمینان از InnoDB</td><td>پیش از هر کار دیگر</td></tr><tr><td>C2</td><td>اجرای آزمون‌های T1 تا T7 روی داده‌های آزمایشی و ثبت نتیجه</td><td>هفتهٔ نخست فاز ۳</td></tr><tr><td>C3</td><td>تکمیل T9 و T10</td><td>هفتهٔ نخست فاز ۳</td></tr><tr><td>C4</td><td>به‌روزرسانی <code>PHASE2_TEST_REPORT_FA.md</code> با نتایج واقعی</td><td>پس از C2 و C3</td></tr><tr><td>C5</td><td>توقف فاز ۳ در صورت مردود شدن هر آزمون هم‌زمانی، تا رفع کامل</td><td>—</td></tr></tbody></table>
+<h3>۱۰.۳ پیشنهاد بهبود فرایند برای فاز ۳</h3>
+<ol><li><strong>تأمین محیط اجرای واقعی</strong> (PHP + MySQL) برای تیم توسعه — این بزرگ‌ترین شکاف کیفی پروژه است. تا زمانی که کد فقط «بررسی نحوی» می‌شود، هیچ تضمین کیفی معناداری وجود ندارد.</li><li><strong>یک سرور Staging</strong> جدا از سرور عملیاتی. هم‌اکنون آزمون روی سامانهٔ زنده انجام می‌شود.</li><li><strong>تأیید واژگان دامنه با مالک سامانه پیش از کدنویسی</strong> — جلوگیری از تکرار بازنویسی میانهٔ فاز.</li><li><strong>افزودن مجموعه آزمون خودکار</strong> از همان ابتدای فاز ۳، با اولویت مسیرهای هم‌زمانی.</li></ol>
+<hr>
+<h2>۱۱. پیوست‌ها</h2>
+<table><thead><tr><th>سند</th><th>محتوا</th></tr></thead><tbody><tr><td><code>PHASE2_FINAL_DECISIONS.md</code></td><td>مرجع نهایی تصمیم‌های معماری</td></tr><tr><td><code>PHASE2_TEST_REPORT_FA.md</code></td><td>وضعیت آزمون‌ها و روش دقیق اجرای هر کدام</td></tr><tr><td><code>INSTALLATION_GUIDE_PHASE2_FA.html</code></td><td>راهنمای آفلاین ارتقا، پشتیبان‌گیری و بازگشت</td></tr><tr><td><code>MANIFEST.txt</code></td><td>۶۸ فایل با اثر انگشت SHA-256</td></tr><tr><td><code>VERSION.txt</code></td><td>شمارهٔ نسخه و تاریخ واقعی ساخت</td></tr></tbody></table>
+<h3>تاریخچهٔ کامیت فاز ۲</h3>
+<table><thead><tr><th>کامیت</th><th>شرح</th></tr></thead><tbody><tr><td><code>c79cc69</code></td><td>گام ۱ — اسکیما و توابع پایه (<strong>بعداً جایگزین شد</strong>)</td></tr><tr><td><code>34349a1</code></td><td>بازنویسی بر پایهٔ اصلاحیهٔ مالک سامانه</td></tr><tr><td><code>63b3f9e</code></td><td>ارتقادهنده، هشت صفحه، منو، CSS و JS</td></tr><tr><td><code>358dc73</code></td><td>بسته، مستندات، گزارش آزمون و مانیفست</td></tr></tbody></table>
+<hr>
+<h3>جمع‌بندی برای تصمیم‌گیرنده</h3>
+<p>فاز ۲ از نظر <strong>کارکرد</strong> تحویل‌شده و روی سرور عملیاتی در حال استفاده است. از نظر <strong>تضمین کیفیت</strong>، پوشش آزمون ناکافی است و تمرکز ریسک باقی‌مانده روی هم‌زمانی است. فاز ۳ می‌تواند آغاز شود، مشروط بر اینکه شکاف آزمون در همان هفتهٔ نخست و پیش از انباشت کد و دادهٔ تازه روی این لایه بسته شود.</p>
+<p><strong>تهیه‌کننده:</strong> تیم توسعه <strong>وضعیت پیشنهادی:</strong> ⚠️ آمادهٔ تأیید مشروط</p>
+</div>
+</body>
+</html>
