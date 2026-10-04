@@ -27,6 +27,11 @@ require_once __DIR__ . '/admission_functions.php';
 require_once __DIR__ . '/case_functions.php';
 require_once __DIR__ . '/lookup_functions.php';
 require_once __DIR__ . '/audit_functions.php';
+/* ── فاز ۲: نوبت‌دهی و تقویم ── */
+require_once __DIR__ . '/schedule_time.php';
+require_once __DIR__ . '/room_functions.php';
+require_once __DIR__ . '/tariff_functions.php';
+require_once __DIR__ . '/appointment_functions.php';
 
 /* منطقهٔ زمانی داخلی PHP روی UTC؛ تبدیل به وقت تهران فقط هنگام نمایش */
 date_default_timezone_set('UTC');
