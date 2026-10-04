@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>راهنمای نصب فاز ۳ — جوما</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>راهنمای نصب فاز ۳ — جوما</h1>
+<p><strong>پروندهٔ بالینی و یادداشت محرمانه — نسخهٔ ۳.۰</strong></p>
+<p>این راهنما برای کسی نوشته شده که برنامه‌نویس نیست. هیچ ابزار فنی، ترمینال یا ویرایش کد لازم نیست. همه‌چیز با cPanel و مرورگر انجام می‌شود.</p>
+<p><strong>زمان لازم:</strong> حدود ۱۵ دقیقه.</p>
+<hr>
+<h2>پیش از شروع — سه نکته</h2>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td>⚠️</td><td>این بسته <strong>روی فاز ۲ نصب می‌شود</strong>. اگر فاز ۲ را نصب نکرده‌اید، ابتدا آن را کامل کنید</td></tr><tr><td>⚠️</td><td>پوشهٔ <code>مستندات</code> را <strong>هرگز روی وب آپلود نکنید</strong></td></tr><tr><td>⚠️</td><td>هیچ آزمونی روی این کد اجرا نشده است. پس از نصب، آزمون‌های بند ۷ را خودتان انجام دهید</td></tr></tbody></table>
+<hr>
+<h2>گام ۱ — پشتیبان بگیرید (رد نکنید)</h2>
+<p>این برنامه خودش پشتیبان نمی‌گیرد. روی هاست اشتراکی چنین امکانی برای PHP وجود ندارد.</p>
+<ol><li>وارد <strong>cPanel</strong> شوید.</li><li>بخش <strong>phpMyAdmin</strong> را باز کنید.</li><li>از ستون سمت چپ روی پایگاه دادهٔ سامانه کلیک کنید (مثلاً <code>mirbolouki_clinic</code>).</li><li>تب <strong>Export</strong> را بزنید.</li><li>گزینهٔ <strong>Go</strong> را بزنید و فایل <code>.sql</code> را روی رایانه ذخیره کنید.</li></ol>
+<blockquote>🔒 <strong>این فایل محرمانه است.</strong> پس از نصب موفق، آن را در جای امن نگه دارید یا حذف کنید. چون یادداشت‌های بالینی رمزنگاری نمی‌شوند، این فایل متن کامل جلسات درمانی را دارد.</blockquote>
+<hr>
+<h2>گام ۲ — فایل‌ها را آپلود کنید</h2>
+<p>ساختار داخل فایل ZIP این است:</p>
+<pre><code>joma-phase3-v3.0.zip
+├── public_html/     ← کدها
+└── مستندات/         ← راهنما، نباید روی وب برود</code></pre>
+<p><strong>روش درست:</strong></p>
+<ol><li>در cPanel، <strong>File Manager</strong> را باز کنید.</li><li>روی دکمهٔ <strong>Home</strong> کلیک کنید. مسیر بالای صفحه باید چیزی مثل <code>/home/username</code> باشد — <strong>نه</strong> <code>/home/username/public_html</code>.</li><li>فایل ZIP را همین‌جا <strong>Upload</strong> کنید.</li><li>راست‌کلیک روی فایل ← <strong>Extract</strong>. مسیر مقصد را روی همین پوشهٔ خانگی بگذارید.</li><li>اگر پرسید فایل‌ها جایگزین شوند → <strong>بله / Overwrite</strong>.</li></ol>
+<blockquote>❌ <strong>اشتباه رایج:</strong> اگر ZIP را داخل <code>public_html</code> استخراج کنید، پوشه‌ای به نام <code>public_html/public_html</code> ساخته می‌شود و هیچ تغییری نمی‌بینید. اگر چنین پوشه‌ای دیدید، آن را حذف کنید و از گام ۲ دوباره شروع کنید.</blockquote>
+<h3>فایل‌هایی که نباید جایگزین شوند</h3>
+<p>این دو در بسته نیستند و دست‌نخورده می‌مانند:</p>
+<ul><li><code>includes/config.php</code> — تنظیمات اتصال به پایگاه داده</li><li><code>install.lock</code> — قفل نصب</li></ul>
+<p>تنظیمات پیامک هم داخل پایگاه داده است و تغییر نمی‌کند.</p>
+<hr>
+<h2>گام ۳ — ارتقا را اجرا کنید</h2>
+<ol><li>با حساب <strong>مدیر</strong> وارد سامانه شوید. (اگر وارد نباشید، صفحهٔ ارتقا به شما پاسخ نمی‌دهد.)</li><li>در نوار نشانی مرورگر، به انتهای نشانی سامانه <code>/upgrade_phase3.php</code> را اضافه کنید.</li></ol>
+<p>مثال: <code>https://my.example.com/upgrade_phase3.php</code></p>
+<ol><li>صفحهٔ «ارتقا به فاز ۳» باز می‌شود. فهرست پیش‌نیازها را ببینید.</li><li>دکمهٔ <strong>🚀 اجرای ارتقا</strong> را بزنید.</li></ol>
+<h3>چه انتظاری داشته باشید</h3>
+<p>کادر سبز با این متن:</p>
+<blockquote>✅ ارتقا با موفقیت انجام شد.</blockquote>
+<p>و در «گزارش اجرا»:</p>
+<table><thead><tr><th>خط</th><th>معنی</th></tr></thead><tbody><tr><td>جدول «confidential_notes» ساخته شد</td><td>جدول تازه ساخته شد</td></tr><tr><td>فهرست «دلیل ابطال یادداشت»: ۴ گزینهٔ تازه افزوده شد</td><td>داده‌های مرجع</td></tr><tr><td>راستی‌آزمایی جدول و داده‌های مرجع موفق بود</td><td>همه‌چیز بررسی شد</td></tr><tr><td>نسخهٔ 3.0.0 در جدول migrations ثبت شد</td><td>پایان موفق</td></tr></tbody></table>
+<hr>
+<h2>گام ۴ — فایل ارتقا را حذف کنید</h2>
+<p><strong>این گام را فراموش نکنید.</strong></p>
+<p>در File Manager به پوشهٔ <code>public_html</code> بروید، فایل <code>upgrade_phase3.php</code> را پیدا کنید و <strong>Delete</strong> بزنید.</p>
+<hr>
+<h2>گام ۵ — بررسی کنید که واقعاً نصب شده</h2>
+<p>پایین هر صفحه باید بنویسد:</p>
+<blockquote>سامانهٔ مدیریت کلینیک جوما — <strong>نسخهٔ ۳.۰</strong> (فاز ۳ — پروندهٔ بالینی)</blockquote>
+<p>اگر هنوز «نسخهٔ ۲.۰.۱» می‌بینید، یعنی فایل‌ها جایگزین نشده‌اند یا ارتقا اجرا نشده است. به گام ۲ برگردید.</p>
+<hr>
+<h2>گام ۶ — چه چیزی تازه است</h2>
+<p>با حساب <strong>درمانگر</strong> وارد شوید:</p>
+<ol><li>در کارتابل، کنار هر پرونده دکمهٔ <strong>«مشاهدهٔ پرونده»</strong> حالا فعال است (قبلاً خاکستری بود).</li><li>در صفحهٔ پرونده می‌بینید: مشخصات مراجع، نوبت‌ها (فقط نمایشی)، و بخش یادداشت‌های محرمانه.</li><li>دکمهٔ <strong>«افزودن یادداشت تازه»</strong> را بزنید، متن بنویسید و ذخیره کنید.</li></ol>
+<h3>قواعدی که باید بدانید</h3>
+<table><thead><tr><th>قاعده</th><th>توضیح</th></tr></thead><tbody><tr><td>🔒 محرمانگی</td><td>یادداشت فقط برای <strong>خودِ نویسنده</strong> قابل دیدن است. مدیر، منشی و سایر درمانگران هیچ مسیری در سامانه ندارند</td></tr><tr><td>⏳ ویرایش</td><td>تا <strong>۲۴ ساعت</strong> پس از ثبت. پس از آن فقط ابطال</td></tr><tr><td>🚫 ابطال</td><td>یادداشت حذف نمی‌شود؛ با نشان «باطل‌شده» در پرونده می‌ماند. دلیل اجباری است</td></tr><tr><td>📏 طول</td><td>حداکثر ۲۰٬۰۰۰ نویسه. شمارنده زیر کادر نمایش داده می‌شود</td></tr></tbody></table>
+<hr>
+<h2>گام ۷ — آزمون‌های پس از نصب</h2>
+<p>هیچ آزمونی روی این کد اجرا نشده است. این پنج مورد مهم‌ترین‌اند:</p>
+<table><thead><tr><th>#</th><th>کار</th><th>نتیجهٔ درست</th></tr></thead><tbody><tr><td>۱</td><td>با درمانگر الف یادداشتی بسازید. نشانی صفحهٔ آن را کپی کنید. از مرورگر دیگری با درمانگر ب وارد شوید و همان نشانی را باز کنید</td><td>پیام «یادداشت یافت نشد یا شما اجازهٔ دسترسی ندارید»</td></tr><tr><td>۲</td><td>با حساب <strong>مدیر</strong> نشانی <code>therapist/case_detail.php</code> را باز کنید</td><td>صفحهٔ «دسترسی مجاز نیست»</td></tr><tr><td>۳</td><td>یادداشتی بیش از ۲۰٬۰۰۰ نویسه بنویسید (متنی را چند بار کپی کنید)</td><td>رد شدن با پیام طول</td></tr><tr><td>۴</td><td>یادداشتی را با دلیل باطل کنید</td><td>در فهرست با نشان «باطل‌شده» بماند، حذف نشود</td></tr><tr><td>۵</td><td>ورود، تعویض نقش، ثبت پذیرش و ثبت نوبت را امتحان کنید</td><td>همه مثل قبل کار کنند</td></tr></tbody></table>
+<p>نتیجهٔ هر کدام را یادداشت کنید.</p>
+<hr>
+<h2>اگر چیزی اشتباه پیش رفت</h2>
+<h3>کادر قرمز «ارتقا کامل نشد»</h3>
+<p>پیام خطا را بخوانید. در MySQL ساخت جدول قابل بازگشت خودکار نیست، اما این برنامه گام‌های انجام‌شده را تکرار نمی‌کند. ایراد را برطرف کنید و <strong>دوباره دکمه را بزنید</strong> — از همان‌جا که مانده بود ادامه می‌دهد.</p>
+<h3>صفحهٔ سفید یا خطا</h3>
+<p>کد پیگیری <code>REF-xxxx</code> را یادداشت و ارسال کنید.</p>
+<h3>بازگشت کامل به فاز ۲ (Rollback)</h3>
+<ol><li>در phpMyAdmin، پایگاه داده را انتخاب کنید.</li><li>تب <strong>Import</strong> ← فایل پشتیبان گام ۱ را انتخاب کنید ← <strong>Go</strong>.</li><li>فایل‌های <code>public_html/</code> نسخهٔ ۲.۰.۱ را دوباره آپلود کنید.</li></ol>
+<blockquote>⚠️ بازگرداندن پشتیبان، <strong>همهٔ داده‌های ثبت‌شده پس از زمان پشتیبان را پاک می‌کند</strong> — از جمله پذیرش‌ها و نوبت‌های تازه. فقط وقتی انجام دهید که واقعاً لازم باشد.</blockquote>
+<hr>
+<h2>یادآوری محرمانگی</h2>
+<p>یادداشت‌های بالینی <strong>رمزنگاری نمی‌شوند</strong> — این تصمیم آگاهانهٔ شما بود و پیامدهایش اینهاست:</p>
+<ul><li>هر فایل پشتیبان، متن کامل جلسات درمانی را خوانا دارد.</li><li>هر کس به phpMyAdmin دسترسی داشته باشد، می‌تواند یادداشت‌ها را بخواند. جملهٔ «مدیر یادداشت را نمی‌بیند» فقط <strong>داخل سامانهٔ جوما</strong> درست است.</li></ul>
+<p>به درمانگران وعده‌ای ندهید که فنی پشتش نیست.</p>
+</div>
+</body>
+</html>

@@ -14,6 +14,7 @@ $me = (int)$_SESSION['person_id'];
 try {
     $awaiting = admissions_fetch_awaiting_for_therapist($db, $me);
     $cases = clinical_cases_fetch_for_therapist($db, $me);
+    $orphaned = phase3_ready($db) ? notes_orphaned_cases_for_therapist($db, $me) : array();
 } catch (Exception $ex) {
     $ref = log_system_error('THERAPIST_DASHBOARD', $ex);
     render_error_page($ref);
@@ -32,6 +33,25 @@ require __DIR__ . '/../templates/header.php';
 </div>
 <?php } ?>
 <?php echo flash_render('therapist_success', 'success'); ?>
+
+<?php if (count($orphaned) > 0) { ?>
+  <div class="alert alert-warning">
+    <strong>⚠️ یادآوری دربارهٔ پرونده‌هایی که دیگر مسئول آن‌ها نیستید</strong><br>
+    شما روی <?php echo to_persian_digits(count($orphaned)); ?> پرونده یادداشت محرمانه دارید
+    که اکنون به درمانگر دیگری سپرده شده است. طبق قاعدهٔ محرمانگی سامانه،
+    <strong>این یادداشت‌ها برای درمانگر جدید و هیچ‌کس دیگر قابل خواندن نیست</strong>
+    و شما هم دیگر به صفحهٔ آن پرونده‌ها دسترسی ندارید.
+    <ul class="hint-list">
+      <?php foreach ($orphaned as $o) { ?>
+        <li>
+          <?php echo e($o['first_name'] . ' ' . $o['last_name']); ?>
+          — پرونده <span class="mono"><?php echo e($o['public_id']); ?></span>
+          (<?php echo to_persian_digits((int)$o['note_count']); ?> یادداشت)
+        </li>
+      <?php } ?>
+    </ul>
+  </div>
+<?php } ?>
 
 <h2>📥 پذیرش‌های در انتظار تصمیم (<?php echo to_persian_digits(count($awaiting)); ?> مورد)</h2>
 <?php if (count($awaiting) === 0) { ?>
@@ -78,9 +98,16 @@ require __DIR__ . '/../templates/header.php';
             <span>تاریخ گشایش: <?php echo e(jalali_display($c['opened_at'], 'date')); ?></span>
           </div>
         </div>
-        <button class="btn btn-secondary" disabled title="در فاز بعدی فعال می‌شود">
-          مشاهدهٔ پرونده — فاز بعد
-        </button>
+        <?php if (phase3_ready($db)) { ?>
+          <a class="btn btn-primary"
+             href="case_detail.php?case_id=<?php echo e($c['public_id']); ?>">
+            مشاهدهٔ پرونده
+          </a>
+        <?php } else { ?>
+          <button class="btn btn-secondary" disabled title="در فاز بعدی فعال می‌شود">
+            مشاهدهٔ پرونده — فاز بعد
+          </button>
+        <?php } ?>
       </div>
     <?php } ?>
   </div>

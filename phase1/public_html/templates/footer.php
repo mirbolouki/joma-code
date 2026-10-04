@@ -2,9 +2,14 @@
 /* جوما — پاورقی مشترک */
 $asset_base = defined('APP_BASE_URL') ? APP_BASE_URL : '';
 if (!isset($layout)) { $layout = 'app'; }
-$joma_version_label = (isset($GLOBALS['db']) && function_exists('phase2_ready') && phase2_ready($GLOBALS['db']))
-    ? 'نسخهٔ ۲.۰.۱ (فاز ۲ — نوبت‌دهی و تقویم)'
-    : 'نسخهٔ ۱.۰.۱ (فاز ۱)';
+$joma_version_label = 'نسخهٔ ۱.۰.۱ (فاز ۱)';
+if (isset($GLOBALS['db'])) {
+    if (function_exists('phase3_ready') && phase3_ready($GLOBALS['db'])) {
+        $joma_version_label = 'نسخهٔ ۳.۰ (فاز ۳ — پروندهٔ بالینی)';
+    } elseif (function_exists('phase2_ready') && phase2_ready($GLOBALS['db'])) {
+        $joma_version_label = 'نسخهٔ ۲.۰.۱ (فاز ۲ — نوبت‌دهی و تقویم)';
+    }
+}
 ?>
 <?php if ($layout === 'auth') { ?>
   </div>

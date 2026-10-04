@@ -221,6 +221,29 @@ function admission_reassign_therapist($db, $id, $new_therapist_person_id, $actor
         );
         audit_log_write($db, $actor_person_id, ROLE_SECRETARY, 'ADMISSION_REASSIGNED',
             'admission', $id, array('new_therapist_person_id' => (int)$new_therapist_person_id));
+
+        /* فاز ۳ — اگر پرونده‌ای برای این پذیرش باز شده باشد، درمانگر مسئول آن
+           هم جابه‌جا می‌شود و رویداد برای درمانگر پیشین در حسابرسی ثبت می‌گردد.
+           هشدار دیدنی، در کارتابل درمانگر پیشین از روی داده استنتاج می‌شود. */
+        if (function_exists('phase3_ready') && phase3_ready($db)) {
+            $linked_case = db_select_one(
+                $db,
+                "SELECT id, responsible_therapist_person_id FROM clinical_cases
+                  WHERE admission_id = ? LIMIT 1",
+                'i',
+                array((int)$id)
+            );
+            if ($linked_case
+                && (int)$linked_case['responsible_therapist_person_id'] !== (int)$new_therapist_person_id) {
+                therapist_case_transfer_warning(
+                    $db,
+                    (int)$linked_case['id'],
+                    (int)$linked_case['responsible_therapist_person_id'],
+                    (int)$new_therapist_person_id
+                );
+            }
+        }
+
         mysqli_commit($db);
     } catch (Exception $e) {
         mysqli_rollback($db);

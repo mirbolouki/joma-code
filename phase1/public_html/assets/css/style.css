@@ -1432,3 +1432,67 @@ input[type="radio"] {
 
 .hidden    { display: none !important; }
 .invisible { visibility: hidden; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   فاز ۳ — پروندهٔ بالینی و یادداشت محرمانه
+   ═══════════════════════════════════════════════════════════════════ */
+
+.note-textarea {
+  width: 100%;
+  min-height: 260px;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 2;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border, #ECF0F1);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--color-text, #2C3E50);
+  resize: vertical;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.note-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary, #2E5090);
+  box-shadow: 0 0 0 3px rgba(46, 80, 144, .12);
+}
+
+.note-textarea.is-invalid {
+  border-color: var(--color-danger, #E74C3C);
+}
+
+.note-counter { font-weight: 700; }
+.note-counter.is-warning { color: var(--color-warning, #F39C12); }
+.note-counter.is-over    { color: var(--color-danger, #E74C3C); }
+
+.note-body {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: 2.1;
+  padding: 16px 18px;
+  background: #FBFCFD;
+  border: 1px solid var(--color-border, #ECF0F1);
+  border-radius: 6px;
+}
+
+.note-body-retracted {
+  opacity: .55;
+  text-decoration: line-through;
+  text-decoration-color: rgba(231, 76, 60, .45);
+}
+
+.note-preview {
+  color: #5A6B7B;
+  font-size: .95rem;
+  line-height: 1.9;
+  margin: 6px 0;
+  word-wrap: break-word;
+}
+
+.item-card.note-retracted { opacity: .7; }
+
+@media (max-width: 767px) {
+  .note-textarea { min-height: 200px; font-size: 1rem; }
+  .note-body { padding: 12px; }
+}

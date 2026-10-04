@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>گزارش آزمون فاز ۳ — جوما</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>گزارش آزمون فاز ۳ — جوما</h1>
+<p><strong>نسخه:</strong> ۳.۰ · <strong>تاریخ:</strong> ۱۴۰۵/۰۷/۱۲ (2026-10-04)</p>
+<hr>
+<h2>⚠️ بیانیهٔ صداقت — پیش از هر چیز بخوانید</h2>
+<blockquote>محیط ساخت این بسته <strong>PHP و MySQL ندارد</strong>. نصب آن‌ها هم در آن محیط ممکن نیست.  بنابراین <strong>هیچ‌یک از آزمون‌های زیر اجرا نشده است</strong> و هیچ‌کدام «قبول» اعلام نمی‌شود. آنچه انجام شده، در بند «بررسی‌های انجام‌شده» با نام دقیق خودش آمده است.  <strong>بررسی نحوی کد، اجرای کد نیست.</strong> تحلیل ایستا، آزمون نیست.  اجرای آزمون‌ها بر عهدهٔ مالک روی سرور عملیاتی است. همان‌طور که در فاز ۲ ثابت شد، سه نقص واقعی (D1، D2، D3) را فقط آزمون انسانی پیدا کرد و هیچ بررسی ایستایی آن‌ها را ندید.</blockquote>
+<hr>
+<h2>۱. بررسی‌های انجام‌شده (نه آزمون)</h2>
+<table><thead><tr><th>بررسی</th><th>ابزار</th><th>نتیجه</th></tr></thead><tbody><tr><td>صحت نحوی همهٔ فایل‌های PHP</td><td><code>php-parser</code></td><td><strong>۵۷ فایل، ۰ خطا</strong> ✅</td></tr><tr><td>فراخوانی تابع تعریف‌نشده</td><td>پویشگر سفارشی</td><td>موردی یافت نشد ✅</td></tr><tr><td>تطابق تعداد <code>?</code> با رشتهٔ نوع و تعداد پارامتر</td><td>پویشگر سفارشی</td><td><strong>۱۱۵ نقطهٔ bind بررسی شد، ۰ مغایرت</strong> ✅</td></tr><tr><td>تطابق نام ستون‌ها با اسکیمای واقعی فاز ۱ و ۲</td><td>بازبینی دستی در برابر <code>phase1_schema.sql</code> و <code>phase2_schema.sql</code></td><td>۵ نام نادرست در دستور اولیه پیدا و اصلاح شد ✅</td></tr><tr><td>تطابق امضای توابع فراخوانی‌شده</td><td>بازبینی دستی</td><td>۱ مورد (<code>appointment_display</code>) اصلاح شد ✅</td></tr></tbody></table>
+<p><strong>این‌ها رفتار زمان اجرا را تضمین نمی‌کنند.</strong> فقط می‌گویند کد پارس می‌شود و به چیزهای ناموجود ارجاع نمی‌دهد.</p>
+<hr>
+<h2>۲. آزمون‌های الزامی — وضعیت: هیچ‌کدام اجرا نشده</h2>
+<table><thead><tr><th>#</th><th>سناریو</th><th>انتظار</th><th>وضعیت</th></tr></thead><tbody><tr><td>۱</td><td>درمانگر یادداشت می‌سازد</td><td>در پرونده ثبت شود</td><td>🔲 اجرا نشده</td></tr><tr><td>۲</td><td>درمانگر ب شناسهٔ یادداشت درمانگر الف را در URL می‌گذارد</td><td>رد + ثبت <code>NOTE_ACCESS_DENIED</code></td><td>🔲 اجرا نشده</td></tr><tr><td>۳</td><td>درمانگر ب شناسهٔ پروندهٔ درمانگر الف را در URL می‌گذارد</td><td>رد + ثبت <code>CASE_ACCESS_DENIED</code></td><td>🔲 اجرا نشده</td></tr><tr><td>۴</td><td>مدیر نشانی <code>therapist/case_detail.php</code> را باز می‌کند</td><td>۴۰۳</td><td>🔲 اجرا نشده</td></tr><tr><td>۵</td><td>منشی همان کار را می‌کند</td><td>۴۰۳</td><td>🔲 اجرا نشده</td></tr><tr><td>۶</td><td>ویرایش ۳ ساعت پس از ثبت</td><td>موفق، <code>edit_count</code> یک واحد بالا برود</td><td>🔲 اجرا نشده</td></tr><tr><td>۷</td><td>ویرایش ۲۵ ساعت پس از ثبت</td><td>رد با پیام روشن؛ فقط ابطال ممکن</td><td>🔲 اجرا نشده</td></tr><tr><td>۸</td><td>ابطال بدون انتخاب دلیل</td><td>رد</td><td>🔲 اجرا نشده</td></tr><tr><td>۹</td><td>ابطال با دلیل</td><td><code>status=&#x27;RETRACTED&#x27;</code>، در فهرست با نشان «باطل‌شده» بماند</td><td>🔲 اجرا نشده</td></tr><tr><td>۱۰</td><td>یادداشت بیش از ۲۰٬۰۰۰ نویسه</td><td>رد با پیام طول</td><td>🔲 اجرا نشده</td></tr><tr><td>۱۱</td><td>مشاهدهٔ یادداشت</td><td><code>view_count</code> یک واحد بالا برود</td><td>🔲 اجرا نشده</td></tr><tr><td>۱۲</td><td>ارجاع مجدد پرونده‌ای که یادداشت دارد</td><td>کادر هشدار در کارتابل درمانگر پیشین + <code>CASE_TRANSFERRED_AWAY</code></td><td>🔲 اجرا نشده</td></tr><tr><td>۱۳</td><td>جست‌وجوی متن یادداشت در <code>audit_log</code></td><td>یافت نشود</td><td>🔲 اجرا نشده</td></tr><tr><td>۱۴</td><td>اجرای دوبارهٔ <code>upgrade_phase3.php</code></td><td>بدون خطا، بدون داده یا جدول تکراری</td><td>🔲 اجرا نشده — نیازمند Staging</td></tr><tr><td>۱۵</td><td>سلامت فاز ۱ و ۲ پس از ارتقا</td><td>ورود، تعویض نقش، پذیرش، نوبت‌دهی دست‌نخورده</td><td>🔲 اجرا نشده</td></tr></tbody></table>
+<h3>شمارش: ۰ قبول / ۰ مردود / ۱۵ اجرا نشده</h3>
+<hr>
+<h2>۳. آنچه آزمون نیست</h2>
+<p>در دستور اجرایی، موردی با این مضمون آمده بود:</p>
+<blockquote>«پرس‌وجوی SQL مستقیم به جدول → یادداشت‌های درمانگر دیگر دیده شود. <strong>تست موفق است.</strong>»</blockquote>
+<p><strong>این آزمون نیست.</strong> این نمایش ریسک <strong>P2</strong> است: کنترل دسترسی فقط در لایهٔ نرم‌افزار وجود دارد و هر کس به phpMyAdmin دسترسی داشته باشد یادداشت‌ها را می‌خواند.</p>
+<p>ثبت آن به‌عنوان «قبول» باعث می‌شد گزارش بگوید «۱۵ از ۱۵ موفق» در حالی که یکی از آن‌ها یک محدودیت امنیتی پذیرفته‌شده است. به بند ریسک‌ها منتقل شد.</p>
+<hr>
+<h2>۴. ریسک‌های باز</h2>
+<table><thead><tr><th>#</th><th>ریسک</th><th>وضعیت</th></tr></thead><tbody><tr><td><strong>P1</strong></td><td>پشتیبان پایگاه داده حاوی متن خام یادداشت</td><td>پذیرفته‌شدهٔ مالک</td></tr><tr><td><strong>P2</strong></td><td>کنترل دسترسی فقط نرم‌افزاری</td><td>پذیرفته‌شدهٔ مالک</td></tr><tr><td><strong>P3</strong></td><td>گسست تداوم درمان پس از ارجاع</td><td>پذیرفته‌شدهٔ مالک</td></tr><tr><td><strong>R8</strong></td><td>نبود محیط Staging</td><td><strong>همچنان باز</strong> — آزمون ۱۴ بدون آن قابل اجرا نیست</td></tr><tr><td><strong>R9</strong></td><td>هیچ آزمون زمان‌اجرایی روی کد فاز ۳ انجام نشده</td><td><strong>باز</strong> — کاهش فقط با اجرای ۱۵ آزمون بالا</td></tr></tbody></table>
+<hr>
+<h2>۵. اولویت پیشنهادی برای اجرا</h2>
+<p>اگر وقت محدود است، این پنج مورد مهم‌ترین‌اند و هرکدام کمتر از پنج دقیقه وقت می‌برد:</p>
+<ol><li><strong>آزمون ۲</strong> — نشت یادداشت بین دو درمانگر. مهم‌ترین آزمون کل فاز.</li><li><strong>آزمون ۴</strong> — مدیر نباید راه داشته باشد.</li><li><strong>آزمون ۷</strong> — پنجرهٔ ۲۴ ساعته واقعاً ببندد.</li><li><strong>آزمون ۱۵</strong> — فاز ۱ و ۲ نشکسته باشند.</li><li><strong>آزمون ۱۲</strong> — هشدار ارجاع دیده شود.</li></ol>
+</div>
+</body>
+</html>

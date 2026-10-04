@@ -376,3 +376,60 @@
     boot();
   }
 })();
+
+/* ═══════════════════════════════════════════════════════════════════
+   فاز ۳ — شمارندهٔ زندهٔ نویسه برای یادداشت محرمانه
+   بدون AJAX و بدون ذخیرهٔ خودکار؛ فقط نمایش.
+   اعتبارسنجی واقعی همیشه در سمت سرور انجام می‌شود.
+   ═══════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var FA = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+
+  function toPersianDigits(n) {
+    return String(n).replace(/[0-9]/g, function (d) { return FA[+d]; });
+  }
+
+  function countChars(value) {
+    /* شمارش بر مبنای نقطه‌کد، هماهنگ با mb_strlen در PHP */
+    if (typeof Array.from === 'function') {
+      return Array.from(value).length;
+    }
+    return value.length;
+  }
+
+  function wire(textarea) {
+    var targetId = textarea.getAttribute('data-counter');
+    var max = parseInt(textarea.getAttribute('data-maxchars'), 10);
+    var out = targetId ? document.getElementById(targetId) : null;
+    if (!out || !max) { return; }
+
+    function update() {
+      var n = countChars(textarea.value);
+      out.textContent = toPersianDigits(n);
+      out.classList.remove('is-warning', 'is-over');
+      if (n > max) {
+        out.classList.add('is-over');
+      } else if (n > max * 0.9) {
+        out.classList.add('is-warning');
+      }
+    }
+
+    textarea.addEventListener('input', update);
+    update();
+  }
+
+  function boot() {
+    var list = document.querySelectorAll('textarea[data-counter]');
+    for (var i = 0; i < list.length; i++) {
+      wire(list[i]);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
