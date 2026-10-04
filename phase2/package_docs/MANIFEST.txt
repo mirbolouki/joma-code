@@ -67,11 +67,11 @@ public_html/therapist/calendar.php                                   6465  75d4b
 public_html/therapist/index.php                                      4003  9cae1e0ec19988c79fd14e265a8c23896cefa25e2044d6c5450a55d4f69c1a46
 public_html/therapist/tariffs_view.php                               3253  083a20c35647956ddb602fefb874550d9c4fa383e9c89d527d4fc15b85e65863
 مستندات/INSTALLATION_GUIDE_PHASE2_FA.html                           17114  02e52d07ebb17d55b426832765eab9f36a8cf8b2945b3ed55b19a466896df6dd
-مستندات/PHASE2_COMPLETION_REPORT_FA.html                            34655  3d3c19fef966c8ad32c795774435e84442ffafaa69a90bd604c6ff6363b651ea
-مستندات/PHASE2_COMPLETION_REPORT_FA.md                              27014  4037a5dbbe831bc60e7f372492c3f61cfeadea4f9b632b416e0c0da5f4930fd2
+مستندات/PHASE2_COMPLETION_REPORT_FA.html                            35176  0ad42cc131b70ba7b9e83dceeef12db16649d26ee7abec50c0412fd300f78821
+مستندات/PHASE2_COMPLETION_REPORT_FA.md                              27438  9fbc85220353126e948c7b49ae441de7a414bd2395f2ad6389b3a4b689789c98
 مستندات/PHASE2_FINAL_DECISIONS.md                                   13601  0a6e9a3b6b155b5fec6e0f158a3bea8575537dca7d9e0a6eaeb230721151111f
 مستندات/PHASE2_TEST_REPORT_FA.md                                    13016  2de5819d28d45e230693bf6a835d90ba331cce8a7d5e51db1267b450562e4858
 مستندات/README_FA.md                                                 1515  20f3c8ec6f2143d3b961b0c1fe3b97cf553a0fe8c5bea4d25383d4c9e9f78552
 مستندات/VERSION.txt                                                  1985  dd5f6c2c7d1890bfc17fc3d1194bc3260569c1c0eb48c7e1579719f0e6fe88c0
 --------------------------------------------------------------------------------------------------------------------------------------------
-تعداد فایل: 70    مجموع حجم: 961410 بایت (0.92 مگابایت)
+تعداد فایل: 70    مجموع حجم: 962355 بایت (0.92 مگابایت)
