@@ -189,3 +189,42 @@ function date_diff_days($a, $b)
     $db = new DateTime($b . ' 00:00:00', new DateTimeZone('UTC'));
     return (int)$da->diff($db)->format('%r%a');
 }
+
+/**
+ * آیا جدول‌های فاز ۲ روی این نصب ساخته شده‌اند؟
+ * تا پیش از اجرای upgrade_phase2.php، صفحه‌های فاز ۱ باید بدون خطا کار کنند.
+ */
+function phase2_ready($db)
+{
+    static $ready = null;
+    if ($ready === null) {
+        $ready = false;
+        $res = @mysqli_query($db, "SHOW TABLES LIKE 'appointments'");
+        if ($res) {
+            $ready = (mysqli_num_rows($res) > 0);
+            mysqli_free_result($res);
+        }
+    }
+    return $ready;
+}
+
+/** نسخهٔ Migration ثبت‌شده است؟ */
+function migration_applied($db, $version)
+{
+    $row = db_select_one($db, "SELECT id FROM migrations WHERE version = ?", 's', array($version));
+    return $row ? true : false;
+}
+
+/** فهرست روزهای یک بازهٔ محلی (برای تقویم هفتگی) */
+function local_date_range($from_date, $to_date)
+{
+    $out = array();
+    $d = $from_date;
+    $guard = 0;
+    while ($d <= $to_date && $guard < 62) {
+        $out[] = $d;
+        $d = date_add_days($d, 1);
+        $guard++;
+    }
+    return $out;
+}

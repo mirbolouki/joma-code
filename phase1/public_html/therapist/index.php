@@ -24,6 +24,13 @@ $active_menu = 'therapist_home';
 require __DIR__ . '/../templates/header.php';
 ?>
 <h1>🩺 کارتابل درمانگر</h1>
+<?php if (phase2_ready($db)) { ?>
+<div class="action-panel">
+  <a href="calendar.php" class="btn btn-primary">📅 تقویم من</a>
+  <a href="absences.php" class="btn btn-secondary">🏖️ عدم حضور</a>
+  <a href="tariffs_view.php" class="btn btn-secondary">💰 تعرفهٔ من</a>
+</div>
+<?php } ?>
 <?php echo flash_render('therapist_success', 'success'); ?>
 
 <h2>📥 پذیرش‌های در انتظار تصمیم (<?php echo to_persian_digits(count($awaiting)); ?> مورد)</h2>

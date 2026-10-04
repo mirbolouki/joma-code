@@ -55,6 +55,10 @@ require __DIR__ . '/../templates/header.php';
 <?php } ?>
 
 <div class="action-panel">
+<?php if (phase2_ready($db)) { ?>
+  <a href="appointment_new.php" class="btn btn-primary">🗓️ ثبت نوبت</a>
+  <a href="appointments.php" class="btn btn-secondary">📅 تقویم نوبت‌ها</a>
+<?php } ?>
   <a href="admission_new.php" class="btn btn-primary">➕ ثبت پذیرش جدید</a>
 </div>
 

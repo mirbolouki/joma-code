@@ -318,6 +318,44 @@
     });
   }
 
+
+  /* ── فاز ۲: شمارش معکوس قفل موقت رزرو ──────────────────────────────
+     فقط نمایش است؛ اعتبار واقعی قفل را سرور تعیین می‌کند. */
+  function initHoldTimer() {
+    var box = $('.hold-timer');
+    if (!box) { return; }
+    var left = parseInt(box.getAttribute('data-hold-seconds'), 10);
+    if (isNaN(left)) { return; }
+    var out = box.querySelector('.hold-countdown');
+    if (!out) { return; }
+
+    function fa(n) {
+      return String(n).replace(/[0-9]/g, function (d) {
+        return '۰۱۲۳۴۵۶۷۸۹'.charAt(parseInt(d, 10));
+      });
+    }
+
+    function tick() {
+      if (left <= 0) {
+        out.textContent = 'به پایان رسید';
+        out.className = 'hold-countdown hold-expired';
+        var buttons = document.querySelectorAll('.hold-card button[type="submit"]');
+        for (var i = 0; i < buttons.length; i++) {
+          if (buttons[i].className.indexOf('btn-secondary') === -1) {
+            buttons[i].disabled = true;
+          }
+        }
+        return;
+      }
+      var m = Math.floor(left / 60);
+      var s = left % 60;
+      out.textContent = fa(m) + ':' + fa(s < 10 ? '0' + s : s);
+      left--;
+      window.setTimeout(tick, 1000);
+    }
+    tick();
+  }
+
   /* ── راه‌اندازی ───────────────────────────────────────────────────── */
   function boot() {
     initMenu();
@@ -329,6 +367,7 @@
     initDigitNormalizer();
     initCountdown();
     initPersonLookup();
+    initHoldTimer();
   }
 
   if (document.readyState === 'loading') {

@@ -55,6 +55,13 @@ require __DIR__ . '/../templates/header.php';
   <a href="users_list.php" class="btn btn-secondary">👥 فهرست کاربران</a>
   <a href="<?php echo e(APP_BASE_URL); ?>/reception/index.php" class="btn btn-secondary">📋 پذیرش‌ها</a>
   <a href="sms_settings.php" class="btn btn-secondary">📨 تنظیمات پیامک</a>
+<?php if (phase2_ready($db)) { ?>
+  <a href="<?php echo e(APP_BASE_URL); ?>/reception/appointments.php" class="btn btn-secondary">📅 تقویم نوبت‌ها</a>
+  <a href="rooms.php" class="btn btn-secondary">🏠 اتاق‌ها</a>
+  <a href="tariffs.php" class="btn btn-secondary">💰 تعرفه‌ها</a>
+<?php } else { ?>
+  <a href="<?php echo e(APP_BASE_URL); ?>/upgrade_phase2.php" class="btn btn-warning">🧩 ارتقا به فاز ۲</a>
+<?php } ?>
 </div>
 
 <div class="card">
@@ -70,7 +77,7 @@ require __DIR__ . '/../templates/header.php';
     </div>
     <div class="check-row">
       <span>نسخهٔ سامانه</span>
-      <span class="badge badge-primary">۱.۰ — فاز ۱</span>
+      <span class="badge badge-primary"><?php echo phase2_ready($db) ? '۲.۰ — فاز ۲' : '۱.۰ — فاز ۱'; ?></span>
     </div>
   </div>
 </div>

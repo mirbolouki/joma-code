@@ -1207,6 +1207,161 @@ input[type="radio"] {
   .table-scroll { max-height: none; }
 }
 
+
+/* ═══════════════════════════════════════════════════════════════════
+   فاز ۲ — نوبت‌دهی و تقویم
+   ═══════════════════════════════════════════════════════════════════ */
+
+.empty-state {
+  padding: 24px;
+  text-align: center;
+  color: var(--color-muted);
+  background-color: var(--color-bg);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+}
+
+.hint-list {
+  margin: 0 0 16px;
+  padding-right: 20px;
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 2;
+}
+
+.form-grid .form-row { margin-bottom: 16px; }
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* ردیف افقی «فیلتر/جست‌وجو» */
+.form-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-inline label {
+  margin: 0;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.form-inline input[type="text"],
+.form-inline select {
+  width: auto;
+  min-width: 150px;
+  padding: 10px 12px;
+}
+
+/* فرم کوچک داخل سلول جدول */
+.inline-form {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 0;
+}
+
+.inline-form select {
+  width: auto;
+  min-width: 130px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.price-input {
+  max-width: 180px;
+  text-align: left;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+/* ── شبکهٔ زمان‌های آزاد ── */
+.slot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.slot-form { margin: 0; }
+
+.slot-btn {
+  min-width: 84px;
+  min-height: 44px;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--color-primary);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  direction: ltr;
+}
+
+.slot-btn:hover,
+.slot-btn:focus-visible {
+  color: #FFF;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* ── کارت قفل موقت ── */
+.hold-card {
+  border: 2px solid var(--color-warning);
+}
+
+.hold-timer {
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  text-align: center;
+  background-color: #FEF5E7;
+  border-radius: var(--radius);
+}
+
+.hold-countdown {
+  font-size: 20px;
+  color: var(--color-danger);
+}
+
+.hold-expired {
+  color: var(--color-danger);
+  font-weight: bold;
+}
+
+/* ── کارت یک روز تقویم ── */
+.day-card .card-header {
+  background-color: var(--color-secondary);
+}
+
+@media (max-width: 767px) {
+  .form-inline { flex-direction: column; align-items: stretch; }
+  .form-inline input[type="text"],
+  .form-inline select { width: 100%; }
+  .inline-form { display: flex; width: 100%; }
+  .inline-form select { flex: 1; }
+  .slot-btn { flex: 1 1 calc(33% - 8px); }
+}
+
 /* چاپ */
 @media print {
   .header, .sidebar, .footer, .btn, .menu-toggle { display: none !important; }
