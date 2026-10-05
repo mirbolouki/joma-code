@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اصلاحیهٔ ۱ دستور فاز ۴</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>اصلاحیهٔ شمارهٔ ۱ بر دستور فاز ۴ — حذف محیط آزمایشی جداگانه</h1>
+<p><strong>تاریخ ثبت:</strong> ۱۴۰۵/۰۷/۱۳ <strong>منبع:</strong> دستور مدیر بالادستی، ابلاغ‌شده توسط مالک <strong>وضعیت:</strong> ثبت شد و جایگزین بند ۲ـ۲ و بند ۸ـ۲ دستور اصلی فاز ۴ است.</p>
+<hr>
+<h2>۱. متن تصمیم (ثبت رسمی)</h2>
+<ul><li><strong>محیط آزمایشی جداگانه ساخته نمی‌شود.</strong> <code>my.mirbolouki.com</code> هم محیط آزمون است و هم</li></ul>
+<p>محیط بهره‌برداری.</p>
+<ul><li>استدلال پذیرفته‌شده: سامانه هنوز بهره‌برداری واقعی ندارد و همهٔ دادهٔ کنونی، دادهٔ</li></ul>
+<p>آزمایشی است.</p>
+<ul><li>۲۹ آزمون فاز ۴ روی همین پایگاه داده و روی همین دادهٔ دمو اجرا می‌شود.</li><li>پس از قبولی همهٔ آزمون‌ها، دادهٔ دمو حذف و پایگاه داده برای بهره‌برداری واقعی تحویل</li></ul>
+<p>می‌شود.</p>
+<ul><li>در نتیجه، بستهٔ دوم («نصب تازه تا فاز ۴» برای محیط آزمایشی) موضوعیت خود را از دست</li></ul>
+<p>می‌دهد — مگر به شکلی که در بند ۴ پیشنهاد شده است.</p>
+<p><strong>ریسک جایگزین‌شده:</strong> R8 (نبود محیط آزمایشی) بسته نمی‌شود؛ به ریسک تازهٔ <strong>R10</strong> تبدیل می‌شود: «آزمون پورتال عمومی مراجع روی همان نشانی‌ای انجام می‌شود که بعداً بهره‌برداری واقعی روی آن است». تا وقتی دادهٔ واقعی مراجع وارد نشده، این ریسک قابل قبول است. از لحظه‌ای که اولین مراجع واقعی ثبت شود، دیگر قابل قبول نیست.</p>
+<hr>
+<h2>۲. اسکریپت حذف پیوست‌شده قابل اجرا نیست — هفت ایراد</h2>
+<p>اسکریپت <code>DELETE</code> همراه دستور را در برابر طرح‌وارهٔ واقعی پایگاه داده بررسی کردم. <strong>اجرای آن در phpMyAdmin یا هیچ داده‌ای را پاک نمی‌کند یا با خطا متوقف می‌شود.</strong> این را پیش از اجرا می‌گویم، نه بعد از آن.</p>
+<h3>ایراد ۱ — پیشوندهای <code>*_test</code> در این سامانه اصلاً وجود ندارند (بنیادی)</h3>
+<p><code>public_id</code> ها را کاربر نمی‌سازد؛ تابع <code>generate_public_id($prefix)</code> می‌سازد:</p>
+<pre><code>function generate_public_id($prefix) {
+    return $prefix . &#x27;_&#x27; . bin2hex(random_bytes(10));
+}</code></pre>
+<p>یعنی مقدار همیشه به شکل <code>pr_9f3a1c…</code> است: پیشوند ثابت + ۲۰ نویسهٔ هگز. پیشوندهای موجود در کل سامانه فقط این‌ها هستند:</p>
+<p><code>ab</code> <code>ac</code> <code>ad</code> <code>ap</code> <code>cs</code> <code>hd</code> <code>nt</code> <code>pr</code> <code>ra</code> <code>rm</code> <code>tf</code></p>
+<p>پیشوندهای <code>dr_</code>، <code>sec_</code>، <code>adm_</code> و <code>pr_test</code> <strong>هیچ‌گاه تولید نمی‌شوند</strong>. علاوه بر این، در SQL نویسهٔ <code>_</code> خودش یک جایگزین تک‌نویسه‌ای است، پس <code>LIKE &#x27;%_test%&#x27;</code> یعنی «هر نویسه‌ای و بعد <code>test</code>» — و چون بخش تصادفی فقط هگز (<code>0-9a-f</code>) است، حروف <code>t</code>، <code>e</code>، <code>s</code> هرگز در آن نمی‌آیند.</p>
+<p><strong>نتیجه:</strong> همهٔ <code>DELETE</code>های مبتنی بر این الگو روی <strong>صفر ردیف</strong> اثر می‌کنند. اسکریپت بی‌خطر است، ولی بی‌اثر هم هست. و نمی‌توان با «مطمئن شوید دادهٔ دمو با این پیشوند ثبت شده» آن را درست کرد، چون این پیشوندها از رابط کاربری قابل تعیین نیستند.</p>
+<h3>ایراد ۲ — جدول <code>clinical_case_status_events</code> وجود ندارد</h3>
+<p>این جدول مربوط به بایگانی پرونده بود که با تصمیم خود مالک <strong>به فاز بعد موکول شد</strong> و هرگز ساخته نشد. خط مربوط به آن با خطای «Table doesn&#x27;t exist» اجرا را در همان نقطه متوقف می‌کند.</p>
+<h3>ایراد ۳ تا ۵ — نام ستون‌های نادرست</h3>
+<table><thead><tr><th>در اسکریپت</th><th>نام واقعی</th><th>جدول</th></tr></thead><tbody><tr><td><code>therapist_id</code></td><td><code>therapist_person_id</code></td><td><code>appointment_holds</code></td></tr><tr><td><code>therapist_id</code></td><td><code>therapist_person_id</code></td><td><code>therapist_absence_rules</code></td></tr><tr><td><code>therapist_id</code></td><td><code>therapist_person_id</code></td><td><code>therapist_service_tariffs</code></td></tr></tbody></table>
+<h3>ایراد ۶ — <code>rooms.created_by_person_id</code> وجود ندارد</h3>
+<p>جدول <code>rooms</code> اصلاً ستون سازنده ندارد (<code>id</code>, <code>public_id</code>, <code>name</code>, <code>room_number</code>, <code>capacity</code>, <code>status</code>, <code>created_at</code>). اتاق‌ها هم دادهٔ پیکربندی‌اند، نه دادهٔ دمو؛ احتمالاً اصلاً نباید حذف شوند.</p>
+<h3>ایراد ۷ — حذف <code>audit_log</code> بر اساس <code>entity_id</code> خطرناک است</h3>
+<pre><code>DELETE FROM audit_log WHERE … OR entity_id IN (SELECT id FROM persons WHERE …);</code></pre>
+<p><code>entity_id</code> چندریختی است: برای رویداد یادداشت به <code>confidential_notes.id</code> اشاره می‌کند، برای نوبت به <code>appointments.id</code> و… . شرط بالا بدون قید <code>entity_type</code> هر ردیفی از هر نوع موجودیت را که شمارهٔ داخلی‌اش با شمارهٔ یک شخص برابر باشد حذف می‌کند. این یعنی حذف تصادفی تاریخچهٔ حسابرسیِ بی‌ربط.</p>
+<hr>
+<h2>۳. اشتباه خودم که در همین بررسی پیدا شد (D6)</h2>
+<p>در فایل <code>CHECK_QUERIES_FA.sql</code> که دیروز تحویل دادم، ستون را <code>metadata</code> نوشته بودم؛ نام واقعی ستون <strong><code>metadata_json</code></strong> است. پرس‌وجوهای ۲ و ۳ با خطای «Unknown column» اجرا نمی‌شدند. فایل اصلاح شد.</p>
+<p>درس این مورد برای من: هر نام ستونی باید پیش از تحویل در برابر فایل طرح‌وارهٔ واقعی بررسی شود، حتی وقتی «واضح» به نظر می‌رسد.</p>
+<hr>
+<h2>۴. پیشنهاد جایگزین — بازسازی کامل به‌جای حذف انتخابی</h2>
+<p>برای رسیدن به هدفِ «پایگاه دادهٔ تمیز برای بهره‌برداری واقعی»، حذف انتخابی ضعیف‌ترین راه است: هر ردیفی که از قلم بیفتد تا همیشه می‌ماند، شمارنده‌های <code>AUTO_INCREMENT</code> دست‌خورده باقی می‌مانند و <code>audit_log</code> آمیخته می‌شود.</p>
+<h3>راه پیشنهادی (توصیهٔ من)</h3>
+<pre><code>۲۹ آزمون روی my.mirbolouki.com با دادهٔ دمو
+        ↓  همه قبول
+پشتیبان کامل از پایگاه داده (بایگانی تاریخی)
+        ↓
+حذف کامل همهٔ ۲۲ جدول (یا ساخت یک پایگاه دادهٔ تازه)
+        ↓
+نصب تازه: install.php + ارتقاهای ۲ و ۳ و ۴ به ترتیب
+        ↓
+پایگاه دادهٔ کاملاً تمیز + مسیر «نصب از صفر» هم آزموده شد</code></pre>
+<p>مزیت‌ها: نتیجه قطعی است (نه «امیدوارم چیزی جا نمانده باشد»)؛ شمارنده‌ها از ۱ شروع می‌شوند؛ و مسیر نصب تازه — که تا امروز هرگز دوباره آزموده نشده — در عمل سنجیده می‌شود. هزینه: ساخت دوبارهٔ کاربران مدیر/منشی/درمانگر و اتاق‌ها و تعرفه‌ها، که کمتر از یک ساعت کار است.</p>
+<p>بدین ترتیب بستهٔ «نصب تازه تا فاز ۴» که مدیر بالادستی خواسته بود، همچنان ساخته می‌شود — ولی کاربردش به‌جای محیط آزمایشی، <strong>پاک‌سازی نهایی خودِ سرور</strong> است.</p>
+<h3>راه جایگزین (اگر بازسازی پذیرفته نشود)</h3>
+<p>اسکریپت حذف <strong>در زمان پاک‌سازی و از روی دادهٔ واقعی</strong> ساخته می‌شود، نه از پیش و کورکورانه:</p>
+<ol><li>فهرست شناسه‌های واقعی اشخاص دمو با یک <code>SELECT</code> استخراج می‌شود (بر پایهٔ نام، شمارهٔ موبایل یا بازهٔ <code>created_at</code> — هر معیاری که مالک تأیید کند).</li><li>آن شناسه‌ها در بندهای <code>IN (...)</code> به‌صورت عددی و صریح نوشته می‌شوند.</li><li>ترتیب حذف از برگ به ریشه، با احترام به قیود <code>RESTRICT</code>.</li><li>حذف <code>audit_log</code> همیشه با قید <code>entity_type</code> همراه باشد.</li><li>پیش از اجرا، پشتیبان کامل؛ و اجرا داخل تراکنش با بررسی تعداد ردیف‌ها.</li></ol>
+<p>در هر دو حالت، اسکریپت نهایی را من می‌نویسم و پیش از اجرا در برابر طرح‌وارهٔ واقعی راستی‌آزمایی می‌کنم.</p>
+<hr>
+<h2>۵. اثر این اصلاحیه بر برنامهٔ فاز ۴</h2>
+<table><thead><tr><th>بند دستور اصلی</th><th>وضعیت</th></tr></thead><tbody><tr><td>۲ـ۲ (محیط آزمایشی الزامی)</td><td><strong>لغو شد</strong></td></tr><tr><td>۸ـ۲ (بستهٔ نصب تازه برای Staging)</td><td><strong>تغییر کاربرد</strong> — برای پاک‌سازی نهایی سرور</td></tr><tr><td>۹ (۲۹ آزمون در محیط آزمایشی)</td><td><strong>پابرجا</strong>، ولی روی <code>my.mirbolouki.com</code></td></tr><tr><td>۱۱ (سند طراحی پیش از کد)</td><td><strong>پابرجا و تغییرنکرده</strong></td></tr></tbody></table>
+<p>سایر بندهای دستور، از جمله مدل داده، ماتریس دسترسی، قواعد دامنه و ریسک‌های P4 تا P6، بدون تغییر باقی می‌مانند.</p>
+</div>
+</body>
+</html>

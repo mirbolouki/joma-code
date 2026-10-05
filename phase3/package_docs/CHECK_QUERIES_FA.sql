@@ -21,7 +21,7 @@ SELECT ra.id,
 
 -- ② آیا اعطا و ابطال نقش در گزارش حسابرسی ثبت شده؟
 --    انتظار: برای هر تغییری که امروز دادید یک ردیف ROLE_GRANTED یا
---    ROLE_REVOKED با شناسهٔ مدیر انجام‌دهنده و کد نقش در metadata.
+--    ROLE_REVOKED با شناسهٔ مدیر انجام‌دهنده و کد نقش در metadata_json.
 SELECT al.id,
        al.created_at,
        al.action_code,
@@ -29,7 +29,7 @@ SELECT al.id,
        al.actor_role_code,
        al.entity_type,
        al.entity_id,
-       al.metadata
+       al.metadata_json
   FROM audit_log al
   LEFT JOIN persons actor ON actor.id = al.actor_person_id
  WHERE al.action_code IN ('ROLE_GRANTED', 'ROLE_REVOKED')
@@ -40,9 +40,9 @@ SELECT al.id,
 --    «٪٪ یک تکهٔ یکتا از متن یادداشت خودتان ٪٪» را با چند کلمهٔ واقعی از
 --    یکی از یادداشت‌هایتان جایگزین کنید.
 --    انتظار: صفر ردیف. هر ردیفی اینجا یعنی نشت متن محرمانه.
-SELECT id, created_at, action_code, metadata
+SELECT id, created_at, action_code, metadata_json
   FROM audit_log
- WHERE metadata LIKE '%٪٪ یک تکهٔ یکتا از متن یادداشت خودتان ٪٪%';
+ WHERE metadata_json LIKE '%٪٪ یک تکهٔ یکتا از متن یادداشت خودتان ٪٪%';
 
 -- ④ وضعیت کلی یادداشت‌ها (بدون نمایش متن).
 SELECT n.public_id,
