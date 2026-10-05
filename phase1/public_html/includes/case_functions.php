@@ -43,6 +43,13 @@ function clinical_case_open_from_admission($db, $admission_id, $therapist_person
         audit_log_write($db, $actor_person_id, ROLE_THERAPIST, 'CASE_OPENED', 'clinical_case',
             $case_id, array('admission_id' => (int)$admission_id));
 
+        /* فاز ۴ / تصمیم D4-4: فرم‌هایی که پیش از باز شدن پرونده به این پذیرش
+           تخصیص یافته‌اند (مثلاً فرم پذیرش اولیهٔ خودکار) به پروندهٔ تازه
+           وصل می‌شوند. داخل همین تراکنش و بی‌اثر وقتی فاز ۴ نصب نیست. */
+        if (function_exists('form_assignments_attach_case')) {
+            form_assignments_attach_case($db, (int)$admission_id, $case_id);
+        }
+
         mysqli_commit($db);
         return $case_id;
     } catch (Exception $e) {

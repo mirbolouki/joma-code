@@ -1,7 +1,7 @@
 <?php
 /* ═════════════════════════════════════════════════════════════════════
  *  جوما — ورود پرسنل
- *  تب «مراجع» در فاز ۱ غیرفعال است.
+ *  تب «مراجع» پس از نصب فاز ۴ فعال می‌شود (ورود با کد پیامکی).
  * ═══════════════════════════════════════════════════════════════════ */
 require_once __DIR__ . '/includes/bootstrap.php';
 
@@ -48,9 +48,13 @@ require __DIR__ . '/templates/header.php';
 ?>
 <div class="tabs" role="tablist">
   <button class="tab active" type="button" role="tab" aria-selected="true">پرسنل</button>
-  <button class="tab disabled" type="button" role="tab" aria-selected="false" disabled>
-    مراجع <small>به‌زودی فعال می‌شود</small>
-  </button>
+  <?php if (phase4_ready($db)) { ?>
+    <a class="tab" href="patient_login.php" role="tab" aria-selected="false">مراجع</a>
+  <?php } else { ?>
+    <button class="tab disabled" type="button" role="tab" aria-selected="false" disabled>
+      مراجع <small>به‌زودی فعال می‌شود</small>
+    </button>
+  <?php } ?>
 </div>
 
 <?php if ($flash_success) { ?>

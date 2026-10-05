@@ -10,6 +10,7 @@ if (!isset($active_menu)) { $active_menu = ''; }
 $menu = array();
 $p2 = (isset($GLOBALS['db']) && function_exists('phase2_ready')) ? phase2_ready($GLOBALS['db']) : false;
 $p3 = (isset($GLOBALS['db']) && function_exists('phase3_ready')) ? phase3_ready($GLOBALS['db']) : false;
+$p4 = (isset($GLOBALS['db']) && function_exists('phase4_ready')) ? phase4_ready($GLOBALS['db']) : false;
 
 if ($role === ROLE_ADMIN) {
     $menu = array(
@@ -25,6 +26,12 @@ if ($role === ROLE_ADMIN) {
         $menu[] = array('label' => '💰 تعرفه‌ها',      'url' => $base . '/admin/tariffs.php',          'key' => 'tariffs');
     } else {
         $menu[] = array('label' => '🧩 ارتقا به فاز ۲', 'url' => $base . '/upgrade_phase2.php', 'key' => 'upgrade2');
+    }
+    if ($p4) {
+        $menu[] = array('label' => '🧾 قالب‌های فرم', 'url' => $base . '/admin/forms.php',          'key' => 'admin_forms');
+        $menu[] = array('label' => '📑 پاسخ‌های فرم', 'url' => $base . '/admin/form_responses.php', 'key' => 'admin_form_responses');
+    } elseif ($p3) {
+        $menu[] = array('label' => '🧩 ارتقا به فاز ۴', 'url' => $base . '/upgrade_phase4.php', 'key' => 'upgrade4');
     }
     $menu[] = array('label' => '📂 پرونده‌ها',      'url' => '', 'key' => '', 'soon' => true);
     $menu[] = array('label' => '⚙️ تنظیمات کلینیک', 'url' => '', 'key' => '', 'soon' => true);
@@ -48,6 +55,9 @@ if ($role === ROLE_ADMIN) {
         $menu[] = array('label' => '🗒️ آخرین یادداشت‌های من',
                         'url' => $base . '/therapist/notes_recent.php', 'key' => 'notes_recent');
     }
+    if ($p4) {
+        $menu[] = array('label' => '🧾 فرم‌های من', 'url' => $base . '/therapist/forms.php', 'key' => 'therapist_forms');
+    }
     if ($p2) {
         $menu[] = array('label' => '📅 تقویم من',    'url' => $base . '/therapist/calendar.php',     'key' => 'therapist_calendar');
         $menu[] = array('label' => '🏖️ عدم حضور',    'url' => $base . '/therapist/absences.php',     'key' => 'therapist_absences');
@@ -55,6 +65,11 @@ if ($role === ROLE_ADMIN) {
     } else {
         $menu[] = array('label' => '📅 تقویم من', 'url' => '', 'key' => '', 'soon' => true);
     }
+} elseif ($role === ROLE_PATIENT) {
+    $menu = array(
+        array('label' => '🏠 صفحهٔ من',   'url' => $base . '/patient/index.php', 'key' => 'patient_home'),
+        array('label' => '🧾 فرم‌های من', 'url' => $base . '/patient/forms.php', 'key' => 'patient_forms'),
+    );
 } elseif ($role === ROLE_PSYCHOMETRIST) {
     $menu = array(
         array('label' => '🧪 بخش روان‌سنجی', 'url' => '', 'key' => '', 'soon' => true),

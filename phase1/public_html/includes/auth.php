@@ -99,6 +99,22 @@ function auth_require_active_session($db)
         unset($_SESSION['active_role_code']);
     }
 
+    /* ۳-۱) فاز ۴ / تصمیم D4-3: نشستی که با پیامک ساخته شده فقط پورتال مراجع
+       را می‌بیند. نقش فعال قفل می‌شود و هر مسیر دیگری ۴۰۳ می‌گیرد. */
+    if (!empty($_SESSION['patient_portal_only'])) {
+        if (!in_array(ROLE_PATIENT, $role_codes, true)) {
+            auth_logout_session();
+            flash_set('login_error', 'دسترسی پورتال مراجع برای این شماره فعال نیست.');
+            redirect(APP_BASE_URL . '/patient_login.php');
+        }
+        $_SESSION['active_role_code'] = ROLE_PATIENT;
+        if (function_exists('patient_portal_path_allowed') && !patient_portal_path_allowed()) {
+            http_response_code(403);
+            require __DIR__ . '/../templates/403.php';
+            exit;
+        }
+    }
+
     /* ۴) تغییر اجباری رمز در نخستین ورود */
     $script = basename($_SERVER['SCRIPT_NAME']);
     if ((int)$account['must_change_password'] === 1 && $script !== 'change_password_forced.php') {

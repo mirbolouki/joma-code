@@ -16,6 +16,7 @@ $case = null;
 $notes = array();
 $retracted = array();
 $appointments = array();
+$forms = array();
 $access_error = null;
 
 try {
@@ -34,6 +35,9 @@ try {
         }
     }
     $appointments = case_appointments_for_therapist($db, (int)$case['admission_id'], $me);
+    if (phase4_ready($db)) {
+        $forms = form_assignments_for_admission($db, (int)$case['admission_id']);
+    }
 } catch (Exception $ex) {
     $access_error = $ex->getMessage();
 }
@@ -59,7 +63,47 @@ require __DIR__ . '/../templates/header.php';
       ➕ افزودن یادداشت تازه
     </a>
   <?php } ?>
+  <?php if (phase4_ready($db)) { ?>
+    <a href="form_assign.php?case_id=<?php echo e($case['public_id']); ?>" class="btn btn-secondary">
+      🧾 فرم‌های این پرونده
+    </a>
+  <?php } ?>
 </div>
+
+<?php if (phase4_ready($db)) { ?>
+<div class="card">
+  <div class="card-header">🧾 فرم‌های پرونده (<?php echo e(to_persian_digits(count($forms))); ?>)</div>
+  <div class="card-body">
+    <?php if (count($forms) === 0) { ?>
+      <p class="empty-state">فرمی برای این پرونده ثبت نشده است.</p>
+    <?php } else { ?>
+      <div class="item-list">
+        <?php foreach ($forms as $fa) { ?>
+          <div class="item-card">
+            <div class="item-card-main">
+              <div class="item-card-title"><?php echo e($fa['template_title']); ?></div>
+              <div class="item-card-meta">
+                پرکننده: <?php echo e(form_assignee_role_label($fa['assignee_role'])); ?>
+                —
+                <span class="badge <?php echo e(form_assignment_status_class($fa['status'])); ?>">
+                  <?php echo e(form_assignment_status_label($fa['status'])); ?>
+                </span>
+              </div>
+            </div>
+            <?php if ($fa['status'] === 'PENDING' && (int)$fa['assignee_person_id'] === $me) { ?>
+              <a class="btn btn-sm btn-primary"
+                 href="form_fill.php?a=<?php echo e($fa['public_id']); ?>">تکمیل</a>
+            <?php } elseif ($fa['status'] === 'SUBMITTED' || $fa['status'] === 'RETRACTED') { ?>
+              <a class="btn btn-sm btn-secondary"
+                 href="form_view.php?a=<?php echo e($fa['public_id']); ?>">مشاهده</a>
+            <?php } ?>
+          </div>
+        <?php } ?>
+      </div>
+    <?php } ?>
+  </div>
+</div>
+<?php } ?>
 
 <div class="card">
   <div class="card-header">👤 مشخصات مراجع</div>

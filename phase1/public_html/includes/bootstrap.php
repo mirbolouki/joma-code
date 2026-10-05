@@ -35,6 +35,13 @@ require_once __DIR__ . '/appointment_functions.php';
 /* ── فاز ۳: پروندهٔ بالینی و یادداشت محرمانه ── */
 require_once __DIR__ . '/note_functions.php';
 require_once __DIR__ . '/case_view_functions.php';
+/* ── فاز ۴: فرم‌های بالینی و پورتال مراجع ── */
+require_once __DIR__ . '/form_functions.php';
+require_once __DIR__ . '/form_template_functions.php';
+require_once __DIR__ . '/form_assignment_functions.php';
+require_once __DIR__ . '/form_submission_functions.php';
+require_once __DIR__ . '/form_render.php';
+require_once __DIR__ . '/patient_auth.php';
 
 /* منطقهٔ زمانی داخلی PHP روی UTC؛ تبدیل به وقت تهران فقط هنگام نمایش */
 date_default_timezone_set('UTC');

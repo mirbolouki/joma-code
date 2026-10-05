@@ -603,8 +603,19 @@ function appointment_confirm_hold($db, $hold_public_id, $notes, $actor_person_id
               'room_id' => (int)$hold['room_id'],
               'warnings' => count($warnings)));
 
-    /* نقطهٔ اتصال فاز ۴: تخصیص فرم اولیه در «تثبیت نخستین نوبتِ این پذیرش»
-       انجام خواهد شد — نه در ایجاد Hold. در فاز ۲ هیچ جدول فرمی ساخته نمی‌شود. */
+    /* نقطهٔ اتصال فاز ۴ (ADR-008): پس از commit موفق، اگر این نخستین نوبتِ
+       این مراجع باشد، فرم پذیرش اولیه به خودِ او تخصیص می‌یابد.
+       این فراخوانی هرگز استثنا نمی‌دهد و اگر جدول‌های فاز ۴ نصب نباشند،
+       بی‌اثر است؛ نوبتِ تثبیت‌شده تحت هیچ شرایطی نباید آسیب ببیند. */
+    if (function_exists('form_auto_assign_intake')) {
+        $admission_row = db_select_one($db,
+            "SELECT patient_person_id FROM admissions WHERE id = ? LIMIT 1",
+            'i', array((int)$hold['admission_id']));
+        if ($admission_row) {
+            form_auto_assign_intake($db, $appt_id, (int)$hold['admission_id'],
+                (int)$admission_row['patient_person_id']);
+        }
+    }
 
     $appointment = db_select_one($db, appointment_select_sql() . " WHERE ap.id = ?",
         'i', array($appt_id));

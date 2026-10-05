@@ -123,6 +123,7 @@ function dashboard_url_for_role($role)
     if ($role === ROLE_ADMIN)     { return APP_BASE_URL . '/admin/index.php'; }
     if ($role === ROLE_SECRETARY) { return APP_BASE_URL . '/reception/index.php'; }
     if ($role === ROLE_THERAPIST) { return APP_BASE_URL . '/therapist/index.php'; }
+    if ($role === ROLE_PATIENT)   { return APP_BASE_URL . '/patient/index.php'; }
     return APP_BASE_URL . '/index.php';
 }
 
