@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>وصلهٔ ۳.۰.۴</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>وصلهٔ ۳.۰.۴ — تجمعی</h1>
+<p>این بسته شامل همهٔ وصله‌های پس از فاز ۳ است. اگر ۳.۰.۱ تا ۳.۰.۳ را نصب کرده‌اید، همین یکی جایگزین همه‌شان می‌شود. اگر هیچ‌کدام را نصب نکرده‌اید، فقط همین کافی است.</p>
+<table><thead><tr><th>#</th><th>تغییر</th></tr></thead><tbody><tr><td>۱</td><td><strong>ویرایش نقش کاربران توسط مدیر</strong> (صفحهٔ <code>admin/user_roles.php</code>)</td></tr><tr><td>۲</td><td><strong>اصلاح پیام رد دسترسی به پرونده</strong> — نقص D4</td></tr><tr><td>۳</td><td><strong>اصلاح ترتیب نگهبان‌های نقش مدیر</strong> — نقص D5</td></tr><tr><td>۴</td><td><strong>میان‌بر «🗒️ آخرین یادداشت‌های من»</strong> در منوی درمانگر — تازه در این نسخه</td></tr></tbody></table>
+<h2>بدون تغییر پایگاه داده</h2>
+<p>فایل ارتقا ندارد، SQL ندارد. پس از نصب پاورقی باید بخواند <strong>«نسخهٔ ۳.۰.۴ (فاز ۳ — پروندهٔ بالینی)»</strong>.</p>
+<h2>۸ فایل</h2>
+<table><thead><tr><th>فایل</th><th>مسیر</th><th>کار</th></tr></thead><tbody><tr><td><code>user_roles.php</code></td><td><code>public_html/admin/</code></td><td>جدید</td></tr><tr><td><code>users_list.php</code></td><td><code>public_html/admin/</code></td><td>جایگزینی</td></tr><tr><td><code>notes_recent.php</code></td><td><code>public_html/therapist/</code></td><td><strong>جدید</strong></td></tr><tr><td><code>account_functions.php</code></td><td><code>public_html/includes/</code></td><td>جایگزینی</td></tr><tr><td><code>case_view_functions.php</code></td><td><code>public_html/includes/</code></td><td>جایگزینی</td></tr><tr><td><code>note_functions.php</code></td><td><code>public_html/includes/</code></td><td>جایگزینی</td></tr><tr><td><code>sidebar.php</code></td><td><code>public_html/templates/</code></td><td>جایگزینی</td></tr><tr><td><code>footer.php</code></td><td><code>public_html/templates/</code></td><td>جایگزینی</td></tr></tbody></table>
+<h2>میان‌بر «آخرین یادداشت‌های من»</h2>
+<p>در منوی کناری درمانگر، زیر «پرونده‌های من». ۳۰ یادداشت اخیرِ خودِ او را در همهٔ پرونده‌هایش نشان می‌دهد، تازه‌ترین بالا: نام مراجع، تاریخ، ۱۶۰ نویسهٔ نخست، تعداد نویسه، تعداد مشاهده، و مهلت ویرایش باقی‌مانده.</p>
+<p><strong>هیچ مسیر دسترسی تازه‌ای باز نمی‌کند.</strong> پرس‌وجو هم‌زمان دو شرط می‌گذارد:</p>
+<ol><li><code>author_person_id</code> = خودِ بیننده — یادداشت باید مال خودش باشد.</li><li><code>responsible_therapist_person_id</code> = خودِ بیننده — پرونده باید هنوز مال او باشد.</li></ol>
+<p>شرط دوم عمدی است: یادداشت‌های پرونده‌ای که ارجاع مجدد شده از فهرست بیرون می‌روند، چون <code>note_view.php</code> هم به همان دلیل اجازهٔ ورود نمی‌دهد و پیوند شکسته ساخته می‌شد. درمانگر پیشین از همان کادر هشدار همیشگی در کارتابل باخبر می‌شود.</p>
+<p>دو نکتهٔ دیگر:</p>
+<ul><li>فقط ۱۶۰ نویسهٔ نخست در فهرست می‌آید؛ متن کامل فقط در <code>note_view.php</code>.</li><li>این صفحه <code>view_count</code> را بالا نمی‌برد — شمارش فقط وقتی انجام می‌شود که متن کامل</li></ul>
+<p>واقعاً دیده شود.</p>
+<ul><li>یادداشت‌های باطل‌شده با نشان «باطل‌شده» می‌آیند ولی پیش‌نمایش متنشان نشان داده نمی‌شود.</li></ul>
+<h2>آزمون‌های پیشنهادی</h2>
+<table><thead><tr><th>#</th><th>کار</th><th>نتیجهٔ درست</th></tr></thead><tbody><tr><td>ی۱</td><td>پاورقی</td><td>«نسخهٔ ۳.۰.۴»</td></tr><tr><td>ی۲</td><td>با درمانگر وارد شوید</td><td>«🗒️ آخرین یادداشت‌های من» در منو باشد</td></tr><tr><td>ی۳</td><td>بازش کنید</td><td>یادداشت‌های خودتان، تازه‌ترین بالا، با نام مراجع</td></tr><tr><td>ی۴</td><td>روی «مشاهده» بزنید</td><td>متن کامل باز شود</td></tr><tr><td>ی۵</td><td>با <strong>مدیر</strong> نشانی <code>therapist/notes_recent.php</code> را باز کنید</td><td>۴۰۳ «دسترسی مجاز نیست»</td></tr><tr><td>ی۶</td><td>شمارندهٔ «مهلت ویرایش»</td><td>روی یادداشت تازه عددی نزدیک ۲۴ ساعت، روی قدیمی «مهلت ویرایش گذشته»</td></tr></tbody></table>
+<h2>وضعیت آزمون — صادقانه</h2>
+<p>بررسی ایستا: ۵۹ فایل PHP بدون خطای نحوی. <strong>۰ آزمون اجرایی از سوی من.</strong></p>
+</div>
+</body>
+</html>
