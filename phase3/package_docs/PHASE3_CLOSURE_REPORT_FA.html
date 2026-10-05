@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>گزارش اختتام فاز ۳ — جوما</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>گزارش اختتام فاز ۳ و درخواست مجوز شروع فاز ۴</h1>
+<p><strong>پروژه:</strong> سامانهٔ مدیریت کلینیک جوما (<code>my.mirbolouki.com</code>) <strong>فاز:</strong> ۳ — پروندهٔ بالینی و یادداشت‌های محرمانه <strong>نسخهٔ مستقر:</strong> ۳.۰.۴ (مهاجرت پایگاه داده: <code>3.0.0</code>) <strong>تاریخ گزارش:</strong> ۱۴۰۵/۰۷/۱۳ <strong>وضعیت پیشنهادی:</strong> آمادهٔ اختتام، مشروط به سه بند «کارهای باز»</p>
+<hr>
+<h2>۱. خلاصهٔ اجرایی</h2>
+<p>فاز ۳ روی سرور عملیاتی نصب شده و کار می‌کند. درمانگر اکنون می‌تواند پروندهٔ بالینی مراجعان خودش را ببیند و یادداشت محرمانه بنویسد، ویرایش کند (تا ۲۴ ساعت) و باطل کند. دکمهٔ «مشاهدهٔ پرونده» که از فاز ۱ غیرفعال بود، فعال شد.</p>
+<p>قاعدهٔ محوری فاز ۳ این است: <strong>فقط درمانگرِ نویسنده یادداشت خودش را می‌بیند.</strong> نه مدیر، نه منشی، نه درمانگر بعدیِ همان پرونده. این قاعده روی سرور عملیاتی آزموده و تأیید شد.</p>
+<p>در جریان آزمون، مالک دو نقص واقعی پیدا کرد (D4 و D5) که هر دو رفع و تأیید شدند. هیچ آزمونی مردود نشده است. در عین حال، <strong>۸ آزمون از ۱۵ آزمون فاز ۳ هنوز اجرا نشده</strong> و این گزارش آن‌ها را «قبول» اعلام نمی‌کند.</p>
+<hr>
+<h2>۲. دامنهٔ تحویل‌شده</h2>
+<h3>در دامنه (انجام شد)</h3>
+<table><thead><tr><th>#</th><th>قابلیت</th></tr></thead><tbody><tr><td>۱</td><td>صفحهٔ پروندهٔ بالینی: مشخصات مراجع، اطلاعات پذیرش، نوبت‌ها (فقط نمایشی)</td></tr><tr><td>۲</td><td>نوشتن یادداشت محرمانه، حداکثر ۲۰٬۰۰۰ نویسه، با شمارندهٔ زنده</td></tr><tr><td>۳</td><td>ویرایش یادداشت تا ۲۴ ساعت پس از ثبت؛ پس از آن فقط ابطال</td></tr><tr><td>۴</td><td>ابطال با دلیل از فهرست قابل‌ویرایش؛ متن هرگز حذف نمی‌شود</td></tr><tr><td>۵</td><td>فعال‌سازی دکمهٔ «مشاهدهٔ پرونده» در کارتابل درمانگر</td></tr><tr><td>۶</td><td>هشدار ارجاع: درمانگر پیشین می‌بیند که پرونده‌ای با یادداشت از او گرفته شده</td></tr><tr><td>۷</td><td>حسابرسی کامل همهٔ رویدادها، بدون ذخیرهٔ متن یادداشت در گزارش حسابرسی</td></tr><tr><td>۸</td><td>(افزودهٔ پس از نصب) ویرایش نقش کاربران موجود توسط مدیر</td></tr><tr><td>۹</td><td>(افزودهٔ پس از نصب) میان‌بر «آخرین یادداشت‌های من» برای درمانگر</td></tr></tbody></table>
+<h3>خارج از دامنه (با تصمیم صریح مالک)</h3>
+<table><thead><tr><th>مورد</th><th>تصمیم</th></tr></thead><tbody><tr><td>رمزنگاری یادداشت‌ها</td><td><strong>کنار گذاشته شد</strong> — انحراف از ADR-002، بند ۶ را ببینید</td></tr><tr><td>بایگانی و بازگشایی پرونده</td><td>به فاز بعد موکول شد — انحراف از اصلاحیهٔ ADR-009</td></tr><tr><td>دسترسی اضطراری مدیر (break-glass)</td><td>حذف شد</td></tr><tr><td>ویرایشگر متن پیشرفته و AJAX</td><td>حذف شد — <code>textarea</code> ساده</td></tr><tr><td>فرم‌ها</td><td>فاز ۴</td></tr><tr><td>گزارش‌گیری و وب‌هوک</td><td>فاز ۵</td></tr></tbody></table>
+<h3>پایگاه داده</h3>
+<p>یک جدول تازه: <code>confidential_notes</code> (هفدهمین جدول). <strong>هیچ جدول فاز ۱ و ۲ دست نخورد.</strong> <code>config.php</code>، <code>install.lock</code> و تنظیمات پیامک بازنویسی نشدند. فایل نصب در بسته نبود. فایل ارتقا پس از استفاده حذف شد.</p>
+<hr>
+<h2>۳. تاریخچهٔ استقرار</h2>
+<table><thead><tr><th>نسخه</th><th>محتوا</th><th>تغییر پایگاه داده</th></tr></thead><tbody><tr><td>۳.۰</td><td>فاز ۳ کامل</td><td>بله — مهاجرت <code>3.0.0</code></td></tr><tr><td>۳.۰.۱</td><td>ویرایش نقش کاربران توسط مدیر</td><td>خیر</td></tr><tr><td>۳.۰.۲</td><td>رفع نقص D4</td><td>خیر</td></tr><tr><td>۳.۰.۳</td><td>رفع نقص D5</td><td>خیر</td></tr><tr><td>۳.۰.۴</td><td>میان‌بر «آخرین یادداشت‌های من»</td><td>خیر</td></tr></tbody></table>
+<p>نسخهٔ مستقر در پاورقی هر صفحه چاپ می‌شود. این عادت از نقص D3 فاز ۲ درس گرفته شد: پیش از آن هیچ راهی برای تشخیص اینکه چه نسخه‌ای واقعاً روی سرور است وجود نداشت.</p>
+<hr>
+<h2>۴. کارنامهٔ آزمون — بدون تورم</h2>
+<blockquote><strong>اصل حاکم بر این گزارش:</strong> محیط توسعه PHP و MySQL ندارد، پس توسعه‌دهنده هیچ آزمون اجرایی انجام نداده است. آنچه «قبول» ثبت شده، صرفاً آزمون‌هایی است که <strong>مالک روی سرور عملیاتی</strong> اجرا کرده. بررسی نحوی کد، آزمون به حساب نمی‌آید.</blockquote>
+<table><thead><tr><th>فهرست</th><th>قبول</th><th>مردود</th><th>دست‌نیافتنی</th><th>اجرا نشده</th></tr></thead><tbody><tr><td>۱۵ آزمون اصلی فاز ۳</td><td><strong>۶</strong></td><td>۰</td><td>۱</td><td>۸</td></tr><tr><td>۸ آزمون مدیریت نقش‌ها</td><td><strong>۸</strong></td><td>۰</td><td>۰</td><td>۰</td></tr><tr><td>۶ آزمون میان‌بر یادداشت‌ها</td><td><strong>۱</strong></td><td>۰</td><td>۰</td><td>۵</td></tr><tr><td><strong>جمع</strong></td><td><strong>۱۵</strong></td><td><strong>۰</strong></td><td><strong>۱</strong></td><td><strong>۱۳</strong></td></tr></tbody></table>
+<h3>قبول‌شده‌های کلیدی</h3>
+<ul><li>درمانگر ب به پروندهٔ درمانگر الف دسترسی ندارد (مهم‌ترین قاعدهٔ فاز).</li><li>مدیر به هیچ‌یک از صفحات بالینی دسترسی ندارد — روی سه نشانی جداگانه آزموده شد.</li><li>محدودیت ۲۰٬۰۰۰ نویسه اعمال می‌شود.</li><li>ابطال با دلیل کار می‌کند و متن حذف نمی‌شود.</li><li>فاز ۱ و ۲ (ورود، تعویض نقش، پذیرش، نوبت‌دهی) پس از ارتقا سالم‌اند.</li><li>هر سه نگهبانِ جلوگیری از قفل‌شدن مدیریت سامانه عملاً کار می‌کنند.</li></ul>
+<h3>اجرا نشده (صادقانه)</h3>
+<p>مهم‌ترین مورد باز: <strong>آزمون ۷ — ویرایش یادداشت پس از گذشت ۲۴ ساعت باید رد شود.</strong> مالک شمارندهٔ معکوس را در عمل دیده، که نشان می‌دهد محاسبهٔ زمان درست است، اما شمارنده صرفاً نمایش است؛ قفل واقعی سمت سرور هنوز سنجیده نشده. این آزمون ذاتاً یک روز صبر لازم دارد.</p>
+<p>بقیه: آزمون ۵ (منشی)، ۶ (ویرایش در پنجرهٔ مجاز)، ۸ (ابطال بدون دلیل)، ۱۱ (شمارش مشاهده)، ۱۲ (هشدار ارجاع)، ۱۳ (نبود متن یادداشت در گزارش حسابرسی)، ۱۴ (اجرای دوبارهٔ ارتقا — نیازمند محیط آزمایشی)، و ی۱ تا ی۴ و ی۶.</p>
+<p>برای آزمون ۱۳ و دو بررسی پایگاه داده، پنج پرس‌وجوی آمادهٔ فقط-خواندنی تحویل شده است (<code>CHECK_QUERIES_FA.sql</code>).</p>
+<hr>
+<h2>۵. نقص‌های یافته‌شده و رفع‌شده</h2>
+<table><thead><tr><th>کد</th><th>نقص</th><th>چه کسی یافت</th><th>وضعیت</th></tr></thead><tbody><tr><td>D4</td><td>پیام رد دسترسی به پرونده تأیید می‌کرد که آن شمارهٔ پرونده وجود دارد</td><td>مالک، آزمون ۳</td><td>رفع در ۳.۰.۲، تأیید شد</td></tr><tr><td>D5</td><td>در سامانهٔ تک‌مدیره، پیام «از مدیر دیگری بخواهید» راهنمایی بن‌بست بود</td><td>مالک، پس از آزمون ر۶</td><td>رفع در ۳.۰.۳، تأیید شد</td></tr></tbody></table>
+<p><strong>نکتهٔ مدیریتی:</strong> هر پنج نقص شناخته‌شدهٔ این پروژه (D1 تا D5) را آزمون انسانی پیدا کرده است، نه بررسی خودکار. D5 از همه گویاتر است: آزمون مربوطه‌اش <strong>قبول شده بود</strong> — رفتار سامانه درست بود و فقط متن پیام کاربر را به بن‌بست می‌برد. هیچ ابزار تحلیل ایستایی چنین چیزی را نمی‌بیند. این استدلال اصلی بند ۸ (درخواست محیط آزمایشی) است.</p>
+<hr>
+<h2>۶. انحراف‌های معماری که نیاز به تأیید مدیر بالادستی دارند</h2>
+<p>این دو تصمیم مالک، مصوبات پیشین را تغییر می‌دهند و باید آگاهانه پذیرفته شوند:</p>
+<h3>۶.۱ لغو رمزنگاری یادداشت‌ها (انحراف از ADR-002)</h3>
+<p>یادداشت‌های محرمانه <strong>رمزنگاری نشده‌اند</strong>. حفاظت صرفاً در لایهٔ نرم‌افزار است.</p>
+<table><thead><tr><th>کد</th><th>ریسک پذیرفته‌شده</th></tr></thead><tbody><tr><td>P1</td><td>هر پشتیبان پایگاه داده حاوی متن خام یادداشت‌هاست؛ هر کس به فایل پشتیبان دسترسی پیدا کند، همه را می‌خواند.</td></tr><tr><td>P2</td><td>هر کس به phpMyAdmin یا حساب پایگاه داده دسترسی داشته باشد، همهٔ یادداشت‌ها را می‌بیند؛ کنترل دسترسی فقط داخل برنامه است.</td></tr><tr><td>P3</td><td>پس از ارجاع پرونده، درمانگر تازه هیچ دسترسی‌ای به یادداشت‌های پیشین ندارد؛ تداوم درمان گسسته می‌شود.</td></tr></tbody></table>
+<p>مالک هر سه را صریحاً پذیرفته است. اگر مدیر بالادستی P1 یا P2 را نپذیرد، رمزنگاری باید <strong>پیش از</strong> فاز ۴ در دستور کار قرار گیرد، چون بعداً باید روی داده‌های انباشته اجرا شود و پرهزینه‌تر است.</p>
+<h3>۶.۲ موکول‌کردن بایگانی پرونده (انحراف از اصلاحیهٔ ADR-009)</h3>
+<p>جدول <code>clinical_case_status_events</code> ساخته نشد و دکمهٔ «بایگانی پرونده» وجود ندارد. پرونده‌ها برای همیشه باز می‌مانند. اثر عملی: فهرست پرونده‌های درمانگر با گذشت زمان طولانی می‌شود. پیشنهاد می‌شود در فاز ۴ یا ۵ انجام شود.</p>
+<hr>
+<h2>۷. ریسک باز — نبود محیط آزمایشی (R8)</h2>
+<p>هیچ محیط Staging وجود ندارد. در نتیجه:</p>
+<ul><li>هر آزمونی روی <strong>سرور عملیاتی با داده‌های واقعی مراجعان</strong> انجام می‌شود.</li><li>آزمون ۱۴ (اجرای دوبارهٔ اسکریپت ارتقا) اصلاً قابل اجرا نیست.</li><li>هر وصله مستقیم روی سامانهٔ در حال استفاده می‌نشیند.</li></ul>
+<p>تاکنون آسیبی وارد نشده، اما این نتیجهٔ احتیاط است، نه نتیجهٔ ساختار. فاز ۴ (فرم‌ها) به‌مراتب بیش از فاز ۳ به پایگاه داده دست می‌زند و این ریسک در آن فاز بزرگ‌تر می‌شود.</p>
+<p><strong>درخواست مشخص:</strong> یک زیردامنه و یک پایگاه دادهٔ جداگانه روی همان میزبان — هزینهٔ اضافی تقریباً صفر، و تنها راه اجرای آزمون ۱۴ و آزمون بی‌خطر فاز ۴.</p>
+<hr>
+<h2>۸. کارهای باز پیش از اختتام رسمی</h2>
+<table><thead><tr><th>#</th><th>کار</th><th>مسئول</th><th>زمان لازم</th></tr></thead><tbody><tr><td>۱</td><td>آزمون ۷ — ویرایش یادداشت پس از ۲۴ ساعت باید رد شود</td><td>مالک</td><td>فردا، ۵ دقیقه</td></tr><tr><td>۲</td><td>اجرای پنج پرس‌وجوی <code>CHECK_QUERIES_FA.sql</code> در phpMyAdmin (آزمون ۱۳ و بررسی ابطال نقش‌ها و حسابرسی)</td><td>مالک</td><td>۱۰ دقیقه</td></tr><tr><td>۳</td><td>آزمون T5 فاز ۲ (بازماندهٔ فاز پیشین)</td><td>مالک</td><td>۱۰ دقیقه</td></tr></tbody></table>
+<p>با انجام این سه مورد، فاز ۳ بدون قید و شرط بسته می‌شود. تا آن زمان، اختتام <strong>مشروط</strong> است.</p>
+<hr>
+<h2>۹. درخواست مجوز شروع فاز ۴ — فرم‌های بالینی</h2>
+<h3>دامنهٔ پیشنهادی</h3>
+<p>مطابق ADR-007 که از فاز ۱ به فاز ۴ موکول شده بود:</p>
+<table><thead><tr><th>#</th><th>قابلیت</th></tr></thead><tbody><tr><td>۱</td><td>تعریف قالب فرم توسط مدیر (عنوان، توضیح، وضعیت فعال/غیرفعال)</td></tr><tr><td>۲</td><td>تعریف پرسش‌ها: متن کوتاه، متن بلند، تک‌انتخابی، چندانتخابی، عدد، تاریخ</td></tr><tr><td>۳</td><td>تخصیص فرم به یک پرونده توسط درمانگر</td></tr><tr><td>۴</td><td>تکمیل فرم و ذخیرهٔ پاسخ‌ها</td></tr><tr><td>۵</td><td>نمایش پاسخ‌ها در صفحهٔ پروندهٔ بالینی</td></tr><tr><td>۶</td><td>حسابرسی کامل، با همان قاعدهٔ دسترسی فاز ۳</td></tr></tbody></table>
+<p>برآورد اولیه: سه تا چهار جدول تازه (<code>form_templates</code>, <code>form_questions</code>, <code>form_assignments</code>, <code>form_answers</code>) و حدود ۸ تا ۱۰ صفحهٔ تازه.</p>
+<h3>پرسش‌هایی که پیش از نوشتن کد باید پاسخ بگیرند</h3>
+<ol><li><strong>چه کسی فرم را پر می‌کند؟</strong> فقط درمانگر، یا مراجع هم باید بتواند (که یعنی ورود مراجع به سامانه — کار بسیار بزرگ‌تری است)؟</li><li><strong>پاسخ فرم‌ها در همان حلقهٔ محرمانگی فاز ۳ قرار می‌گیرد؟</strong> یعنی فقط درمانگر مسئول ببیند، یا مدیر هم برای گزارش‌گیری دسترسی داشته باشد؟</li><li><strong>فرم‌ساز چقدر آزاد باشد؟</strong> فهرست ثابتی از فرم‌ها، یا مدیر بتواند هر فرمی بسازد؟</li><li><strong>فرم پر شده پس از ثبت قابل ویرایش است؟</strong> و اگر بله، با چه پنجرهٔ زمانی؟</li></ol>
+<h3>پیش‌نیاز اجرایی</h3>
+<ul><li>تأیید دو انحراف بند ۶ (یا دستور بازنگری در رمزنگاری).</li><li>تصمیم دربارهٔ محیط آزمایشی بند ۷.</li><li>انجام سه کار باز بند ۸.</li></ul>
+<h3>روش کار پیشنهادی — همان روش موفق فاز ۳</h3>
+<ol><li>سند طراحی اول، کد بعد. (در فاز ۳ همین روش جلوی ۱۳ ایراد طراحی را گرفت.)</li><li>هیچ آزمونی بدون اجرای واقعی «قبول» اعلام نمی‌شود.</li><li>هر وصله نشانگر نسخهٔ دیداری دارد.</li><li>مهاجرت پایگاه داده فقط پس از راستی‌آزمایی همهٔ گام‌ها ثبت می‌شود و اجرای دوباره‌اش بی‌خطر است.</li></ol>
+<hr>
+<h2>۱۰. درخواست تصمیم</h2>
+<p>از مدیر بالادستی سه چیز خواسته می‌شود:</p>
+<table><thead><tr><th>#</th><th>تصمیم موردنیاز</th></tr></thead><tbody><tr><td><strong>۱</strong></td><td><strong>اختتام مشروط فاز ۳</strong> پس از انجام سه کار باز بند ۸ — تأیید یا رد</td></tr><tr><td><strong>۲</strong></td><td><strong>پذیرش آگاهانهٔ ریسک‌های P1، P2 و P3</strong> (نبود رمزنگاری) — تأیید، یا دستور افزودن رمزنگاری پیش از فاز ۴</td></tr><tr><td><strong>۳</strong></td><td><strong>مجوز شروع فاز ۴</strong> با دامنهٔ بند ۹، به‌علاوهٔ پاسخ چهار پرسش طراحی و تصمیم دربارهٔ محیط آزمایشی</td></tr></tbody></table>
+<hr>
+<h3>پیوست‌ها</h3>
+<table><thead><tr><th>سند</th><th>مسیر</th></tr></thead><tbody><tr><td>گزارش کامل آزمون</td><td><code>phase3/package_docs/PHASE3_TEST_REPORT_FA.md</code></td></tr><tr><td>سند طراحی فاز ۳</td><td><code>phase3/package_docs/PHASE3_DESIGN_FA.md</code></td></tr><tr><td>تصمیمات نهایی فاز ۳</td><td><code>phase3/package_docs/PHASE3_FINAL_DECISIONS.md</code></td></tr><tr><td>راهنمای نصب</td><td><code>phase3/package_docs/INSTALLATION_GUIDE_PHASE3_FA.md</code></td></tr><tr><td>پرس‌وجوهای بررسی</td><td><code>phase3/package_docs/CHECK_QUERIES_FA.sql</code></td></tr><tr><td>وصلهٔ تجمعی ۳.۰.۴</td><td><code>phase3/joma-patch-v3.0.4.zip</code></td></tr></tbody></table>
+</div>
+</body>
+</html>
