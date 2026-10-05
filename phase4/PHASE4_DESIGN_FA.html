@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>سند طراحی فاز ۴ — جوما</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>سند طراحی فاز ۴ — فرم‌های بالینی و پورتال مراجع</h1>
+<p><strong>پروژه:</strong> جوما (<code>my.mirbolouki.com</code>) · <strong>نسخهٔ هدف:</strong> ۴.۰ · <strong>مهاجرت:</strong> <code>4.0.0</code> <strong>تاریخ:</strong> ۱۴۰۵/۰۷/۱۳ · <strong>وضعیت:</strong> پیش‌نویس برای تأیید مالک — <strong>هیچ کدی نوشته نشده است</strong></p>
+<blockquote>این سند تمام بندهای «دستور کامل فاز ۴» و «اصلاحیهٔ ۱» را پوشش می‌دهد. هر جا ابهام یا تعارضی با قواعد ثابت پروژه دیدم، به‌جای حدس زدن، در <strong>بند ۱۱ (سؤال‌های باز)</strong> با شماره آورده‌ام. کدنویسی پس از پاسخ به آن سؤال‌ها آغاز می‌شود.</blockquote>
+<hr>
+<h2>۰. تصمیمات ورودی (ثبت‌شده، نه قابل بازگشایی در این سند)</h2>
+<table><thead><tr><th>#</th><th>تصمیم</th><th>منبع</th></tr></thead><tbody><tr><td>۱</td><td>فرم را <strong>هم درمانگر و هم مراجع</strong> پر می‌کنند؛ پورتال مراجع ساخته می‌شود</td><td>پاسخ ۱-ب</td></tr><tr><td>۲</td><td>پاسخ‌ها را درمانگر <strong>و مدیر (فقط‌خواندنی و حسابرسی‌شده)</strong> می‌بینند</td><td>پاسخ ۲-ب → ریسک P4</td></tr><tr><td>۳</td><td><strong>فرم‌ساز کامل</strong> برای مدیر، با قید ADR-007 دربارهٔ متن آزاد</td><td>پاسخ ۳-ب</td></tr><tr><td>۴</td><td>ویرایش ۲۴ ساعته با نسخه‌سازی، سپس فقط ابطال</td><td>پاسخ ۴-ب</td></tr><tr><td>۵</td><td><strong>فرم سند پرونده است، نه سند نویسنده</strong> — درمانگر مسئولِ فعلی همهٔ فرم‌های پرونده را می‌بیند؛ یادداشت‌ها همچنان فقط مال نویسنده</td><td>تأیید مالک → <strong>P7</strong></td></tr><tr><td>۶</td><td>محیط آزمایشی جداگانه نداریم؛ آزمون روی <code>my.mirbolouki.com</code> با دادهٔ دمو</td><td>اصلاحیهٔ ۱</td></tr><tr><td>۷</td><td>پاک‌سازی نهایی = <code>DROP</code> + نصب تازه از صفر</td><td>اصلاحیهٔ ۱، بند ۴</td></tr><tr><td>۸</td><td><strong>پیش‌نویس فرم فقط برای مراجع</strong>؛ درمانگر پیش‌نویس ندارد</td><td>تأیید مالک → <strong>P8</strong></td></tr></tbody></table>
+<h3>۰ـ۱. دو خط مرزی که کل فاز ۴ روی آن‌ها بنا می‌شود</h3>
+<pre><code>فرم      = دادهٔ ساخت‌یافتهٔ پرونده   → درمانگرِ مسئولِ فعلی + مدیر (مشروط) + خودِ مراجع
+یادداشت  = رأی شخصی نویسنده        → فقط نویسنده. فاز ۳ دست‌نخورده می‌ماند.</code></pre>
+<p>هیچ تابع فاز ۳ در این فاز تغییر نمی‌کند. هیچ صفحهٔ فرم، یادداشتی را نشان نمی‌دهد و هیچ صفحهٔ یادداشت، فرمی را.</p>
+<hr>
+<h2>۱. دامنه</h2>
+<h3>در دامنه</h3>
+<ol><li>فرم‌ساز مدیر: قالب، فیلد، ترتیب، گزینه، الزامی/اختیاری، فعال/آرشیو، نسخه‌سازی.</li><li>هفت نوع فیلد: عدد، تاریخ شمسی، بله/خیر، تک‌انتخابی، چندانتخابی، مقیاس، متن توضیحی.</li><li>تخصیص فرم به پرونده توسط درمانگر، با تعیین پرکننده (درمانگر یا مراجع).</li><li>تخصیص خودکار «فرم پذیرش اولیهٔ مراجع» هنگام تثبیت نخستین نوبت (ADR-008).</li><li>تکمیل فرم توسط درمانگر و توسط مراجع.</li><li>ویرایش ۲۴ ساعته با نگهداری نسخه؛ پس از آن ابطال با دلیل.</li><li>پیش‌نویس برای مراجع.</li><li>ورود مراجع با موبایل + کد پیامکی.</li><li>پورتال مراجع: نوبت‌ها (فقط‌خواندنی)، فرم‌های در انتظار، فرم‌های ثبت‌شدهٔ خودش.</li><li>حسابرسی کامل، بدون ذخیرهٔ متن پاسخ‌ها در <code>audit_log</code>.</li></ol>
+<h3>خارج از دامنه (صریح)</h3>
+<p>رزرو/لغو نوبت توسط مراجع · پیامک «فرم تازه تخصیص یافت» (نیازمند صف پیامک، فاز ۵) · دیدن یادداشت/گزارش/سند آزمون توسط مراجع · بایگانی پرونده · رمزنگاری · منطق شرطی فرم و محاسبهٔ نمره · پیش‌نویس برای درمانگر · ویرایش پاسخ توسط مدیر.</p>
+<hr>
+<h2>۲. مدل داده</h2>
+<p>پس از فاز ۴: <strong>۲۳ جدول</strong> (۱۷ جدول فعلی + ۶ جدول تازه).</p>
+<blockquote>دستور، ۲۲ جدول را پیش‌بینی کرده بود؛ با افزودن <code>form_draft_saves</code> (تصمیم ۸) عدد نهایی ۲۳ می‌شود.</blockquote>
+<h3>۲ـ۰. قواعد ثابت اسکیما</h3>
+<ul><li><code>id BIGINT UNSIGNED</code> داخلی + <code>public_id VARCHAR(30)</code> یکتا (ADR-001).</li><li><strong>همهٔ کلیدهای خارجی <code>RESTRICT</code>.</strong> هیچ <code>CASCADE</code> — بند ۲ـ۷ را ببینید.</li><li>گزینه‌ها و دادهٔ پیش‌نویس در <code>TEXT</code>/<code>LONGTEXT</code> با JSON کدشده در PHP ذخیره می‌شوند،</li></ul>
+<p>نه با نوع ستونی <code>JSON</code> (سازگاری با MySQL نسخه‌های قدیمی هاست اشتراکی).</p>
+<ul><li>زمان‌ها UTC؛ تاریخِ واردشدهٔ کاربر شمسی گرفته و میلادی ذخیره می‌شود.</li><li><code>public_id</code> و دادهٔ Seed در PHP تولید می‌شوند، نه در SQL.</li><li>پیشوندهای تازهٔ <code>public_id</code>: <code>ft_</code> قالب، <code>ff_</code> فیلد، <code>fa_</code> تخصیص، <code>fs_</code> ثبت،</li></ul>
+<p><code>fd_</code> پیش‌نویس. (<code>form_submission_values</code> شناسهٔ عمومی ندارد؛ هرگز مستقیم آدرس‌دهی نمی‌شود.)</p>
+<h3>۲ـ۱. <code>form_templates</code> — قالب فرم</h3>
+<table><thead><tr><th>ستون</th><th>نوع</th><th>توضیح</th></tr></thead><tbody><tr><td><code>id</code></td><td>BIGINT UNSIGNED PK</td><td></td></tr><tr><td><code>public_id</code></td><td>VARCHAR(30) UNIQUE</td><td><code>ft_…</code></td></tr><tr><td><code>template_code</code></td><td>VARCHAR(50)</td><td>شناسهٔ پایدار بین نسخه‌ها</td></tr><tr><td><code>version</code></td><td>SMALLINT UNSIGNED</td><td>از ۱</td></tr><tr><td><code>parent_template_id</code></td><td>BIGINT NULL</td><td>نسخهٔ پیشین</td></tr><tr><td><code>title</code></td><td>VARCHAR(150)</td><td></td></tr><tr><td><code>description</code></td><td>VARCHAR(1000) NULL</td><td></td></tr><tr><td><code>default_assignee_role</code></td><td>ENUM(&#x27;THERAPIST&#x27;,&#x27;PATIENT&#x27;)</td><td>پیش‌فرض پرکننده</td></tr><tr><td><code>admin_can_view</code></td><td>TINYINT(1) DEFAULT 1</td><td>کاهندهٔ ریسک P4</td></tr><tr><td><code>patient_can_have_draft</code></td><td>TINYINT(1) DEFAULT 1</td><td>بند ۲ـ۶</td></tr><tr><td><code>status</code></td><td>ENUM(&#x27;DRAFT&#x27;,&#x27;ACTIVE&#x27;,&#x27;ARCHIVED&#x27;)</td><td></td></tr><tr><td><code>locked_at</code></td><td>DATETIME NULL</td><td>با نخستین پاسخ پر می‌شود</td></tr><tr><td><code>created_by_person_id</code></td><td>BIGINT</td><td>FK persons RESTRICT</td></tr><tr><td><code>created_at</code> / <code>updated_at</code></td><td>DATETIME / NULL</td><td></td></tr></tbody></table>
+<p>کلیدها: <code>UNIQUE (template_code, version)</code>، <code>KEY (status)</code>.</p>
+<h3>۲ـ۲. <code>form_fields</code> — فیلدهای قالب</h3>
+<p>ستون‌ها مطابق دستور: <code>field_code</code>، <code>label</code>، <code>help_text</code>، <code>field_type</code> از هفت مقدار، <code>is_required</code>، <code>display_order</code>، <code>options_text</code>، <code>min_value</code>/<code>max_value</code>، <code>max_length</code>، <code>is_active</code>، <code>created_at</code>. <code>UNIQUE (template_id, field_code)</code> و <code>KEY (template_id, display_order)</code>. FK به <code>form_templates</code> <strong>RESTRICT</strong> (نه CASCADE).</p>
+<p>«حذف» فیلد پیش از قفل‌شدن قالب = <code>is_active=0</code>، نه حذف فیزیکی؛ چون ممکن است همان قالب در نسخهٔ قبلی پاسخ داشته باشد.</p>
+<h3>۲ـ۳. <code>form_assignments</code> — تخصیص فرم</h3>
+<p>ستون‌های کلیدی: <code>admission_id</code> (NOT NULL، لنگر اصلی)، <code>clinical_case_id</code> (NULL تا وقتی پرونده باز شود)، <code>patient_person_id</code>، <code>template_id</code>، <code>assignee_role</code>، <code>assignee_person_id</code>، <code>assignment_source</code> (&#x27;MANUAL&#x27; | &#x27;AUTO_FIRST_APPOINTMENT&#x27;)، <code>trigger_appointment_id</code> NULL، <code>assigned_by_person_id</code> NULL (برای تخصیص خودکار)، <code>assigned_by_role_code</code> NULL، <code>status</code> (&#x27;PENDING&#x27;,&#x27;SUBMITTED&#x27;,&#x27;RETRACTED&#x27;,&#x27;CANCELLED&#x27;)، <code>assigned_at</code>، <code>cancelled_at</code>، <code>cancelled_by_person_id</code>.</p>
+<p>همهٔ FKها RESTRICT. کلیدها: <code>(admission_id, status)</code>، <code>(assignee_person_id, status)</code>، <code>(patient_person_id)</code>.</p>
+<p><strong>چرا لنگر <code>admission_id</code> است:</strong> ADR-008 می‌گوید فرم پذیرش اولیه در لحظهٔ تثبیت نخستین نوبت تخصیص می‌یابد، مستقل از اینکه درمانگر مسئولیت را پذیرفته باشد. در آن لحظه ممکن است هنوز <code>clinical_cases</code> ردیفی نداشته باشد.</p>
+<p><strong>پر شدن بعدی <code>clinical_case_id</code>:</strong> هنگام باز شدن پرونده از پذیرش (<code>clinical_case_open_from_admission()</code>)، تخصیص‌های همان پذیرش که <code>clinical_case_id</code> تهی دارند به‌روزرسانی می‌شوند. این تنها تغییر در <code>case_functions.php</code> است — <strong>سؤال باز ۴.</strong></p>
+<h3>۲ـ۴. <code>form_submissions</code> — سندِ ثبت‌شده</h3>
+<p><code>assignment_id</code> <strong>UNIQUE</strong> (هر تخصیص حداکثر یک ثبت)، <code>submitted_by_person_id</code>، <code>submitted_by_role_code</code> (نقش واقعی نشست)، <code>submitted_at</code>، <code>current_revision</code>، <code>edit_count</code>، <code>last_edited_at</code>، <code>status</code> (&#x27;ACTIVE&#x27;,&#x27;RETRACTED&#x27;)، <code>retracted_at</code>، <code>retracted_by_person_id</code>، <code>retraction_reason_id</code> → <code>lookup_items</code> RESTRICT.</p>
+<h3>۲ـ۵. <code>form_submission_values</code> — مقادیر، نسخه‌به‌نسخه</h3>
+<p><code>submission_id</code>، <code>field_id</code>، <code>revision</code>، <code>value_text</code>، <code>is_current</code>، <code>created_at</code>. <code>UNIQUE (submission_id, field_id, revision)</code> و <code>KEY (submission_id, is_current)</code>. نسخه‌های قبلی هرگز حذف یا بازنویسی نمی‌شوند.</p>
+<h3>۲ـ۶. <code>form_draft_saves</code> — پیش‌نویس مراجع (P8)</h3>
+<p><code>assignment_id</code>، <code>saved_by_person_id</code>، <code>saved_by_role_code</code>، <code>draft_data_json</code> (LONGTEXT)، <code>saved_at</code>.</p>
+<p>سه تغییر نسبت به پیشنهاد دستور، با دلیل:</p>
+<table><thead><tr><th>مورد</th><th>پیشنهاد دستور</th><th>پیشنهاد من</th><th>دلیل</th></tr></thead><tbody><tr><td>FK <code>assignment_id</code></td><td><code>ON DELETE CASCADE</code></td><td><strong>RESTRICT</strong></td><td>«هیچ <code>CASCADE</code>» قاعدهٔ ثابت پروژه است و در دستور هم تکرار شده. حذف پیش‌نویس در کد و صریح انجام می‌شود.</td></tr><tr><td>چند ردیف به‌ازای هر تخصیص</td><td>نامشخص</td><td><strong><code>UNIQUE (assignment_id)</code></strong></td><td>پیش‌نویس همیشه بازنویسی می‌شود؛ تاریخچهٔ پیش‌نویس ارزشی ندارد و انباشت بی‌دلیل است.</td></tr><tr><td>پاک‌سازی ۳۰ روزه</td><td>«حذف Lazy»</td><td>حذف تنبل در دو نقطهٔ مشخص</td><td>سرور Cron ندارد. بند ۴ـ۷.</td></tr></tbody></table>
+<h3>۲ـ۷. تنها تغییر در جدول قدیمی</h3>
+<pre><code>ALTER TABLE otp_codes MODIFY purpose
+  ENUM(&#x27;REGISTER&#x27;,&#x27;RESET_PASSWORD&#x27;,&#x27;CONFIRM_MOBILE_CHANGE&#x27;,&#x27;PATIENT_LOGIN&#x27;) NOT NULL;</code></pre>
+<p>افزایشی است: هیچ مقداری حذف یا تغییر نمی‌کند. اسکریپت ارتقا پیش از اجرا با <code>SHOW COLUMNS</code> بررسی می‌کند که <code>PATIENT_LOGIN</code> از قبل نباشد (idempotent). <code>accounts.account_type</code> از فاز ۱ مقدار <code>PATIENT</code> را دارد و نیازی به تغییر نیست — این را در طرح‌وارهٔ واقعی بررسی کردم.</p>
+<h3>۲ـ۸. Seed (در PHP، idempotent)</h3>
+<p><strong>فهرست دلایل ابطال</strong> <code>form_retraction_reason</code>: <code>fr_patient_request</code> «درخواست مراجع»، <code>fr_data_error</code> «خطای ثبت داده»، <code>fr_wrong_case</code> «ثبت در پروندهٔ اشتباه»، <code>fr_other</code> «سایر».</p>
+<p><strong>قالب <code>patient_intake</code> نسخهٔ ۱</strong> — «فرم پذیرش اولیهٔ مراجع»، <code>default_assignee_role=PATIENT</code>، وضعیت <code>ACTIVE</code>، بدون هیچ فیلد متن آزاد. ده فیلد پیشنهادی:</p>
+<table><thead><tr><th>#</th><th>عنوان</th><th>نوع</th><th>الزامی</th><th>گزینه‌ها / بازه</th></tr></thead><tbody><tr><td>۱</td><td>وضعیت تأهل</td><td>تک‌انتخابی</td><td>بله</td><td>مجرد، متأهل، جداشده، همسرفوت‌شده</td></tr><tr><td>۲</td><td>بالاترین مدرک تحصیلی</td><td>تک‌انتخابی</td><td>بله</td><td>زیر دیپلم، دیپلم، کاردانی، کارشناسی، کارشناسی ارشد و بالاتر</td></tr><tr><td>۳</td><td>وضعیت اشتغال</td><td>تک‌انتخابی</td><td>بله</td><td>شاغل، بیکار، دانشجو، خانه‌دار، بازنشسته</td></tr><tr><td>۴</td><td>با چه کسانی زندگی می‌کنید؟</td><td>چندانتخابی</td><td>بله</td><td>تنها، همسر، فرزندان، والدین، سایر بستگان</td></tr><tr><td>۵</td><td>سابقهٔ دریافت خدمات روان‌شناختی</td><td>بله/خیر</td><td>بله</td><td>—</td></tr><tr><td>۶</td><td>در حال حاضر دارویی مصرف می‌کنید؟</td><td>بله/خیر</td><td>بله</td><td>—</td></tr><tr><td>۷</td><td>سابقهٔ بستری به دلایل روان‌پزشکی</td><td>بله/خیر</td><td>بله</td><td>—</td></tr><tr><td>۸</td><td>شدت ناراحتی فعلی</td><td>مقیاس</td><td>بله</td><td>۱ تا ۱۰</td></tr><tr><td>۹</td><td>مدت زمان درگیری با مشکل فعلی</td><td>تک‌انتخابی</td><td>بله</td><td>کمتر از یک ماه، ۱ تا ۶ ماه، ۶ تا ۱۲ ماه، بیش از یک سال</td></tr><tr><td>۱۰</td><td>چگونه با کلینیک آشنا شدید؟</td><td>تک‌انتخابی</td><td>خیر</td><td>پزشک، آشنایان، اینترنت، شبکه‌های اجتماعی، سایر</td></tr></tbody></table>
+<p>این فهرست <strong>پیشنهاد است و نیاز به تأیید مالک دارد — سؤال باز ۱.</strong></p>
+<p>روی سرور هیچ قالب نمونهٔ دیگری Seed نمی‌شود.</p>
+<hr>
+<h2>۳. ماتریس دسترسی قطعی</h2>
+<table><thead><tr><th>عملیات</th><th>مدیر</th><th>منشی</th><th>درمانگر مسئولِ فعلی</th><th>درمانگر دیگر</th><th>مراجع (خودش)</th></tr></thead><tbody><tr><td>ساخت/ویرایش/نسخه/آرشیو قالب</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td></tr><tr><td>تخصیص فرم</td><td>❌</td><td>❌</td><td>✅</td><td>❌</td><td>❌</td></tr><tr><td>لغو تخصیصِ پرنشده</td><td>❌</td><td>❌</td><td>✅</td><td>❌</td><td>❌</td></tr><tr><td>تکمیل فرمِ <code>assignee=THERAPIST</code></td><td>❌</td><td>❌</td><td>✅</td><td>❌</td><td>❌</td></tr><tr><td>تکمیل فرمِ <code>assignee=PATIENT</code></td><td>❌</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td></tr><tr><td>ویرایش ۲۴ ساعته / ابطال</td><td>فقط تکمیل‌کنندهٔ همان فرم</td><td></td><td></td><td></td><td></td></tr><tr><td><strong>مشاهدهٔ پاسخ‌های فرم‌های پرونده</strong></td><td>✅ فقط‌خواندنی، فقط قالب‌های <code>admin_can_view=1</code>، هر بار حسابرسی</td><td>❌</td><td>✅ <strong>همهٔ فرم‌های پرونده، صرف‌نظر از نویسنده (P7)</strong></td><td>❌</td><td>✅ فقط فرم‌هایی که خودش پر کرده</td></tr><tr><td>تاریخچهٔ نسخه‌ها</td><td>✅ (همان شرط)</td><td>❌</td><td>✅</td><td>❌</td><td>❌ (فقط نسخهٔ جاری خودش)</td></tr><tr><td>وضعیت فرم پذیرش (نه محتوا)</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td><td>✅</td></tr><tr><td>یادداشت محرمانه</td><td>❌</td><td>❌</td><td>طبق فاز ۳ (فقط نویسنده)</td><td>❌</td><td>❌</td></tr></tbody></table>
+<p>تعریف «درمانگر مسئولِ فعلی»: اگر پرونده وجود دارد <code>clinical_cases.responsible_therapist_person_id</code>؛ وگرنه <code>admissions.referred_therapist_person_id</code>. در هر دو حالت از <code>$_SESSION[&#x27;person_id&#x27;]</code> سنجیده می‌شود، هرگز از ورودی کاربر.</p>
+<p>سه قاعدهٔ تکمیلی:</p>
+<ul><li>مراجع هرگز فرم‌هایی را که درمانگر پر کرده نمی‌بیند، حتی اگر دربارهٔ خودش باشد.</li><li>منشی به هیچ محتوایی دسترسی ندارد؛ فقط وضعیت «در انتظار / ثبت‌شده» را می‌بیند.</li><li>مدیر نمی‌تواند فرم تخصیص دهد یا پر کند؛ این اقدام بالینی است.</li></ul>
+<h3>۳ـ۱. الگوی پیام رد دسترسی</h3>
+<p>درس D4 اجباری است: «یافت نشد» و «مال شما نیست» همیشه <strong>یک پیام یکسان</strong> می‌دهند:</p>
+<blockquote>فرم یافت نشد یا شما اجازهٔ دسترسی به آن را ندارید.</blockquote>
+<p>و هر دو حالت <code>FORM_ACCESS_DENIED</code> را در حسابرسی ثبت می‌کنند.</p>
+<hr>
+<h2>۴. قواعد دامنه</h2>
+<h3>۴ـ۱. چرخهٔ عمر قالب</h3>
+<pre><code>DRAFT ──فعال‌سازی──► ACTIVE ──نخستین پاسخ──► ACTIVE(locked_at) ──آرشیو──► ARCHIVED</code></pre>
+<ul><li><code>DRAFT</code> یا <code>ACTIVE</code> بدون قفل: فیلدها آزادانه ویرایش، غیرفعال و جابه‌جا می‌شوند.</li><li>پس از پر شدن <code>locked_at</code>: فیلدها فقط‌خواندنی؛ فقط <code>title</code>، <code>description</code> و</li></ul>
+<p><code>admin_can_view</code> قابل ویرایش می‌مانند؛ تغییر فیلد فقط با «ساخت نسخهٔ جدید» (کپی کامل فیلدها، <code>version+1</code>، <code>parent_template_id</code>، وضعیت <code>DRAFT</code>).</p>
+<ul><li>فعال‌سازی نسخهٔ تازه، نسخهٔ پیشین را خودکار آرشیو <strong>نمی‌کند</strong>؛ ولی در هر لحظه</li></ul>
+<p>بیش از یک نسخهٔ <code>ACTIVE</code> از یک <code>template_code</code> مجاز نیست (کنترل سمت سرور، داخل تراکنش با قفل سطر).</p>
+<ul><li><code>ARCHIVED</code>: تخصیص تازه ممنوع؛ تخصیص‌های <code>PENDING</code> همچنان قابل تکمیل‌اند؛ درمانگر</li></ul>
+<p>می‌تواند لغوشان کند.</p>
+<ul><li>اگر هیچ نسخهٔ <code>ACTIVE</code> از <code>patient_intake</code> نباشد، هوک ADR-008 کاری نمی‌کند و در</li></ul>
+<p>داشبورد مدیر هشدار نشان داده می‌شود.</p>
+<h3>۴ـ۲. انواع فیلد و اعتبارسنجی سمت سرور (الزامی — JS هرگز کافی نیست)</h3>
+<table><thead><tr><th>نوع</th><th>ذخیره در <code>value_text</code></th><th>اعتبارسنجی سرور</th></tr></thead><tbody><tr><td><code>NUMBER</code></td><td>رشتهٔ عددی</td><td>عددی بودن؛ بازهٔ <code>min_value</code>/<code>max_value</code>؛ تبدیل ارقام فارسی</td></tr><tr><td><code>DATE</code></td><td><code>YYYY-MM-DD</code> میلادی</td><td>شمسی معتبر (با <code>jalali.php</code>)؛ تبدیل سمت سرور</td></tr><tr><td><code>YES_NO</code></td><td><code>1</code> / <code>0</code></td><td>فقط همین دو</td></tr><tr><td><code>SINGLE_CHOICE</code></td><td><code>code</code> گزینه</td><td>باید در <code>options_text</code> باشد</td></tr><tr><td><code>MULTI_CHOICE</code></td><td>JSON آرایهٔ کدها</td><td>هر کد معتبر؛ حداقل یکی اگر الزامی</td></tr><tr><td><code>SCALE</code></td><td>عدد صحیح</td><td>بین <code>min_value</code> و <code>max_value</code> (پیش‌فرض ۱–۵)</td></tr><tr><td><code>DESCRIPTIVE_TEXT</code></td><td>متن</td><td><code>max_length</code> (پیش‌فرض ۲۰۰۰، سقف مطلق ۵۰۰۰)؛ خروجی با <code>e()</code></td></tr></tbody></table>
+<p><strong>ADR-007:</strong> افزودن فیلد <code>DESCRIPTIVE_TEXT</code> در فرم‌ساز بدون تیک تأیید صریح («آگاهانه فیلد متن آزاد اضافه می‌کنم») رد می‌شود و با تیک، رویداد <code>FORM_FIELD_FREE_TEXT_ADDED</code> ثبت می‌گردد.</p>
+<p>شمارش نویسه با <code>mb_strlen</code> و در سمت کلاینت با <code>Array.from</code> — همان الگوی فاز ۳ تا دو شمارش یکی باشند.</p>
+<h3>۴ـ۳. تخصیص</h3>
+<ul><li>درمانگر در صفحهٔ پرونده: انتخاب قالب فعال + انتخاب پرکننده (پیش‌فرض از قالب).</li><li>اگر پرکننده مراجع است و مراجع هنوز حساب ندارد، تخصیص انجام می‌شود؛ حساب در نخستین</li></ul>
+<p>ورود او ساخته می‌شود.</p>
+<ul><li>تخصیص تکراری همان قالب روی همان پرونده مجاز است؛ ولی اگر تخصیص <code>PENDING</code> از همان</li></ul>
+<p>قالب وجود دارد، سامانه هشدار می‌دهد و تأیید دوباره می‌خواهد.</p>
+<ul><li><code>CANCELLED</code> فقط برای <code>PENDING</code>. تخصیصِ دارای پاسخ لغو نمی‌شود — پاسخش ابطال می‌شود.</li></ul>
+<h3>۴ـ۴. تکمیل، ویرایش، ابطال</h3>
+<p><strong>تکمیل</strong> در یک تراکنش: درج همهٔ مقادیر با <code>revision=1</code>، ساخت <code>form_submissions</code>، <code>assignments.status=&#x27;SUBMITTED&#x27;</code>، حذف پیش‌نویس، حسابرسی <code>FORM_SUBMITTED</code> با نقش واقعی نشست. <strong>متن پاسخ‌ها هرگز در <code>audit_log</code> نوشته نمی‌شود</strong> — فقط شناسه‌ها و شمارش.</p>
+<p><strong>ویرایش</strong> فقط اگر <code>submitted_by_person_id</code> برابر کاربر نشست باشد و کمتر از ۲۴ ساعت از <code>submitted_at</code> گذشته باشد (محاسبه در سرور). ویرایش یعنی درج <strong>نسخهٔ کامل تازه</strong> از همهٔ فیلدها با <code>revision+1</code>، <code>is_current=0</code> برای نسخهٔ پیشین، <code>edit_count+1</code>. پس از ۲۴ ساعت دکمه غیرفعال می‌شود <strong>و</strong> تلاش مستقیم با POST هم رد می‌شود (آزمون ۷).</p>
+<p><strong>ابطال</strong> فقط به‌دست تکمیل‌کننده، با دلیل الزامی از فهرست. مقادیر باقی می‌مانند و با برچسب «باطل‌شده» برای درمانگر مسئول، مدیر و خود مراجع دیده می‌شوند. درمانگر پس از ابطال می‌تواند فرم را دوباره تخصیص دهد (تخصیص تازه، چون <code>assignment_id</code> در <code>form_submissions</code> یکتاست).</p>
+<h3>۴ـ۵. پیش‌نویس مراجع (P8)</h3>
+<ul><li>فقط <code>assignee_role=&#x27;PATIENT&#x27;</code> و فقط خودِ مراجع. درمانگر دکمهٔ پیش‌نویس ندارد.</li><li>ذخیره: بازنویسی همان ردیف (کلید یکتا روی <code>assignment_id</code>).</li><li>بارگذاری خودکار در باز کردن دوبارهٔ فرم، با پیام «پیش‌نویس ذخیره‌شده در تاریخ …</li></ul>
+<p>بازیابی شد» و دکمهٔ «دورانداختن پیش‌نویس».</p>
+<ul><li>با ثبت نهایی، پیش‌نویس در همان تراکنش حذف می‌شود.</li><li><strong>پیش‌نویس هیچ اعتبارسنجی‌ای ندارد</strong> (ممکن است ناقص باشد) و هیچ‌گاه به‌عنوان پاسخ</li></ul>
+<p>شمرده نمی‌شود. مقادیر نامعتبر هنگام بارگذاری نادیده گرفته می‌شوند، نه خطا.</p>
+<ul><li>حسابرسی: <code>FORM_DRAFT_SAVED</code>، <code>FORM_DRAFT_LOADED</code>، <code>FORM_DRAFT_DISCARDED</code> — بدون</li></ul>
+<p>محتوا.</p>
+<p><strong>دربارهٔ AJAX:</strong> این نخستین AJAX پروژه است (فاز ۳ صریحاً بدون AJAX بود). پیشنهاد من: ذخیرهٔ پیش‌نویس با <code>fetch()</code> انجام شود، ولی همان Endpoint یک <strong>فرم POST معمولی</strong> را هم بپذیرد و دکمهٔ «ذخیرهٔ پیش‌نویس» یک <code>&lt;button type=&quot;submit&quot; formaction=…&gt;</code> واقعی باشد. در این صورت اگر JS کار نکند (مرورگر قدیمی موبایل)، پیش‌نویس با یک رفرش ساده ذخیره می‌شود و قابلیت از دست نمی‌رود. بدون این، کاربرِ بدون JS دقیقاً همان دادهٔ پرشده را از دست می‌دهد که می‌خواستیم نجاتش دهیم.</p>
+<h3>۴ـ۶. هوک ADR-008 — تخصیص خودکار فرم پذیرش</h3>
+<ul><li>نقطهٔ اتصال: <code>appointment_confirm_hold()</code> در <code>includes/appointment_functions.php</code>،</li></ul>
+<p><strong>خط ۶۰۶</strong>، جایی که از فاز ۲ کامنت رزرو شده است. (بررسی شد: درست پس از Commit و پس از <code>APPOINTMENT_CREATED</code> قرار دارد.) این تنها تغییر در آن فایل است.</p>
+<ul><li>شرط «مراجع تازه»: آن شخص پیش از این هیچ نوبتی با وضعیت</li></ul>
+<p><code>SCHEDULED/COMPLETED/NO_SHOW</code> نداشته باشد (در سطح شخص، نه پذیرش).</p>
+<ul><li>شرط دوم: نسخهٔ <code>ACTIVE</code> از <code>patient_intake</code> موجود باشد و برای این شخص هیچ تخصیصی</li></ul>
+<p>از این <code>template_code</code> (هر نسخه، هر وضعیت جز <code>CANCELLED</code>) نباشد.</p>
+<ul><li>اجرا <strong>پس از Commit موفق</strong>، در تراکنش کوچک جداگانه. شکست هوک نوبت را خراب</li></ul>
+<p>نمی‌کند: خطا در لاگ و <code>FORM_AUTO_ASSIGN_FAILED</code> ثبت و در داشبورد مدیر هشدار داده می‌شود.</p>
+<ul><li>ثبت: <code>assignment_source=&#x27;AUTO_FIRST_APPOINTMENT&#x27;</code>، <code>assigned_by_person_id=NULL</code>،</li></ul>
+<p><code>trigger_appointment_id</code> پر، <code>assignee_role=&#x27;PATIENT&#x27;</code>.</p>
+<ul><li>جابه‌جایی نوبت هوک را دوباره اجرا نمی‌کند؛ لغو نوبت تخصیص را لغو نمی‌کند.</li></ul>
+<h3>۴ـ۷. پاک‌سازی تنبل پیش‌نویس‌ها</h3>
+<p>سرور Cron ندارد. حذف پیش‌نویس‌های کهنه‌تر از ۳۰ روز در دو نقطه و با سقف ۵۰ ردیف در هر بار انجام می‌شود (همان الگوی <code>holds_expire_lazy()</code> فاز ۲):</p>
+<ol><li>در ورود موفق هر مراجع.</li><li>در باز کردن <code>admin/form_submissions.php</code>.</li></ol>
+<hr>
+<h2>۵. ورود مراجع و پورتال</h2>
+<h3>۵ـ۱. احراز هویت</h3>
+<ul><li>تب «مراجعین» در <code>login.php</code> فعال می‌شود. ورودی: موبایل، با تبدیل ارقام فارسی و</li></ul>
+<p><code>normalize_mobile_number()</code> اجباری (ADR-014).</p>
+<ul><li>جریان: موبایل → OTP با <code>purpose=&#x27;PATIENT_LOGIN&#x27;</code>، کد ۶ رقمی، ۱۲۰ ثانیه، همان</li></ul>
+<p>محدودیت‌های نرخ فاز ۱ → تأیید → ورود.</p>
+<ul><li><strong>ضد افشا:</strong> پیام همیشه یکسان است — «در صورتی که شماره در کلینیک ثبت شده باشد، کد</li></ul>
+<p>ارسال شد.» برای شماره‌ای که در <code>persons</code> نیست یا هیچ پذیرشی ندارد، <strong>پیامکی ارسال نمی‌شود</strong> ولی پیام همان است.</p>
+<ul><li>ساخت حساب در نخستین ورود موفق: <code>account_type=&#x27;PATIENT&#x27;</code>،</li></ul>
+<p><code>login_identifier</code> = موبایل، <code>password_hash</code> = هش تصادفی غیرقابل‌استفاده، <code>must_change_password=0</code>، نقش <code>patient</code>. حسابرسی <code>PATIENT_ACCOUNT_CREATED</code>.</p>
+<ul><li><strong>پرسنلی که خودش مراجع هم هست:</strong> <code>accounts.person_id</code> یکتاست (بررسی شد)، پس حساب</li></ul>
+<p>دوم ساخته نمی‌شود؛ نقش <code>patient</code> به همان حساب افزوده می‌شود و <code>role_select.php</code> کار می‌کند. نکتهٔ ظریف: چنین کاربری با OTP وارد حسابی می‌شود که رمز پرسنلی هم دارد — <strong>سؤال باز ۳.</strong></p>
+<ul><li><code>auth_require_active_session()</code> برای مراجع هم اجرا می‌شود؛ غیرفعال‌سازی فوری اثر</li></ul>
+<p>می‌کند. نشست ۳۰ دقیقه. مراجع به <code>admin/</code>، <code>reception/</code>، <code>therapist/</code> دسترسی ندارد (۴۰۳) و پرسنل بدون نقش <code>patient</code> به <code>patient/</code> نمی‌رود.</p>
+<h3>۵ـ۲. صفحات پورتال</h3>
+<table><thead><tr><th>صفحه</th><th>محتوا</th></tr></thead><tbody><tr><td><code>patient/index.php</code></td><td>خوش‌آمد، نوبت بعدی، تعداد فرم‌های در انتظار</td></tr><tr><td><code>patient/appointments.php</code></td><td>نوبت‌های آینده و گذشته: تاریخ شمسی، ساعت تهران، درمانگر، خدمت، وضعیت. <strong>بدون مبلغ</strong></td></tr><tr><td><code>patient/forms.php</code></td><td>«در انتظار تکمیل» و «ثبت‌شدهٔ من» (با برچسب باطل‌شده)</td></tr><tr><td><code>patient/form_fill.php</code></td><td>رندر فرم، اعتبارسنجی سرور، خطای فیلدی، پیش‌نویس، تأیید نهایی</td></tr><tr><td><code>patient/form_view.php</code></td><td>نسخهٔ جاری خودش + دکمهٔ ویرایش (در ۲۴ ساعت) یا ابطال</td></tr><tr><td><code>patient/logout.php</code></td><td>—</td></tr></tbody></table>
+<p>رابط پورتال موبایل‌اول: بدون نوار کناری، فونت بزرگ‌تر، هدف لمسی حداقل ۴۴ پیکسل، همان پالت رنگی. اتاق و مبلغ به مراجع نشان داده نمی‌شود.</p>
+<hr>
+<h2>۶. صفحات پرسنل و فایل‌ها</h2>
+<table><thead><tr><th>مسیر</th><th>کار</th></tr></thead><tbody><tr><td><code>admin/form_templates.php</code></td><td>فهرست قالب‌ها: وضعیت، نسخه، قفل، شمار تخصیص؛ جدید/ویرایش/نسخهٔ تازه/فعال/آرشیو</td></tr><tr><td><code>admin/form_template_edit.php</code></td><td>عنوان، توضیح، پرکنندهٔ پیش‌فرض، <code>admin_can_view</code>، <code>patient_can_have_draft</code></td></tr><tr><td><code>admin/form_builder.php</code></td><td>فیلدها: افزودن، ویرایش، غیرفعال، جابه‌جایی با دکمهٔ بالا/پایین (بدون کتابخانهٔ درگ‌اند‌دراپ)، پیش‌نمایش، تیک متن آزاد</td></tr><tr><td><code>admin/form_submissions.php</code></td><td>فهرست پاسخ‌ها با فیلتر قالب/تاریخ/درمانگر؛ مشاهدهٔ فقط‌خواندنی؛ هر بار <code>FORM_SUBMISSION_VIEWED_BY_ADMIN</code></td></tr><tr><td><code>admin/patient_accounts.php</code></td><td>فهرست حساب‌های مراجع، فعال/غیرفعال‌سازی</td></tr><tr><td><code>therapist/case_detail.php</code> (تغییر)</td><td>بخش «فرم‌ها»: در انتظار / ثبت‌شده / باطل‌شده + دکمهٔ تخصیص</td></tr><tr><td><code>therapist/form_assign.php</code></td><td>انتخاب قالب فعال + پرکننده</td></tr><tr><td><code>therapist/form_fill.php</code></td><td>تکمیل فرم‌های <code>assignee=THERAPIST</code></td></tr><tr><td><code>therapist/form_view.php</code></td><td>مشاهدهٔ هر فرم پرونده + تاریخچهٔ نسخه‌ها؛ ویرایش/ابطال فقط برای تکمیل‌کننده</td></tr><tr><td><code>reception/admission_*</code> (تغییر کوچک)</td><td>نشانگر وضعیت فرم پذیرش اولیه — فقط وضعیت</td></tr><tr><td><code>login.php</code> (تغییر)</td><td>فعال‌سازی تب مراجعین</td></tr></tbody></table>
+<p>فایل‌های تازهٔ <code>includes/</code>: <code>form_template_functions.php</code>، <code>form_assignment_functions.php</code>، <code>form_submission_functions.php</code>، <code>form_render.php</code> (رندر و اعتبارسنجی مشترک درمانگر و مراجع — <strong>یک</strong> پیاده‌سازی، نه دو) و <code>patient_auth.php</code>. <code>bootstrap.php</code> و <code>sidebar.php</code> و <code>footer.php</code> به‌روزرسانی می‌شوند.</p>
+<hr>
+<h2>۷. ارتقا، بسته‌بندی و پاک‌سازی نهایی</h2>
+<p><code>upgrade_phase4.php</code> با همان الزامات فاز ۲ و ۳: فقط مدیرِ واردشده، POST + CSRF، بررسی وجود مهاجرت <code>3.0.0</code>، گام‌به‌گام و idempotent، <code>ALTER</code> افزایشی فقط در صورت نیاز، Seed بدون تکرار، ثبت <code>4.0.0</code> تنها پس از موفقیت همهٔ گام‌ها، دستور حذف فایل پس از موفقیت. <code>config.php</code>، <code>install.lock</code> و تنظیمات پیامک دست‌نخورده. <code>install.php</code> در بستهٔ ارتقا نیست. پاورقی: <strong>نسخهٔ ۴.۰</strong>.</p>
+<p>دو بسته:</p>
+<ol><li><code>فاز۴_جوما_ارتقا_نسخه۴.۰.zip</code> — ارتقای سرور فعلی برای اجرای ۲۹ آزمون.</li><li><code>جوما_نصب_تازه_تا_فاز۴.zip</code> — برای <strong>پاک‌سازی نهایی</strong> (اصلاحیهٔ ۱): شامل <code>install.php</code> و هر سه اسکریپت ارتقا و راهنمای گام‌به‌گام <code>DROP</code>/<code>CREATE</code>/نصب.</li></ol>
+<p>مستندات: <code>PHASE4_DESIGN_FA.md</code>، <code>PHASE4_FINAL_DECISIONS.md</code> (شامل P4 تا P8)، راهنمای HTML ارتقا، راهنمای HTML پاک‌سازی و نصب تازه، <strong>راهنمای یک‌صفحه‌ای مراجع</strong> برای چاپ در پذیرش، گزارش صادقانهٔ آزمون، مانیفست، و <code>CHECK_QUERIES_FA.sql</code> به‌روز.</p>
+<hr>
+<h2>۸. حسابرسی — کدهای تازه</h2>
+<p><code>FORM_TEMPLATE_CREATED/UPDATED/ACTIVATED/ARCHIVED/VERSIONED</code> · <code>FORM_FIELD_ADDED/UPDATED/DEACTIVATED/REORDERED</code> · <code>FORM_FIELD_FREE_TEXT_ADDED</code> · <code>FORM_ASSIGNED</code> · <code>FORM_AUTO_ASSIGNED</code> · <code>FORM_AUTO_ASSIGN_FAILED</code> · <code>FORM_ASSIGNMENT_CANCELLED</code> · <code>FORM_SUBMITTED</code> · <code>FORM_EDITED</code> · <code>FORM_RETRACTED</code> · <code>FORM_SUBMISSION_VIEWED_BY_ADMIN</code> · <code>FORM_ACCESS_DENIED</code> · <code>FORM_DRAFT_SAVED/LOADED/DISCARDED</code> · <code>PATIENT_LOGIN_OTP_SENT</code> · <code>PATIENT_LOGIN_SUCCESS/FAILED</code> · <code>PATIENT_ACCOUNT_CREATED</code>.</p>
+<p>هیچ‌کدام محتوای پاسخ را ذخیره نمی‌کنند.</p>
+<hr>
+<h2>۹. آزمون‌ها</h2>
+<p>۲۹ آزمون دستور، به‌علاوهٔ ۵ آزمون تازه برای پیش‌نویس و یک آزمون برای P7:</p>
+<table><thead><tr><th>#</th><th>سناریو</th><th>انتظار</th></tr></thead><tbody><tr><td>۳۰</td><td>مراجع نیمی از فرم را پر و «ذخیرهٔ پیش‌نویس» می‌زند، مرورگر را می‌بندد و دوباره وارد می‌شود</td><td>همان مقادیر بازیابی شوند</td></tr><tr><td>۳۱</td><td>مراجع پیش‌نویس را دور می‌اندازد</td><td>فرم خالی شود، ردیف حذف شود</td></tr><tr><td>۳۲</td><td>مراجع فرم را نهایی ثبت می‌کند</td><td>پیش‌نویس حذف شود، در <code>form_submissions</code> ثبت گردد</td></tr><tr><td>۳۳</td><td>درمانگر دنبال دکمهٔ پیش‌نویس می‌گردد / با POST مستقیم تلاش می‌کند</td><td>دکمه نباشد؛ POST رد شود</td></tr><tr><td>۳۴</td><td>ذخیرهٔ پیش‌نویس با JavaScript غیرفعال</td><td>باز هم کار کند (بند ۴ـ۵)</td></tr><tr><td>۳۵</td><td>پذیرش به درمانگر ج ارجاع می‌شود (P7)</td><td>ج همهٔ فرم‌های پرونده را می‌بیند، ولی هیچ یادداشت الف را نه</td></tr></tbody></table>
+<p><strong>قاعدهٔ همیشگی:</strong> هیچ آزمونی بدون اجرای واقعی «قبول» اعلام نمی‌شود. محیط ساخت PHP و MySQL ندارد. آزمون‌ها روی <code>my.mirbolouki.com</code> با دادهٔ دمو اجرا می‌شوند و پس از قبولی همه، پاک‌سازی نهایی طبق اصلاحیهٔ ۱ انجام می‌گیرد.</p>
+<hr>
+<h2>۱۰. ریسک‌ها</h2>
+<table><thead><tr><th>کد</th><th>ریسک</th><th>وضعیت</th></tr></thead><tbody><tr><td>P1، P2</td><td>نبود رمزنگاری؛ متن خام در پشتیبان و phpMyAdmin — حالا شامل پاسخ فرم‌ها هم می‌شود</td><td>پذیرفته‌شده</td></tr><tr><td>P3</td><td>گسست یادداشت‌ها پس از ارجاع</td><td>پذیرفته‌شده (فرم‌ها با P7 مستثنا شدند)</td></tr><tr><td><strong>P4</strong></td><td>مدیر پاسخ فرم بالینی را می‌بیند (نقض ADR-004). کاهش: <code>admin_can_view</code> به‌ازای قالب + حسابرسی هر مشاهده</td><td>تصمیم ۲-ب</td></tr><tr><td><strong>P5</strong></td><td>فرم سند پرونده است نه نویسنده</td><td>تصحیح معماری</td></tr><tr><td><strong>P6</strong></td><td>پورتال عمومی مراجع؛ تنها سد، امنیت نشست و محدودیت نرخ OTP است</td><td>تصمیم ۱-ب</td></tr><tr><td><strong>P7</strong></td><td>درمانگر جاری همهٔ فرم‌های پرونده را می‌بیند</td><td>تأیید مالک</td></tr><tr><td><strong>P8</strong></td><td>پیش‌نویس تأییدنشده و اعتبارسنجی‌نشدهٔ مراجع در پایگاه داده می‌ماند</td><td>تأیید مالک</td></tr><tr><td><strong>R10</strong></td><td>آزمون پورتال عمومی روی همان نشانی بهره‌برداری</td><td>قابل قبول تا پیش از ورود نخستین مراجع واقعی</td></tr></tbody></table>
+<hr>
+<h2>۱۱. سؤال‌های باز — پاسخ لازم پیش از کدنویسی</h2>
+<ol><li><strong>فیلدهای <code>patient_intake</code></strong> (بند ۲ـ۸): ده فیلد پیشنهادی تأیید می‌شوند؟ کدام را حذف یا اضافه کنم؟ آیا «شدت ناراحتی» مقیاس ۱–۱۰ درست است یا ۱–۵؟</li></ol>
+<ol><li><strong>پیشنهاد سه اصلاح در جدول پیش‌نویس</strong> (بند ۲ـ۶): <code>RESTRICT</code> به‌جای <code>CASCADE</code>، یکتا بودن یک پیش‌نویس به‌ازای هر تخصیص، و حذف تنبل در دو نقطه. تأیید می‌کنید؟</li></ol>
+<ol><li><strong>پرسنلی که مراجع هم هست:</strong> وقتی با OTP وارد حساب پرسنلی‌اش می‌شود، عملاً یک راه ورود بدون رمز به حساب پرسنلی باز شده است. سه گزینه: الف) همین رفتار (ساده، ولی پرسنل می‌تواند با پیامک وارد پنل اداری شود). ب) اگر حساب <code>STAFF</code> است، ورود با OTP فقط نقش <code>patient</code> را در نشست فعال کند و دسترسی به پنل پرسنلی در آن نشست بسته باشد. <strong>توصیهٔ من.</strong> ج) چنین شخصی اصلاً به پورتال مراجع راه نداشته باشد.</li></ol>
+<ol><li><strong>پر کردن <code>clinical_case_id</code> در تخصیص‌ها</strong> (بند ۲ـ۳): اجازه می‌دهید <code>clinical_case_open_from_admission()</code> تغییر کند تا تخصیص‌های همان پذیرش به پروندهٔ تازه وصل شوند؟ جایگزینش این است که همیشه از راه <code>admission_id</code> پیوند بزنیم و این ستون همیشه تهی بماند.</li></ol>
+<ol><li><strong>نمایش فرم‌های پذیرشِ بدون پرونده:</strong> اگر مراجع فرم پذیرش را پر کند ولی درمانگر هنوز مسئولیت را نپذیرفته باشد، چه کسی پاسخ را ببیند؟ پیشنهاد من: درمانگرِ ارجاع‌شدهٔ پذیرش (<code>referred_therapist_person_id</code>) پیش از باز شدن پرونده هم ببیند، چون همان داده به تصمیم پذیرش او کمک می‌کند.</li></ol>
+<ol><li><strong>سقف تعداد فیلد در هر قالب:</strong> پیشنهاد من ۵۰ فیلد، برای جلوگیری از فرم‌های غیرقابل‌استفاده روی موبایل و درخواست‌های POST بسیار بزرگ. موافقید؟</li></ol>
+<hr>
+<h2>۱۲. ترتیب اجرا پس از تأیید</h2>
+<ol><li>اسکیما (<code>database/phase4_schema.sql</code>) و توابع دامنه.</li><li>صفحات مدیر (فرم‌ساز) → صفحات درمانگر → پورتال مراجع.</li><li>هوک ADR-008 و ورود مراجع.</li><li><code>upgrade_phase4.php</code> و دو بستهٔ تحویل.</li><li>مستندات و راهنماها.</li><li>تحویل برای اجرای ۳۵ آزمون توسط مالک؛ وصلهٔ نقص‌ها با نشانگر نسخهٔ دیداری.</li><li>پاک‌سازی نهایی طبق اصلاحیهٔ ۱.</li></ol>
+</div>
+</body>
+</html>
