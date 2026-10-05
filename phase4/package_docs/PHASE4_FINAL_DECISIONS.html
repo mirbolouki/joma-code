@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تصمیم‌های نهایی فاز ۴ — جوما</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>تصمیمات نهایی فاز ۴ — جوما</h1>
+<p><strong>تاریخ:</strong> ۱۴۰۵/۰۷/۱۳ · <strong>وضعیت:</strong> قطعی. مرجع نهایی در صورت تعارض با هر سند دیگر.</p>
+<p>مالک شش سؤال باز سند طراحی را به ایجنت واگذار کرد با این قید: «بهترین تصمیم را بگیر که برای توسعه در آینده هم مشکلی پیش نیاید». تصمیم‌ها و دلیلشان در ادامه آمده و کدنویسی بر همین مبنا انجام شده است.</p>
+<hr>
+<h2>بخش الف — تصمیم‌های واگذارشده</h2>
+<h3>D4-1 — فیلدهای فرم پذیرش اولیه</h3>
+<p>ده فیلد پیشنهادی سند طراحی تأیید شد، با دو اصلاح:</p>
+<ul><li><strong>«شدت ناراحتی فعلی» مقیاس ۰ تا ۱۰</strong> شد، نه ۱ تا ۱۰. در ابزارهای استاندارد سنجش</li></ul>
+<p>ناراحتی (SUDS)، صفر یعنی «هیچ ناراحتی». اگر کمینه را ۱ بگذاریم، مراجعی که مشکلی ندارد مجبور است عددی بزرگ‌تر از صفر بزند و دادهٔ پایه مخدوش می‌شود.</p>
+<ul><li><strong>همهٔ فیلدها <code>field_code</code> پایدار و خوانا دارند</strong> (<code>marital_status</code>,</li></ul>
+<p><code>education_level</code>, <code>employment_status</code>, <code>living_with</code>, <code>prior_therapy</code>, <code>current_medication</code>, <code>psychiatric_admission</code>, <code>distress_level</code>, <code>problem_duration</code>, <code>referral_source</code>). این کدها هرگز تغییر نمی‌کنند؛ گزارش‌گیری فاز ۵ روی همین کدها بسته می‌شود، نه روی متن پرسش که ممکن است بازنویسی شود.</p>
+<h3>D4-2 — جدول پیش‌نویس</h3>
+<p>هر سه اصلاح پیشنهادی پذیرفته شد:</p>
+<ol><li>کلید خارجی <code>RESTRICT</code> به‌جای <code>CASCADE</code>. «هیچ <code>CASCADE</code>» قاعدهٔ ثابت پروژه است؛ یک استثنا در یک جدول فرعی، فردا به استثنای دوم و سوم راه می‌دهد.</li><li><code>UNIQUE (assignment_id)</code> — یک پیش‌نویس به‌ازای هر تخصیص. تاریخچهٔ پیش‌نویس بی‌ارزش است و فقط جدول را باد می‌کند.</li><li>حذف تنبل ۳۰ روزه در دو نقطهٔ مشخص (ورود مراجع، باز شدن فهرست پاسخ‌های مدیر) با سقف ۵۰ ردیف در هر بار — همان الگوی <code>holds_expire_lazy()</code> فاز ۲، چون سرور Cron ندارد.</li></ol>
+<h3>D4-3 — پرسنلی که مراجع هم هست (تصمیم امنیتی)</h3>
+<p><strong>گزینهٔ ب انتخاب شد:</strong> ورود با کد پیامکی، نشست را در <strong>حالت مراجع</strong> قرار می‌دهد.</p>
+<p>پیاده‌سازی: در ورود موفق با OTP، کلید نشست <code>patient_portal_only = true</code> گذاشته می‌شود. تا پایان آن نشست:</p>
+<ul><li><code>active_role_code</code> روی <code>patient</code> قفل است و <code>role_select.php</code> نقش دیگری پیشنهاد</li></ul>
+<p>نمی‌دهد.</p>
+<ul><li>هر مسیر <code>admin/</code>، <code>reception/</code>، <code>therapist/</code> با ۴۰۳ پاسخ می‌گیرد، حتی اگر آن شخص</li></ul>
+<p>واقعاً نقش پرسنلی فعال داشته باشد.</p>
+<ul><li>برای کار اداری باید خارج شود و با نام کاربری و رمز وارد شود.</li></ul>
+<p><strong>دلیل:</strong> بدون این قید، کد پیامکی عملاً به یک «رمز عبور یک‌بارمصرف برای پنل مدیریت» تبدیل می‌شد. هر کس کنترل موقت سیم‌کارت یک کارمند را به دست بگیرد، بدون دانستن رمز او وارد پنل اداری می‌شد. این یک تنزل امنیتی واقعی نسبت به فاز ۱ بود، نه یک قابلیت.</p>
+<h3>D4-4 — پر شدن <code>clinical_case_id</code> در تخصیص‌ها</h3>
+<p><strong>بله، با یک تغییر کوچک و افزایشی در <code>clinical_case_open_from_admission()</code>.</strong> هنگام باز شدن پرونده، تخصیص‌های همان پذیرش که <code>clinical_case_id</code> تهی دارند به پروندهٔ تازه وصل می‌شوند.</p>
+<p><strong>دلیل:</strong> پیوند همیشگی از راه <code>admission_id</code> کار می‌کرد، ولی هر پرس‌وجوی آیندهٔ «فرم‌های این پرونده» را مجبور می‌کرد یک پرش اضافه از راه پذیرش بزند. ستونی که همیشه تهی بماند، بدهی فنی است. تغییر داخل همان تراکنش موجود انجام می‌شود و اگر جدول‌های فاز ۴ هنوز نصب نشده باشند، بی‌اثر از کنارش رد می‌شود.</p>
+<h3>D4-5 — دیدن فرم پذیرش پیش از باز شدن پرونده</h3>
+<p><strong>درمانگرِ ارجاع‌شدهٔ پذیرش (<code>referred_therapist_person_id</code>) پاسخ را می‌بیند،</strong> حتی پیش از آنکه مسئولیت را بپذیرد.</p>
+<p><strong>دلیل:</strong> کل هدف ADR-008 این است که درمانگر پیش از تصمیم پذیرش، تصویری از مراجع داشته باشد. اگر پاسخ تا لحظهٔ پذیرش مسئولیت پنهان بماند، فرم دقیقاً در لحظه‌ای که بیشترین ارزش را دارد بی‌فایده است. منشی و مدیر همچنان محتوا را نمی‌بینند.</p>
+<h3>D4-6 — سقف تعداد فیلد در هر قالب</h3>
+<p><strong>۵۰ فیلد.</strong> دلیل: فرم بلندتر از این روی موبایل رها می‌شود؛ و حجم POST با <code>max_input_vars</code> پیش‌فرض ۱۰۰۰ در PHP فاصلهٔ امنی نگه می‌دارد (هر فیلد چندانتخابی چند ورودی می‌فرستد). عدد در ثابت <code>FORM_MAX_FIELDS</code> تعریف شده و تغییرش یک‌خطی است.</p>
+<hr>
+<h2>بخش ب — تصمیم‌های معماری ثبت‌شدهٔ پیشین</h2>
+<table><thead><tr><th>کد</th><th>عنوان</th></tr></thead><tbody><tr><td><strong>P4</strong></td><td>مدیر پاسخ فرم‌های بالینی را می‌بیند (انحراف از ADR-004). کاهش ریسک: <code>admin_can_view</code> به‌ازای هر قالب + حسابرسی هر مشاهده</td></tr><tr><td><strong>P5/P7</strong></td><td>فرم سند پرونده است، نه سند نویسنده؛ درمانگر مسئولِ فعلی همهٔ فرم‌های پرونده را می‌بیند. یادداشت‌های فاز ۳ دست‌نخورده و فقط مال نویسنده می‌مانند</td></tr><tr><td><strong>P6</strong></td><td>پورتال عمومی مراجع؛ تنها سد، امنیت نشست و محدودیت نرخ OTP است</td></tr><tr><td><strong>P8</strong></td><td>پیش‌نویس اعتبارسنجی‌نشدهٔ مراجع در پایگاه داده نگهداری می‌شود</td></tr><tr><td><strong>P9</strong></td><td><em>(تازه)</em> کد پیامکی هرگز به پنل پرسنلی راه نمی‌دهد — D4-3</td></tr><tr><td>P1، P2، P3</td><td>از فاز ۳، بدون تغییر</td></tr><tr><td>R10</td><td>آزمون پورتال روی همان سرور بهره‌برداری — تا پیش از ورود نخستین مراجع واقعی قابل قبول</td></tr></tbody></table>
+<hr>
+<h2>بخش ج — قواعد ثابتی که در کد فاز ۴ رعایت شده‌اند</h2>
+<ul><li>همهٔ کلیدهای خارجی <code>RESTRICT</code>. هیچ <code>CASCADE</code>.</li><li>هیچ حذف فیزیکی؛ ابطال و غیرفعال‌سازی.</li><li><code>public_id</code> با پیشوند، تولید در PHP (<code>ft_ ff_ fa_ fs_ fd_</code>).</li><li>پیام یکسان برای «یافت نشد» و «مال شما نیست» (درس D4 فاز ۳).</li><li>متن پاسخ‌ها هرگز در <code>audit_log</code> نوشته نمی‌شود.</li><li>نقش واقعی نشست در حسابرسی ثبت می‌شود، نه نقش فرض‌شده.</li><li>اعتبارسنجی سمت سرور در همه حال؛ JavaScript فقط برای راحتی کاربر.</li><li>تنها تغییر در جدول‌های قدیمی، افزودن یک مقدار به <code>otp_codes.purpose</code> است.</li></ul>
+</div>
+</body>
+</html>

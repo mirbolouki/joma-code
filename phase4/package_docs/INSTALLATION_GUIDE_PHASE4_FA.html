@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>راهنمای نصب فاز ۴ — جوما</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>راهنمای نصب فاز ۴ — فرم‌های بالینی و پورتال مراجع</h1>
+<p><strong>نسخهٔ بسته:</strong> ۴.۰.۰ · <strong>نسخهٔ Migration:</strong> <code>4.0.0</code> · <strong>پیش‌نیاز:</strong> فاز ۳ نسخهٔ ۳.۰.۴ نصب‌شده</p>
+<hr>
+<h2>۰. پیش از هر کاری — پشتیبان</h2>
+<p>از phpMyAdmin پشتیبان کامل بگیرید:</p>
+<blockquote>cPanel ← phpMyAdmin ← پایگاه دادهٔ <code>mirbolouki_clinic</code> ← زبانهٔ <strong>Export</strong> ← Go</blockquote>
+<p>فایل <code>.sql</code> را روی رایانهٔ خودتان نگه دارید. <strong>برنامهٔ ارتقا خودش پشتیبان نمی‌گیرد</strong>؛ روی هاست اشتراکی، PHP به <code>mysqldump</code> دسترسی ندارد. در MySQL دستورهای ساخت جدول قابل بازگشت خودکار نیستند و تنها راه بازگشت کامل، همین فایل پشتیبان است.</p>
+<p>همچنین از پوشهٔ <code>public_html</code> روی هاست یک کپی فشرده بگیرید (File Manager ← انتخاب پوشه ← Compress).</p>
+<hr>
+<h2>۱. آپلود فایل‌ها</h2>
+<ol><li>فایل زیپ را روی رایانه باز کنید.</li><li>محتویات پوشهٔ <code>public_html/</code> داخل بسته را روی <code>public_html</code> هاست بریزید و اجازهٔ جایگزینی (Overwrite) بدهید.</li></ol>
+<p><strong>این دو فایل هرگز نباید جایگزین شوند:</strong></p>
+<table><thead><tr><th>فایل</th><th>چرا</th></tr></thead><tbody><tr><td><code>includes/config.php</code></td><td>رمز پایگاه داده و کلید پیامک شماست؛ در بسته نیست</td></tr><tr><td><code>install.lock</code></td><td>نبودنش باعث می‌شود نصب‌کنندهٔ اولیه دوباره فعال شود</td></tr></tbody></table>
+<p>پوشهٔ <code>مستندات/</code> داخل بسته <strong>نباید</strong> روی وب آپلود شود؛ فقط برای خودتان است.</p>
+<hr>
+<h2>۲. اجرای ارتقا</h2>
+<ol><li>با حساب <strong>مدیر</strong> وارد سامانه شوید (اگر وارد نباشید، صفحهٔ ارتقا اجرا نمی‌شود).</li><li>نشانی زیر را باز کنید:</li></ol>
+<pre><code>https://my.mirbolouki.com/upgrade_phase4.php</code></pre>
+<ol><li>فهرست «پیش از زدن دکمه» را بخوانید و سپس <strong>🚀 اجرای ارتقا</strong> را بزنید.</li></ol>
+<p>برنامه شش گام را انجام می‌دهد و نتیجهٔ هر گام را نشان می‌دهد:</p>
+<table><thead><tr><th>گام</th><th>کار</th></tr></thead><tbody><tr><td>۱</td><td>ساخت شش جدول تازه</td></tr><tr><td>۲</td><td>افزودن مقدار <code>PATIENT_LOGIN</code> به ستون <code>otp_codes.purpose</code></td></tr><tr><td>۳</td><td>افزودن پنج گزینهٔ «دلیل ابطال پاسخ فرم»</td></tr><tr><td>۴</td><td>ساخت و فعال‌سازی قالب «فرم پذیرش اولیه» با ۱۰ پرسش</td></tr><tr><td>۵</td><td>راستی‌آزمایی همهٔ گام‌های بالا</td></tr><tr><td>۶</td><td>ثبت نسخهٔ <code>4.0.0</code> در جدول <code>migrations</code></td></tr></tbody></table>
+<p><strong>نسخه فقط در صورت موفقیت کامل ثبت می‌شود.</strong> اگر گامی شکست خورد، پیام خطا را ببینید، ایراد را رفع کنید و دوباره دکمه را بزنید؛ گام‌های انجام‌شده تکرار نمی‌شوند.</p>
+<hr>
+<h2>۳. بررسی پس از ارتقا (سه دقیقه)</h2>
+<p><strong>۳-۱ پاورقی.</strong> هر صفحه‌ای را باز کنید. پایین صفحه باید بنویسد:</p>
+<blockquote>سامانهٔ مدیریت کلینیک جوما — نسخهٔ ۴.۰.۰ (فاز ۴ — فرم‌ها و پورتال مراجع)</blockquote>
+<p>اگر هنوز «۳.۰.۴» می‌نویسد، ارتقا کامل نشده است؛ <strong>فایل ارتقا را حذف نکنید</strong> و گزارش اجرا را دوباره ببینید.</p>
+<p><strong>۳-۲ منوی مدیر.</strong> دو آیتم تازه باید دیده شود: «🧾 قالب‌های فرم» و «📑 پاسخ‌های فرم».</p>
+<p><strong>۳-۳ قالب پذیرش.</strong> در «قالب‌های فرم»، ردیف <code>patient_intake</code> با وضعیت <strong>فعال</strong> و ۱۰ پرسش باید باشد.</p>
+<p><strong>۳-۴ تب مراجع.</strong> صفحهٔ ورود را باز کنید؛ تب «مراجع» دیگر خاکستری نیست و به صفحهٔ ورود با کد پیامکی می‌رود.</p>
+<hr>
+<h2>۴. حذف فایل ارتقا</h2>
+<p><strong>فقط پس از آنکه هر چهار بررسی بالا درست بود:</strong></p>
+<blockquote>File Manager ← <code>public_html</code> ← فایل <code>upgrade_phase4.php</code> ← Delete</blockquote>
+<p>تا وقتی این فایل روی هاست باشد، یک مسیر اضافی برای تغییر ساختار پایگاه داده باز مانده است. (حذف نکردن آن خطای امنیتی است، نه سلیقه.)</p>
+<hr>
+<h2>۵. آنچه تازه است</h2>
+<h3>۵-۱ فرم‌ساز (مدیر)</h3>
+<p>ساخت قالب فرم با هفت نوع پرسش: تک‌انتخابی، چندانتخابی، بله/خیر، مقیاس عددی، عدد، تاریخ شمسی و متن توضیحی.</p>
+<p>سه قاعده که باید بدانید:</p>
+<ul><li><strong>قالب با نخستین پاسخ قفل می‌شود.</strong> از آن پس برای هر تغییر باید «نسخهٔ جدید»</li></ul>
+<p>بسازید. این عمدی است: پاسخ‌های ثبت‌شده باید تا ابد با همان پرسشی که واقعاً پرسیده شده خوانده شوند.</p>
+<ul><li><strong>در هر لحظه فقط یک نسخه از هر قالب فعال است.</strong></li><li><strong>«متن توضیحی» تیک تأیید آگاهانه می‌خواهد</strong> (ADR-007). داده‌ای که ساختار ندارد</li></ul>
+<p>در فاز ۵ گزارش‌پذیر نیست.</p>
+<h3>۵-۲ فرم‌ها در جریان کار درمانگر</h3>
+<p>درمانگر از صفحهٔ پرونده، دکمهٔ «🧾 فرم‌های این پرونده» را دارد و می‌تواند فرم را به خودش یا به مراجع بدهد. پس از ثبت، <strong>۲۴ ساعت مهلت ویرایش</strong> دارد؛ هر ویرایش نسخهٔ تازه می‌سازد و نسخهٔ پیشین در تاریخچه می‌ماند. پس از ۲۴ ساعت فقط «ابطال» ممکن است و ابطال هم چیزی را پاک نمی‌کند.</p>
+<p><strong>فرم سند پرونده است، نه سند نویسنده (P7):</strong> درمانگرِ مسئولِ فعلی همهٔ فرم‌های آن پرونده را می‌بیند، حتی فرمی که درمانگر قبلی پر کرده. این دقیقاً برعکس یادداشت محرمانه است که فقط نویسنده‌اش آن را می‌بیند.</p>
+<h3>۵-۳ فرم پذیرش اولیهٔ خودکار (ADR-008)</h3>
+<p>با تثبیت <strong>نخستین</strong> نوبتِ هر مراجعِ تازه، فرم پذیرش اولیه خودکار به او تخصیص می‌یابد. اگر این کار به هر دلیلی شکست بخورد، <strong>نوبت سالم می‌ماند</strong> و در داشبورد مدیر هشدار دیده می‌شود تا فرم را دستی تخصیص دهید.</p>
+<h3>۵-۴ پورتال مراجع</h3>
+<p>مراجع با شمارهٔ موبایلی که هنگام پذیرش ثبت شده وارد می‌شود و یک کد ۶ رقمی دریافت می‌کند. او فرم‌هایش، نوبت‌های پیش‌رو و پاسخ‌های خودش را می‌بیند؛ <strong>هیچ چیز دیگری را نمی‌بیند</strong>.</p>
+<blockquote><strong>نکتهٔ امنیتی که باید بدانید.</strong> اگر کسی هم پرسنل باشد و هم مراجع، ورود با کد پیامکی او را فقط وارد <strong>پورتال مراجع</strong> می‌کند. تا پایان آن نشست، هر مسیر مدیریتی برایش ۴۰۳ می‌دهد. برای کار اداری باید خارج شود و با نام کاربری و رمز وارد شود. دلیلش ساده است: در غیر این صورت، هر کس کنترل موقت سیم‌کارت یک کارمند را به دست بگیرد بدون دانستن رمز او وارد پنل اداری می‌شد.</blockquote>
+<h3>۵-۵ پیش‌نویس</h3>
+<p>فقط مراجع پیش‌نویس دارد (تصمیم P8). پیش‌نویس بدون اعتبارسنجی ذخیره می‌شود (چون قرار است ناقص باشد)، با ثبت نهایی حذف می‌شود و پس از ۳۰ روز بی‌استفاده ماندن خود‌به‌خود پاک می‌شود. درمانگر پیش‌نویس ندارد: فرم یا ثبت می‌شود یا رها.</p>
+<h3>۵-۶ دسترسی مدیر به پاسخ‌ها</h3>
+<p>طبق تصمیم مالک، مدیر پاسخ‌ها را <strong>فقط‌خواندنی</strong> می‌بیند و فقط برای قالب‌هایی که گزینهٔ «مدیر ببیند» برایشان روشن است. <strong>هر بار باز کردن یک پاسخ در گزارش حسابرسی با نام مدیر ثبت می‌شود.</strong> این یک انحراف آگاهانه از ADR-004 است و در سند تصمیم‌ها به‌عنوان ریسک <strong>P4</strong> ثبت شده است.</p>
+<hr>
+<h2>۶. آنچه ساخته نشد</h2>
+<ul><li>رمزنگاری پاسخ‌ها (تصمیم مالک از فاز ۱).</li><li>امتیازدهی و تفسیر خودکار آزمون‌های روان‌شناختی.</li><li>بارگذاری فایل یا تصویر در فرم.</li><li>امضای دیجیتال مراجع.</li><li>گزارش‌گیری تجمعی از پاسخ‌ها — فاز ۵، روی همان <code>field_code</code>های پایدار.</li><li>بایگانی و بازگشایی پرونده — همچنان موکول.</li></ul>
+<hr>
+<h2>۷. اگر چیزی اشتباه پیش رفت</h2>
+<table><thead><tr><th>نشانه</th><th>معنی</th><th>کار</th></tr></thead><tbody><tr><td>صفحهٔ سفید یا خطای ۵۰۰</td><td>خطای PHP</td><td><code>storage/logs/</code> را ببینید و کد مرجع خطا را بفرستید</td></tr><tr><td>صفحهٔ ساده و بدون قالب با «یافت نشد»</td><td><strong>۴۰۴</strong> — نشانی اشتباه تایپ شده</td><td>نشانی را دقیق بنویسید</td></tr><tr><td>صفحهٔ باقالبِ سامانه با پیام فارسی دسترسی</td><td><strong>۴۰۳</strong> — نشانی درست، دسترسی نه</td><td>با نقش درست وارد شوید</td></tr><tr><td>پاورقی هنوز ۳.۰.۴</td><td>ارتقا کامل نشده</td><td>گزارش اجرای <code>upgrade_phase4.php</code> را ببینید</td></tr><tr><td>تب «مراجع» خاکستری مانده</td><td>جدول‌های فاز ۴ ساخته نشده‌اند</td><td>گام ۲ را دوباره اجرا کنید</td></tr><tr><td>مراجع می‌گوید پیامک نیامد</td><td>تنظیمات SMS.ir</td><td>«تنظیمات پیامک» در منوی مدیر</td></tr></tbody></table>
+<p>برای بازگشت کامل: پایگاه داده را از فایل پشتیبان بازگردانید و فایل‌های <code>public_html</code> را از کپی فشرده برگردانید. <strong>هیچ‌وقت جدول‌ها را دستی DROP نکنید.</strong></p>
+<hr>
+<h2>۸. گام بعدی</h2>
+<p>۳۵ آزمون در <code>PHASE4_TEST_REPORT_FA.md</code> فهرست شده است. <strong>هیچ‌کدام اجرا نشده‌اند.</strong> لطفاً آن‌ها را روی دادهٔ آزمایشی اجرا کنید و نتیجه را برگردانید.</p>
+<p>سه قلم باز از فازهای پیشین نیز هنوز اجرا نشده‌اند و با پاک‌سازی نهایی برای همیشه از دست می‌روند:</p>
+<ol><li>آزمون ۷ فاز ۳،</li><li>اجرای <code>CHECK_QUERIES_FA.sql</code> فاز ۳،</li><li>آزمون T5 فاز ۲.</li></ol>
+<p>بهتر است پیش از پاک‌سازی نهایی، همین حالا اجرا شوند.</p>
+</div>
+</body>
+</html>

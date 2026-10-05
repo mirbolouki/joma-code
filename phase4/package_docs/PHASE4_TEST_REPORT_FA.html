@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>گزارش آزمون فاز ۴ — جوما</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>گزارش آزمون فاز ۴ — فرم‌های بالینی و پورتال مراجع</h1>
+<p><strong>نسخه:</strong> ۴.۰.۰ · <strong>تاریخ تدوین:</strong> ۱۴۰۵/۰۷/۱۳ (2026-10-05) · <strong>محیط اجرا:</strong> <code>my.mirbolouki.com</code></p>
+<hr>
+<h2>وضعیت کلی</h2>
+<table><thead><tr><th>شاخص</th><th>مقدار</th></tr></thead><tbody><tr><td>کل آزمون‌ها</td><td>۳۵</td></tr><tr><td>قبول</td><td>۰</td></tr><tr><td>مردود</td><td>۰</td></tr><tr><td><strong>اجرا نشده</strong></td><td><strong>۳۵</strong></td></tr></tbody></table>
+<blockquote><strong>قاعدهٔ ثابت پروژه:</strong> هیچ آزمونی بدون اجرای واقعی «قبول» اعلام نمی‌شود. محیط ساخت این بسته PHP و MySQL ندارد، بنابراین <strong>هیچ‌یک از ۳۵ آزمون اجرا نشده است</strong>. اجرای آن‌ها روی سرور و ثبت نتیجه در ستون آخر، بر عهدهٔ مالک است.</blockquote>
+<p>راهنمای پر کردن ستون نتیجه: <code>قبول</code> / <code>مردود</code> / <code>اجرا نشده</code>. برای هر <code>مردود</code> شمارهٔ آزمون و شرح دقیق آنچه دیدید را بنویسید؛ «کار نکرد» قابل پیگیری نیست.</p>
+<hr>
+<h2>الف) نصب و ارتقا (آزمون ۱ تا ۴)</h2>
+<table><thead><tr><th>#</th><th>سناریو</th><th>انتظار</th><th>نتیجه</th></tr></thead><tbody><tr><td>۱</td><td>اجرای <code>upgrade_phase4.php</code> با حساب مدیر</td><td>شش جدول ساخته شود، گزارش اجرا همه‌چیز را «انجام شد» نشان دهد</td><td>اجرا نشده</td></tr><tr><td>۲</td><td>اجرای دوبارهٔ همان فایل</td><td>هیچ چیز تکرار نشود؛ همهٔ سطرها «بدون تغییر»</td><td>اجرا نشده</td></tr><tr><td>۳</td><td>باز کردن <code>upgrade_phase4.php</code> با حساب منشی یا درمانگر</td><td>صفحهٔ ۴۰۳ (نه ۴۰۴، نه اجرا)</td><td>اجرا نشده</td></tr><tr><td>۴</td><td>پاورقی هر صفحه پس از ارتقا</td><td>«نسخهٔ ۴.۰.۰ (فاز ۴ — فرم‌ها و پورتال مراجع)»</td><td>اجرا نشده</td></tr></tbody></table>
+<h2>ب) فرم‌ساز مدیر (آزمون ۵ تا ۱۲)</h2>
+<table><thead><tr><th>#</th><th>سناریو</th><th>انتظار</th><th>نتیجه</th></tr></thead><tbody><tr><td>۵</td><td>ساخت قالب تازه با شناسهٔ فنی تکراری</td><td>پیام خطای روشن؛ قالب ساخته نشود</td><td>اجرا نشده</td></tr><tr><td>۶</td><td>افزودن هر هفت نوع پرسش به یک قالب</td><td>همه ساخته شوند و در پیش‌نمایش درست دیده شوند</td><td>اجرا نشده</td></tr><tr><td>۷</td><td>افزودن پرسش «متن توضیحی» بدون زدن تیک تأیید</td><td>رد شود با پیام ارجاع به ADR-007</td><td>اجرا نشده</td></tr><tr><td>۸</td><td>افزودن همان پرسش با تیک تأیید</td><td>ساخته شود و در <code>audit_log</code> کد <code>FORM_FIELD_FREE_TEXT_ADDED</code> ثبت گردد</td><td>اجرا نشده</td></tr><tr><td>۹</td><td>فعال‌سازی قالب بدون هیچ پرسش</td><td>رد شود</td><td>اجرا نشده</td></tr><tr><td>۱۰</td><td>فعال‌سازی نسخهٔ دوم در حالی که نسخهٔ اول فعال است</td><td>رد شود با پیام «نخست نسخهٔ قبلی را بایگانی کنید»</td><td>اجرا نشده</td></tr><tr><td>۱۱</td><td>تلاش برای ویرایش قالبی که پاسخ ثبت‌شده دارد</td><td>فیلدها قفل باشند؛ راهنمای «ساخت نسخهٔ جدید» دیده شود</td><td>اجرا نشده</td></tr><tr><td>۱۲</td><td>ساخت نسخهٔ جدید از قالب قفل‌شده</td><td>کپی کامل با شمارهٔ نسخهٔ +۱ و وضعیت پیش‌نویس؛ پاسخ‌های قدیمی دست‌نخورده</td><td>اجرا نشده</td></tr></tbody></table>
+<h2>پ) تخصیص فرم (آزمون ۱۳ تا ۱۸)</h2>
+<table><thead><tr><th>#</th><th>سناریو</th><th>انتظار</th><th>نتیجه</th></tr></thead><tbody><tr><td>۱۳</td><td>درمانگر فرمی را به خودش تخصیص می‌دهد</td><td>در «فرم‌های من» و در صفحهٔ پرونده دیده شود</td><td>اجرا نشده</td></tr><tr><td>۱۴</td><td>درمانگر همان فرم را به مراجع تخصیص می‌دهد</td><td>در پورتال مراجع دیده شود</td><td>اجرا نشده</td></tr><tr><td>۱۵</td><td>تخصیص دوبارهٔ همان قالب وقتی نسخهٔ در انتظار وجود دارد</td><td>هشدار داده شود و بدون تیک تأیید انجام نشود</td><td>اجرا نشده</td></tr><tr><td>۱۶</td><td>لغو تخصیصِ هنوز پرنشده</td><td>وضعیت «لغوشده» و پیش‌نویس احتمالی حذف شود</td><td>اجرا نشده</td></tr><tr><td>۱۷</td><td>تلاش برای لغو تخصیصی که پاسخ دارد</td><td>رد شود با پیام «پاسخ باید باطل شود، نه لغو»</td><td>اجرا نشده</td></tr><tr><td>۱۸</td><td>درمانگر ب نشانی تخصیص درمانگر الف را دستی وارد می‌کند</td><td>پیام یکسان «یافت نشد یا دسترسی ندارید» + ثبت <code>FORM_ACCESS_DENIED</code></td><td>اجرا نشده</td></tr></tbody></table>
+<h2>ت) تخصیص خودکار فرم پذیرش — ADR-008 (آزمون ۱۹ تا ۲۲)</h2>
+<table><thead><tr><th>#</th><th>سناریو</th><th>انتظار</th><th>نتیجه</th></tr></thead><tbody><tr><td>۱۹</td><td>ثبت و تثبیت <strong>نخستین</strong> نوبت برای یک مراجع تازه</td><td>فرم پذیرش اولیه خودکار به او تخصیص یابد؛ <code>FORM_AUTO_ASSIGNED</code> ثبت شود</td><td>اجرا نشده</td></tr><tr><td>۲۰</td><td>ثبت نوبت <strong>دوم</strong> برای همان مراجع</td><td>فرم تازه‌ای ساخته نشود</td><td>اجرا نشده</td></tr><tr><td>۲۱</td><td>بایگانی قالب پذیرش اولیه، سپس ثبت نوبت نخست یک مراجع تازه</td><td>نوبت سالم ثبت شود، فرم ساخته نشود، <code>FORM_AUTO_ASSIGN_FAILED</code> ثبت و در داشبورد مدیر هشدار دیده شود</td><td>اجرا نشده</td></tr><tr><td>۲۲</td><td>باز شدن پرونده از روی پذیرشی که فرم خودکار داشت</td><td>ستون <code>clinical_case_id</code> آن تخصیص پر شود (تصمیم D4-4)</td><td>اجرا نشده</td></tr></tbody></table>
+<h2>ث) پر کردن، ویرایش و ابطال (آزمون ۲۳ تا ۲۹)</h2>
+<table><thead><tr><th>#</th><th>سناریو</th><th>انتظار</th><th>نتیجه</th></tr></thead><tbody><tr><td>۲۳</td><td>ارسال فرم با یک پرسش الزامیِ خالی</td><td>ثبت نشود؛ خطا کنار همان پرسش دیده شود؛ بقیهٔ پاسخ‌ها پاک نشوند</td><td>اجرا نشده</td></tr><tr><td>۲۴</td><td>وارد کردن متن در پرسش عددی، و تاریخ نامعتبر در پرسش تاریخ</td><td>هر دو رد شوند با پیام فارسی مشخص</td><td>اجرا نشده</td></tr><tr><td>۲۵</td><td>ارسال مقدار خارج از بازه در پرسش مقیاس (مثلاً ۱۵ از ۱۰) با دستکاری HTML</td><td>سمت سرور رد شود</td><td>اجرا نشده</td></tr><tr><td>۲۶</td><td>ثبت موفق فرم</td><td>وضعیت «ثبت‌شده»، مهلت ویرایش ۲۴ ساعته نمایش داده شود</td><td>اجرا نشده</td></tr><tr><td>۲۷</td><td>ویرایش پاسخ داخل مهلت</td><td>بازنگری تازه ساخته شود و بازنگری قبلی در تاریخچه بماند</td><td>اجرا نشده</td></tr><tr><td>۲۸</td><td>تلاش برای ویرایش پس از پایان مهلت (یا با دستکاری نشانی)</td><td>رد شود؛ فقط ابطال ممکن باشد</td><td>اجرا نشده</td></tr><tr><td>۲۹</td><td>ابطال پاسخ با انتخاب دلیل</td><td>وضعیت «باطل‌شده»؛ محتوا پاک نشود؛ <code>FORM_RETRACTED</code> ثبت شود</td><td>اجرا نشده</td></tr></tbody></table>
+<h2>ج) پیش‌نویس مراجع — P8 (آزمون ۳۰ تا ۳۴)</h2>
+<table><thead><tr><th>#</th><th>سناریو</th><th>انتظار</th><th>نتیجه</th></tr></thead><tbody><tr><td>۳۰</td><td>مراجع نیمی از فرم را پر و «ذخیرهٔ پیش‌نویس» می‌زند، مرورگر را می‌بندد و دوباره وارد می‌شود</td><td>همان مقادیر بازیابی شوند</td><td>اجرا نشده</td></tr><tr><td>۳۱</td><td>مراجع پیش‌نویس را دور می‌اندازد</td><td>فرم خالی شود، ردیف حذف شود</td><td>اجرا نشده</td></tr><tr><td>۳۲</td><td>مراجع فرم را نهایی ثبت می‌کند</td><td>پیش‌نویس حذف شود و رکورد در <code>form_submissions</code> بیفتد</td><td>اجرا نشده</td></tr><tr><td>۳۳</td><td>درمانگر دنبال دکمهٔ پیش‌نویس می‌گردد / با POST مستقیم تلاش می‌کند</td><td>دکمه نباشد؛ POST رد شود</td><td>اجرا نشده</td></tr><tr><td>۳۴</td><td>ذخیرهٔ پیش‌نویس با JavaScript غیرفعال</td><td>باز هم کار کند (فرم کاملاً سمت سرور است)</td><td>اجرا نشده</td></tr></tbody></table>
+<h2>چ) دسترسی، پورتال و محرمانگی (آزمون ۳۵ و آزمون‌های امنیتی هم‌زمان)</h2>
+<table><thead><tr><th>#</th><th>سناریو</th><th>انتظار</th><th>نتیجه</th></tr></thead><tbody><tr><td>۳۵</td><td>پذیرش به درمانگر ج ارجاع می‌شود (P7)</td><td>ج همهٔ فرم‌های پرونده را می‌بیند، ولی هیچ یادداشت محرمانهٔ درمانگر الف را نه</td><td>اجرا نشده</td></tr></tbody></table>
+<h3>آزمون‌های امنیتی که همراه آزمون ۳۵ اجرا می‌شوند</h3>
+<p>این موارد شمارهٔ مستقل ندارند اما <strong>اجرای هر سه الزامی است</strong>:</p>
+<ol><li><strong>قفل نشست پورتال (D4-3).</strong> شخصی که هم پرسنل است و هم مراجع، با کد پیامکی وارد شود؛ سپس نشانی <code>admin/index.php</code> یا <code>therapist/index.php</code> را دستی باز کند → باید <strong>۴۰۳ با قالب سامانه</strong> ببیند، نه داشبورد و نه ۴۰۴.</li><li><strong>دسترسی مدیر (Q2 = ب، ریسک P4).</strong> مدیر یک پاسخ را باز کند → در <code>audit_log</code> یک سطر <code>FORM_SUBMISSION_VIEWED_BY_ADMIN</code> با نام او ثبت شود. سپس گزینهٔ «مدیر ببیند» را برای آن قالب خاموش کند → همان نشانی دیگر پاسخ ندهد.</li><li><strong>محتوا در حسابرسی.</strong> در <code>audit_log</code> جست‌وجو کنید؛ <strong>هیچ سطری نباید متن پاسخ مراجع را داشته باشد</strong> — فقط شناسه، کد قالب و شمارش.</li></ol>
+<hr>
+<h2>نحوهٔ گزارش نتیجه</h2>
+<p>برای هر آزمون مردود بنویسید:</p>
+<pre><code>آزمون شمارهٔ __
+چه کردم: ...
+چه انتظار داشتم: ...
+چه دیدم (متن دقیق پیام یا شمارهٔ خطا): ...</code></pre>
+<p>تفاوت ۴۰۳ و ۴۰۴ را دقیق گزارش کنید: صفحهٔ <strong>بدون قالب و ساده</strong> یعنی نشانی اشتباه تایپ شده (۴۰۴)؛ صفحهٔ <strong>با قالب سامانه و پیام فارسی</strong> یعنی نبودِ دسترسی (۴۰۳). این دو هرگز یک چیز نیستند.</p>
+</div>
+</body>
+</html>

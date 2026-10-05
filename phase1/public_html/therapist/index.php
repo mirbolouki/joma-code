@@ -15,6 +15,8 @@ try {
     $awaiting = admissions_fetch_awaiting_for_therapist($db, $me);
     $cases = clinical_cases_fetch_for_therapist($db, $me);
     $orphaned = phase3_ready($db) ? notes_orphaned_cases_for_therapist($db, $me) : array();
+    $my_pending_forms = phase4_ready($db)
+        ? form_assignments_pending_for_person($db, $me) : array();
 } catch (Exception $ex) {
     $ref = log_system_error('THERAPIST_DASHBOARD', $ex);
     render_error_page($ref);
@@ -50,6 +52,22 @@ require __DIR__ . '/../templates/header.php';
         </li>
       <?php } ?>
     </ul>
+  </div>
+<?php } ?>
+
+<?php if (phase4_ready($db) && count($my_pending_forms) > 0) { ?>
+  <div class="alert alert-info">
+    <strong>🧾 <?php echo to_persian_digits(count($my_pending_forms)); ?> فرم در انتظار تکمیل توسط شماست.</strong>
+    <ul class="hint-list">
+      <?php foreach ($my_pending_forms as $pf) { ?>
+        <li>
+          <?php echo e($pf['template_title']); ?> —
+          <?php echo e($pf['patient_first_name'] . ' ' . $pf['patient_last_name']); ?>
+          <a href="form_fill.php?a=<?php echo e($pf['public_id']); ?>">تکمیل</a>
+        </li>
+      <?php } ?>
+    </ul>
+    <a class="btn btn-sm btn-secondary" href="forms.php">همهٔ فرم‌های من</a>
   </div>
 <?php } ?>
 

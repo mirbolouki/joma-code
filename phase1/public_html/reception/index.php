@@ -112,11 +112,12 @@ require __DIR__ . '/../templates/header.php';
   <div class="table-wrap table-scroll">
     <table class="table table-card">
       <thead>
-        <tr><th>مراجع</th><th>خدمت</th><th>درمانگر</th><th>تاریخ ثبت</th><th>وضعیت</th></tr>
+        <tr><th>مراجع</th><th>خدمت</th><th>درمانگر</th><th>تاریخ ثبت</th><th>وضعیت</th>
+          <?php if (phase4_ready($db)) { ?><th>فرم پذیرش</th><?php } ?></tr>
       </thead>
       <tbody>
       <?php if (count($recent) === 0) { ?>
-        <tr><td colspan="5" class="table-empty">هنوز پذیرشی ثبت نشده است.</td></tr>
+        <tr><td colspan="<?php echo phase4_ready($db) ? 6 : 5; ?>" class="table-empty">هنوز پذیرشی ثبت نشده است.</td></tr>
       <?php } ?>
       <?php foreach ($recent as $row) { ?>
         <tr>
@@ -131,6 +132,19 @@ require __DIR__ . '/../templates/header.php';
               <?php echo e(admission_status_label($row['status'])); ?>
             </span>
           </td>
+          <?php if (phase4_ready($db)) {
+              /* فقط وضعیت فرم دیده می‌شود، نه محتوای آن (ADR-004 / P4) */
+              $intake_state = form_intake_status_for_admission($db, (int)$row['id']); ?>
+            <td data-label="فرم پذیرش">
+              <?php if ($intake_state === null) { ?>
+                <span class="text-muted">—</span>
+              <?php } else { ?>
+                <span class="badge <?php echo e(form_assignment_status_class($intake_state)); ?>">
+                  <?php echo e(form_assignment_status_label($intake_state)); ?>
+                </span>
+              <?php } ?>
+            </td>
+          <?php } ?>
         </tr>
       <?php } ?>
       </tbody>
