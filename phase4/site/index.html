@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>دانلود بستهٔ فاز ۴ — جوما</title>
+<style>
+  :root { --p:#2C5F8D; --b:#ECF0F1; --m:#6B7C8C; }
+  * { box-sizing:border-box; }
+  body { font-family:Tahoma,"Segoe UI",sans-serif; background:#F4F7F9; color:#20303D;
+         margin:0; padding:24px 16px; line-height:2; }
+  .wrap { max-width:880px; margin:0 auto; }
+  h1 { color:var(--p); font-size:23px; margin:0 0 4px; }
+  .sub { color:var(--m); margin:0 0 22px; }
+  .card { background:#fff; border:1px solid var(--b); border-radius:10px;
+          padding:18px 20px; margin-bottom:18px; }
+  .card h2 { font-size:17px; margin:0 0 12px; color:var(--p); }
+  a.dl { display:block; padding:12px 14px; border:1px solid var(--b); border-radius:8px;
+         margin-bottom:10px; text-decoration:none; color:#20303D; background:#FBFCFD; }
+  a.dl:hover { border-color:var(--p); background:#F2F7FB; }
+  a.dl b { color:var(--p); }
+  .meta { color:var(--m); font-size:13px; }
+  code { background:#F1F4F7; padding:2px 5px; border-radius:4px; font-size:12px;
+         direction:ltr; display:inline-block; word-break:break-all; }
+  .warn { background:#FFF8E6; border:1px solid #F0D79A; border-radius:8px;
+          padding:14px 16px; margin-bottom:18px; }
+  .danger { background:#FDF3F2; border:1px solid #F0C0BA; border-radius:8px;
+            padding:14px 16px; margin-bottom:18px; }
+  ol,ul { padding-right:20px; margin:8px 0; }
+  .foot { color:var(--m); font-size:13px; text-align:center; margin-top:24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🧾 بستهٔ ارتقا به فاز ۴ — فرم‌های بالینی و پورتال مراجع</h1>
+<p class="sub">سامانهٔ مدیریت کلینیک روان‌شناسی جوما — نسخهٔ ۴.۰.۰ · ۱۴۰۵/۰۷/۱۳</p>
+
+<div class="warn">
+  <b>پیش از هر کاری:</b> از پایگاه داده پشتیبان بگیرید
+  (cPanel ← phpMyAdmin ← Export). برنامهٔ ارتقا خودش پشتیبان نمی‌گیرد و در MySQL
+  ساخت جدول قابل بازگشت خودکار نیست.
+</div>
+
+<div class="danger">
+  <b>وضعیت آزمون:</b> هیچ‌یک از <b>۳۵ آزمون</b> اجرا نشده است؛ محیط ساخت این بسته
+  PHP و MySQL ندارد. تا اجرای واقعی، هیچ آزمونی «قبول» اعلام نمی‌شود.
+</div>
+
+<div class="card">
+  <h2>۱. بستهٔ نصب</h2>
+  <a class="dl" href="/files/فاز۴_جوما_ارتقا_نسخه۴.۰.zip" download>
+    <b>⬇️ فاز۴_جوما_ارتقا_نسخه۴.۰.zip</b><br>
+    <span class="meta">۷۲۰ کیلوبایت · ۱۰۹ فایل · شامل <code>public_html/</code> و پوشهٔ مستندات</span>
+  </a>
+  <a class="dl" href="/files/joma-phase4-v4.0.zip" download>
+    <b>⬇️ joma-phase4-v4.0.zip</b> <span class="meta">(همان فایل، با نام لاتین)</span><br>
+    <span class="meta">SHA-256: <code>a57a73eed5d983b26e67f916994f2a97ac55cd71005e736aef11536cede3852c</code></span>
+  </a>
+  <p class="meta">
+    بسته عمداً بدون <code>includes/config.php</code> و <code>install.lock</code> ساخته شده
+    تا جایگزینی تصادفی آن‌ها ممکن نباشد. فهرست کامل با اندازه و SHA-256 هر فایل:
+    <a href="/files/MANIFEST.txt">MANIFEST.txt</a> ·
+    <a href="/files/SHA256SUMS.txt">SHA256SUMS.txt</a> ·
+    <a href="/files/VERSION.txt">VERSION.txt</a>
+  </p>
+</div>
+
+<div class="card">
+  <h2>۲. راهنماها و گزارش‌ها</h2>
+  <a class="dl" href="/files/INSTALLATION_GUIDE_PHASE4_FA.html">
+    <b>📘 راهنمای نصب فاز ۴</b><br>
+    <span class="meta">گام‌به‌گام، همراه با بررسی‌های پس از ارتقا و جدول رفع اشکال</span>
+  </a>
+  <a class="dl" href="/files/PHASE4_TEST_REPORT_FA.html">
+    <b>🧪 گزارش آزمون — ۳۵ آزمون، همه اجرا نشده</b><br>
+    <span class="meta">جدول آماده برای پر کردن ستون نتیجه
+      (<a href="/files/PHASE4_TEST_REPORT_FA.md">نسخهٔ متنی</a>)</span>
+  </a>
+  <a class="dl" href="/files/PHASE4_FINAL_DECISIONS.html">
+    <b>⚖️ تصمیم‌های نهایی فاز ۴</b><br>
+    <span class="meta">شش تصمیم واگذارشده (D4-1 تا D4-6) و ریسک‌های P4 تا P9</span>
+  </a>
+  <a class="dl" href="/files/PHASE4_DESIGN_FA.html">
+    <b>📐 سند طراحی فاز ۴</b><br>
+    <span class="meta">دامنه، مدل داده، ماتریس دسترسی، قواعد دامنه، آزمون‌ها و ریسک‌ها</span>
+  </a>
+  <a class="dl" href="/files/DIRECTIVE_AMENDMENT_01_FA.html">
+    <b>📄 اصلاحیهٔ ۱ دستور فاز ۴</b><br>
+    <span class="meta">لغو محیط استیجینگ، هفت نقص اسکریپت حذف، و توالی تأییدشدهٔ پاک‌سازی نهایی</span>
+  </a>
+</div>
+
+<div class="card">
+  <h2>۳. کارهای باز از فازهای پیشین</h2>
+  <p class="meta">این سه قلم هنوز اجرا نشده‌اند و با پاک‌سازی نهایی برای همیشه از دست می‌روند.</p>
+  <ul>
+    <li>آزمون ۷ فاز ۳</li>
+    <li>اجرای پرس‌وجوهای بررسی فاز ۳ — <a href="/files/CHECK_QUERIES_FA.sql">CHECK_QUERIES_FA.sql</a></li>
+    <li>آزمون T5 فاز ۲</li>
+  </ul>
+  <a class="dl" href="/files/joma-patch-v3.0.4.zip" download>
+    <b>⬇️ وصلهٔ فاز ۳ نسخهٔ ۳.۰.۴</b>
+    <span class="meta">(در صورت نیاز به نصب دوباره)</span>
+  </a>
+</div>
+
+<div class="card">
+  <h2>۴. خلاصهٔ نصب در پنج خط</h2>
+  <ol>
+    <li>پشتیبان پایگاه داده و پوشهٔ <code>public_html</code>.</li>
+    <li>محتویات <code>public_html/</code> بسته را روی هاست جایگزین کنید —
+        به‌جز <code>includes/config.php</code> و <code>install.lock</code>.</li>
+    <li>با حساب <b>مدیر</b> وارد شوید و <code>upgrade_phase4.php</code> را باز کنید.</li>
+    <li>دکمهٔ ارتقا را بزنید و <b>پاورقی را ببینید</b>: باید «نسخهٔ ۴.۰.۰» بنویسد.</li>
+    <li>تنها پس از آن، فایل <code>upgrade_phase4.php</code> را از هاست حذف کنید.</li>
+  </ol>
+</div>
+
+<p class="foot">کلینیک جوما — شاخهٔ مخزن <code>arena/01a102a8-joma-code</code></p>
+
+</div>
+</body>
+</html>
