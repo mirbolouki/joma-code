@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بررسی سند تصمیم نهایی</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>بررسی فنی سند «تصمیم نهایی — بهترین مسیر»</h1>
+<p><strong>تاریخ:</strong> ۱۴۰۵/۰۷/۱۴ · <strong>موضوع:</strong> مقابلهٔ سند دریافتی با وضعیت واقعی پروژه <strong>روش:</strong> هر ادعا در برابر فایل‌های اسکیما و کد زندهٔ <code>my.mirbolouki.com</code> بررسی شد.</p>
+<hr>
+<h2>۰. حکم کلی</h2>
+<table><thead><tr><th>بخش سند</th><th>حکم</th></tr></thead><tbody><tr><td><strong>تصمیم ۱</strong> — ساخت فوری به‌صورت وصلهٔ مستقل، بدون انتظار برای فاز ۵</td><td>✅ <strong>درست. موافقم.</strong></td></tr><tr><td><strong>تصمیم ۲</strong> — «اول فاز ۲ را تکمیل کن»</td><td>❌ <strong>نادرست، روی هر سه پایه‌اش</strong></td></tr><tr><td><strong>ضمیمهٔ SQL و PHP</strong></td><td>⚠️ <strong>قابل اجرا نیست.</strong> یک دستور در آن <strong>مخرب</strong> است</td></tr></tbody></table>
+<p>استدلال اصلی سند — «سایت امروز این را می‌خواهد، نه ماه آینده» — کاملاً درست است. ولی همین سند، با تصمیم ۲، همان کار فوری را پشت سه روز کار نامرتبط قفل می‌کند. <strong>سند با خودش در تناقض است.</strong></p>
+<hr>
+<h2>۱. سه ایراد بحرانی</h2>
+<h3>ب-۱ — دستور <code>ALTER</code> مخرب است و ورود مراجعان را از کار می‌اندازد</h3>
+<p>سند می‌نویسد:</p>
+<pre><code>ALTER TABLE otp_codes ADD COLUMN purpose ENUM(
+    &#x27;LOGIN&#x27;,&#x27;PASSWORD_RESET&#x27;,&#x27;MOBILE_CHANGE&#x27;,&#x27;BOOKING_REQUEST&#x27;
+) DEFAULT &#x27;LOGIN&#x27;;</code></pre>
+<p>سه خطا در یک دستور:</p>
+<ol><li><strong>ستون <code>purpose</code> از فاز ۱ وجود دارد.</strong> <code>ADD COLUMN</code> با خطای «Duplicate column name» شکست می‌خورد.</li><li><strong>فهرست مقادیر کاملاً اشتباه است.</strong> مقادیر واقعی امروز: ``<code> ENUM(&#x27;REGISTER&#x27;,&#x27;RESET_PASSWORD&#x27;,&#x27;CONFIRM_MOBILE_CHANGE&#x27;,&#x27;PATIENT_LOGIN&#x27;) </code>`` هیچ‌کدام از چهار مقدار سند در سامانه وجود ندارد.</li><li><strong>اگر کسی <code>ADD</code> را به <code>MODIFY</code> تصحیح کند و اجرا شود، فاجعه است:</strong> هر ردیف موجود مقداری دارد که در فهرست تازه نیست. در حالت غیرسخت‌گیرانهٔ MySQL همهٔ آن‌ها بی‌صدا به رشتهٔ خالی تبدیل می‌شوند. <strong>و <code>PATIENT_LOGIN</code> حذف می‌شود — یعنی ورود مراجع به پورتال، که فاز ۴ هفتهٔ پیش راه انداخت، از کار می‌افتد.</strong></li></ol>
+<p><strong>شکل درست، دقیقاً همان کاری که فاز ۴ کرد — افزایشی:</strong></p>
+<pre><code>ALTER TABLE otp_codes MODIFY purpose
+  ENUM(&#x27;REGISTER&#x27;,&#x27;RESET_PASSWORD&#x27;,&#x27;CONFIRM_MOBILE_CHANGE&#x27;,
+       &#x27;PATIENT_LOGIN&#x27;,&#x27;BOOKING_REQUEST&#x27;) NOT NULL;</code></pre>
+<h3>ب-۲ — سقف IP پیشنهادی، R11 را <strong>نمی‌بندد</strong></h3>
+<p>سند R11 را «پیش‌نیاز قطعی» می‌نامد و این کد را می‌دهد:</p>
+<pre><code>$count = SELECT COUNT(*) FROM booking_requests WHERE ip_address = ? AND created_at &gt; ...</code></pre>
+<p>این شمارش روی <strong>ردیف‌های ثبت‌شدهٔ درخواست</strong> است. ولی طبق تصمیم ت-۲، در لحظه‌ای که پیامک ارسال می‌شود <strong>هنوز هیچ ردیفی ساخته نشده</strong>. حمله‌ای که R11 توصیف می‌کند — ربات با شماره‌های متفاوت، پیامک پشت پیامک — هرگز به مرحلهٔ ثبت ردیف نمی‌رسد. <strong>شمارنده همیشه صفر می‌ماند و اعتبار پنل SMS.ir می‌سوزد.</strong></p>
+<p>سقف باید <strong>در لحظهٔ ارسال پیامک</strong> و در جدول مستقل خودش شمرده شود، نه از روی جدول درخواست‌ها.</p>
+<h3>ب-۳ — بازنویسی <code>otp_rate_limit_check</code> سقف فعلی را <strong>ضعیف‌تر</strong> می‌کند</h3>
+<p>سند <code>purpose</code> را به شرط سقف اضافه می‌کند:</p>
+<pre><code>WHERE mobile = ? AND purpose = ? AND created_at &gt; ... AND used_at IS NULL</code></pre>
+<p>دو مشکل:</p>
+<ul><li><strong>تضعیف امنیتی:</strong> سقف امروز «۳ پیامک به ازای هر شماره در ۱۰ دقیقه، در</li></ul>
+<p>مجموع» است. با تفکیک بر اساس <code>purpose</code>، می‌شود ۳ پیامک <strong>به ازای هر هدف</strong> — یعنی تا ۱۵ پیامک به یک شماره در ۱۰ دقیقه.</p>
+<ul><li><strong>ستون <code>used_at</code> وجود ندارد.</strong> نامش <code>consumed_at</code> است. این شرط خطای</li></ul>
+<p>SQL می‌دهد. ضمناً شرط درستی هم نیست: کد مصرف‌شده هم باید در سقف شمرده شود، وگرنه حمله با مصرف کد دور زده می‌شود.</p>
+<hr>
+<h2>۲. چرا تصمیم ۲ نادرست است</h2>
+<p>سند می‌گوید اول «وصلهٔ فاز ۲ (نوبت‌دهی: صفحه + فرم)» ساخته شود، سه روز، چون «موتور نوبت‌دهی و تقویم پیش‌نیاز است». هر سه پایهٔ این استدلال غلط است:</p>
+<p><strong>الف) صفحه‌ای که می‌گوید ساخته نشده، از قبل وجود دارد.</strong> «صفحهٔ نوبت‌های دسترس‌پذیر (نقش منشی)» همان <code>reception/appointment_new.php</code> است که از فاز ۲ کار می‌کند: انتخاب تاریخ شمسی، انتخاب اتاق، نمایش زمان‌های آزاد، قفل موقت ۳۰۰ ثانیه‌ای، کنترل تداخل درمانگر و اتاق. در کنارش <code>appointments.php</code> و <code>appointment_reschedule.php</code> هم هستند.</p>
+<p><strong>ب) فاز ۲ بسته و مورد تأیید مالک است.</strong> آنچه واقعاً وجود ندارد، «فرم رزرو برای مراجع قدیمی در پورتال» است — یعنی همان <strong>در ۲</strong>. و مالک دیروز صراحتاً تصمیم ت-۳ را گرفت: «در ۲ فعلاً نه». <strong>سند بدون اعلام، تصمیم مالک را برمی‌گرداند.</strong></p>
+<p><strong>ج) وابستگی ادعاشده وجود ندارد.</strong> طبق تصمیم ت-۱، بازدیدکننده فقط روز و بازهٔ ترجیحی می‌دهد و تقویم هرگز عمومی نمی‌شود. <strong>پس صفحهٔ عمومی درخواست، صفر وابستگی به موتور نوبت‌دهی دارد.</strong> می‌شود همین امروز ساختش.</p>
+<p>نتیجه: تصمیم ۲ سه روز تأخیر به کاری اضافه می‌کند که سند خودش آن را «فوری» خوانده، و در ازایش هیچ چیزی باز نمی‌کند.</p>
+<hr>
+<h2>۳. ایرادهای ساختاری جدول</h2>
+<table><thead><tr><th>#</th><th>مورد</th><th>واقعیت پروژه</th></tr></thead><tbody><tr><td>ب-۴</td><td><code>gender ENUM(&#x27;M&#x27;,&#x27;F&#x27;,&#x27;O&#x27;)</code></td><td><code>persons.gender</code> = <code>ENUM(&#x27;MALE&#x27;,&#x27;FEMALE&#x27;)</code>. نگاشت می‌شکند و <code>&#x27;O&#x27;</code> مقصدی ندارد.</td></tr><tr><td>ب-۵</td><td><code>public_id CHAR(26)</code></td><td>قرارداد پروژه <code>VARCHAR(30)</code> با <code>generate_public_id()</code>. <code>br_</code> حدود ۸ نویسه است؛ <code>CHAR(26)</code> با فاصله پر می‌شود و مقایسه‌ها را خراب می‌کند.</td></tr><tr><td>ب-۶</td><td><code>DEFAULT CURRENT_TIMESTAMP</code> و <code>DEFAULT (DATE_ADD(...))</code></td><td>قاعدهٔ پروژه: زمان در PHP با <code>now_dt()</code> و همه‌چیز UTC. این دو، منطقهٔ زمانی سرور را وارد اسکیمای UTC می‌کنند. ضمناً پیش‌فرض عبارتی به MySQL 8.0.13+ نیاز دارد که روی میزبان تأیید نشده.</td></tr><tr><td>ب-۷</td><td><code>ip_address</code>، <code>user_agent</code> خام</td><td>سند مجوز، <strong>هش</strong> را برای تأیید برده بود (بند ا-۳). این سند بی‌اعلام آن را به ذخیرهٔ خام برگردانده — پس‌رفت حریم خصوصی برای شهروند احرازهویت‌نشده.</td></tr><tr><td>ب-۸</td><td><code>rejection_reason TEXT</code></td><td>قاعدهٔ پروژه برای دلایل، FK به <code>lookup_items</code> است (<code>decline_reason_id</code>، <code>cancellation_reason_id</code>). متن آزاد، گزارش‌گیری را غیرممکن می‌کند.</td></tr><tr><td>ب-۹</td><td><code>status</code> شامل <code>PENDING</code>/<code>OTP_SENT</code>/<code>OTP_VERIFIED</code></td><td>با ت-۲ ناسازگار: اگر ردیف پیش از تأیید ساخته نشود، این سه وضعیت مرده‌اند؛ اگر ساخته شود، ت-۲ نقض شده. یکی را باید انتخاب کرد.</td></tr><tr><td>ب-۱۰</td><td>فقط <code>service_type_label</code>، بدون <code>service_type_id</code></td><td>نگاشت ۱۲ خدمت سایت به خدمات رسمی کلینیک جایی ندارد؛ گزارش و تعرفه بعداً ناممکن می‌شود.</td></tr><tr><td>ب-۱۱</td><td><code>ON DELETE RESTRICT</code> بدون <code>ON UPDATE</code></td><td>قاعدهٔ پروژه هر دو را RESTRICT می‌خواهد.</td></tr><tr><td>ب-۱۲</td><td><code>mobile_number CHAR(11)</code></td><td>در <code>persons</code> و <code>otp_codes</code> برابر <code>VARCHAR(15)</code> است.</td></tr><tr><td>ب-۱۳</td><td>نبود <code>mobile_verified_at</code>، <code>handled_by/handled_at</code>، <code>source</code></td><td>پیگیری «چه کسی و کی رسیدگی کرد» و منبع ورودی از بین می‌رود.</td></tr></tbody></table>
+<hr>
+<h2>۴. ایرادهای کد PHP</h2>
+<table><thead><tr><th>#</th><th>مورد</th></tr></thead><tbody><tr><td>ب-۱۴</td><td><strong>هیچ‌یک از توابع فراخوانی‌شده وجود ندارد:</strong> <code>persons_find_or_create_by_mobile</code>، <code>admissions_create</code>، <code>appointments_create</code>، <code>audit_log_entry</code>، <code>auth()-&gt;person_id</code>. نام‌های واقعی: <code>person_insert</code>، <code>admission_insert</code>، <code>audit_log_write($db, ...)</code>، <code>$_SESSION[&#x27;person_id&#x27;]</code>.</td></tr><tr><td>ب-۱۵</td><td><strong>آرگومان نام‌دار</strong> (<code>person_id: $x</code>) به PHP 8 نیاز دارد. کل کد پروژه با <code>array()</code> نوشته شده و نسخهٔ PHP میزبان تأیید نشده. روی PHP 7 این خطای نحوی است.</td></tr><tr><td>ب-۱۶</td><td><strong>دروازهٔ پذیرش درمانگر دور زده می‌شود.</strong> <code>admission_insert()</code> همیشه وضعیت <code>AWAITING_THERAPIST</code> می‌سازد تا درمانگر بپذیرد یا رد کند. تابع پیشنهادی در همان فراخوانی، هم درمانگر را تعیین می‌کند و هم نوبت می‌سازد. این یکی از قواعد بنیادی سامانه را حذف می‌کند.</td></tr><tr><td>ب-۱۷</td><td><code>persons_find_or_create_by_mobile</code> بدون حل ابهام. اگر آن شماره متعلق به یک <strong>پرسنل</strong> باشد، یا به مراجعی با نام متفاوت، تابع بی‌صدا به شخص اشتباه وصل می‌شود. <code>persons.mobile_number</code> یکتاست و حذف فیزیکی ممنوع — خطا دائمی است.</td></tr></tbody></table>
+<hr>
+<h2>۵. پیشنهاد جایگزین</h2>
+<p><strong>تصمیم ۱ را نگه دارید. تصمیم ۲ را برعکس کنید.</strong></p>
+<table><thead><tr><th>مرتبه</th><th>کار</th><th>مدت</th><th>وابستگی</th></tr></thead><tbody><tr><td>۱</td><td>✅ وصلهٔ ۴.۱.۱</td><td>انجام شد</td><td>—</td></tr><tr><td><strong>۲</strong></td><td><strong>مسیر درخواست اینترنتی (در ۱)</strong></td><td><strong>۲ روز</strong></td><td><strong>هیچ</strong></td></tr><tr><td>۳</td><td>تصمیم دربارهٔ در ۲، پس از یک هفته دادهٔ واقعی</td><td>—</td><td>ت-۳</td></tr><tr><td>۴</td><td>فاز ۵ (وب‌هوک، گزارش، مالی)</td><td>متغیر</td><td>—</td></tr></tbody></table>
+<p><strong>نام‌گذاری:</strong> وصلهٔ <strong>۴.۲.۰</strong> با مهاجرت <code>4.2.0</code>، هم‌خوان با زنجیرهٔ ۴.۰.۱ → ۴.۱.۰ → ۴.۱.۱. «فاز ۴.۵» با شماره‌گذاری فعلی مهاجرت‌ها جا نمی‌افتد.</p>
+<p><strong>اصلاح‌های لازم پیش از نوشتن کد:</strong></p>
+<ol><li><code>ALTER</code> افزایشی با حفظ هر پنج مقدار (ب-۱).</li><li>سقف در جدول مستقل <code>public_rate_limits</code>، شمارش <strong>در لحظهٔ ارسال پیامک</strong>، با دو سطل: <code>ip:&lt;hash&gt;</code> و <code>global:&lt;روز&gt;</code> (ب-۲).</li><li><code>otp_rate_limit_check</code> <strong>دست نخورد</strong> (ب-۳).</li><li>هش IP و مرورگر، نه خام (ب-۷).</li><li>دلیل رد از <code>lookup_items</code> (ب-۸).</li><li>ترجیح ساختاریافته: <code>preferred_date</code> + <code>preferred_window</code>، به‌علاوهٔ یک فیلد متن آزاد اختیاری (ب-۹، ب-۱۰).</li><li><strong>تبدیل در دو گام، نه یک تابع:</strong> درخواست → پذیرش با وضعیت <code>AWAITING_THERAPIST</code> → درمانگر می‌پذیرد → آنگاه منشی نوبت را ثبت می‌کند. دروازهٔ پذیرش درمانگر حذف نمی‌شود (ب-۱۶).</li><li>تبدیل، صفحهٔ <strong>حل ابهام شماره</strong> داشته باشد: اگر شماره از قبل وجود دارد، کارمند باید ببیند متعلق به کیست و آگاهانه تصمیم بگیرد (ب-۱۷).</li></ol>
+<hr>
+<h2>۶. آنچه سند درست دیده است</h2>
+<p>انصاف حکم می‌کند این‌ها ثبت شود:</p>
+<ul><li><strong>فوریت را درست تشخیص داده.</strong> انتظار برای فاز ۵ اشتباه بود.</li><li><strong>جدول جداگانه به‌جای نوشتن در <code>persons</code></strong> — همان اصل درست.</li><li><strong>اجباری بودن دلیل در «رد کردن»</strong> — درست.</li><li><strong>۱۸۰ روز انقضا</strong> — با پیشنهاد سند مجوز یکی است.</li><li><strong>R11 را به‌عنوان پیش‌نیاز انتشار شناسایی کرده</strong> — تشخیص درست بود،</li></ul>
+<p>هرچند راه‌حلش کار نمی‌کند.</p>
+</div>
+</body>
+</html>
