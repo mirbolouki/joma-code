@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اصلاحیهٔ شمارهٔ ۱ — مجوز ساخت ۴.۲.۰</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>اصلاحیهٔ شمارهٔ ۱ بر «درخواست مجوز ساخت — فاز ۵-الف»</h1>
+<p><strong>تاریخ:</strong> ۱۴۰۵/۰۷/۱۴ · <strong>تقدیم به:</strong> مدیر ارشد <strong>نسبت به سند اصلی:</strong> جایگزین بندهای ۶ و ۹ می‌شود؛ بقیهٔ سند معتبر است. <strong>وضعیت:</strong> در انتظار تصمیم. تا صدور مجوز هیچ کدی نوشته نمی‌شود.</p>
+<hr>
+<h2>۱. تغییر نام و جایگاه</h2>
+<table><thead><tr><th>از</th><th>به</th></tr></thead><tbody><tr><td>«فاز ۵-الف»</td><td><strong>وصلهٔ ۴.۲.۰</strong> با مهاجرت <code>4.2.0</code></td></tr></tbody></table>
+<p>دلیل: هم‌خوانی با زنجیرهٔ موجود ۴.۰.۱ → ۴.۱.۰ → ۴.۱.۱. این یک وصلهٔ افزایشی است، نه یک فاز تازه.</p>
+<hr>
+<h2>۲. حذف وابستگی به فاز ۲ — صرفه‌جویی سه روز</h2>
+<p>در بررسی مشخص شد:</p>
+<ul><li>صفحهٔ انتخاب زمان‌های آزاد برای منشی <strong>از قبل وجود دارد</strong></li></ul>
+<p>(<code>reception/appointment_new.php</code>, از فاز ۲).</p>
+<ul><li>آنچه ساخته نشده «رزرو مستقیم مراجع قدیمی» است که مالک با تصمیم ت-۳</li></ul>
+<p>به تعویق انداخته است.</p>
+<ul><li>طبق تصمیم ت-۱ تقویم هرگز عمومی نمی‌شود، پس **صفحهٔ عمومی درخواست هیچ</li></ul>
+<p>وابستگی‌ای به موتور نوبت‌دهی ندارد.**</p>
+<p><strong>نتیجه: وصلهٔ ۴.۲.۰ بدون هیچ پیش‌نیازی قابل ساخت است. برآورد: ۲ روز.</strong></p>
+<hr>
+<h2>۳. چهار تصمیم تکمیلی مالک</h2>
+<table><thead><tr><th>#</th><th>موضوع</th><th>تصمیم</th></tr></thead><tbody><tr><td>ت-۵</td><td>ترجیح زمانی</td><td>کشویی <strong>روز هفته</strong> + <strong>بازه</strong> + یک یادداشت کوتاه اختیاری</td></tr><tr><td>ت-۶</td><td>سقف کل روزانهٔ پیامک رزرو</td><td><strong>۱۰۰</strong> در شبانه‌روز</td></tr><tr><td>ت-۷</td><td>سقف هر دستگاه</td><td><strong>۵</strong> در ساعت، بر پایهٔ <strong>هش</strong> IP</td></tr><tr><td>ت-۸</td><td>۱۲ خدمت سایت</td><td>جدول نگاشت قابل ویرایش + امکان تغییر دستی توسط منشی</td></tr></tbody></table>
+<p><strong>دو اصلاح فنی بر ت-۵ و ت-۸، پیش از ساخت:</strong></p>
+<ul><li><strong>گزینهٔ «شب» حذف می‌شود.</strong> ساعت کاری سامانه از فاز ۲ برابر ۹ تا ۲۰ است</li></ul>
+<p>و هیچ نوبتی بعد از ۲۰ وجود ندارد. پیشنهاد «شب» همان انتظار نادرستی را می‌سازد که ت-۱ برای حذفش گرفته شد. بازه‌ها با ساعت صریح: <strong>صبح (۹–۱۳) · عصر (۱۳–۲۰) · فرقی ندارد</strong>.</p>
+<ul><li><strong>کلید جدول نگاشت، متن فارسی نباشد.</strong> اصلاح یک نیم‌فاصله نگاشت را بی‌صدا</li></ul>
+<p>می‌شکند. کلید عددی با یک کد کوتاه پایدار.</p>
+<hr>
+<h2>۴. مورد تازه‌ای که تأیید می‌خواهد</h2>
+<h3>ا-۵ — یک <code>ALTER</code> دوم روی <code>otp_codes</code></h3>
+<p>سند اصلی فقط یک تغییر در جدول‌های موجود را برای تأیید برده بود (افزودن مقدار <code>&#x27;BOOKING_REQUEST&#x27;</code> به <code>purpose</code>). یک مورد دوم لازم شد:</p>
+<pre><code>ALTER TABLE otp_codes ADD COLUMN ip_hash CHAR(64) NULL AFTER purpose;
+ALTER TABLE otp_codes ADD KEY idx_otp_ip (ip_hash, created_at);</code></pre>
+<p><strong>چرا لازم است:</strong> ریسک R11 (سوزاندن اعتبار پیامک) جز با سقف بر پایهٔ IP بسته نمی‌شود، و جدول <code>otp_codes</code> امروز هیچ ستونی برای شناسایی منبع درخواست ندارد. بدون این، سقف روی ستونی خوانده می‌شود که وجود ندارد.</p>
+<p><strong>چرا بی‌خطر است:</strong> افزودن ستون <strong>nullable</strong> است. هیچ ردیف موجودی تغییر نمی‌کند، هیچ کد موجودی نمی‌شکند، و برگشت‌پذیر است. این با آن <code>MODIFY</code> روی <code>ENUM</code> — که در بررسی رد شد — تفاوت ماهوی دارد.</p>
+<p><strong>سود جانبی:</strong> سقف IP آنگاه برای همهٔ جریان‌های کد یک‌بارمصرف فعال می‌شود، از جمله <strong>ورود مراجع به پورتال که امروز هیچ سقف IP ندارد</strong>.</p>
+<p><strong>در مقابل،</strong> جدول <code>public_rate_limits</code> که در سند اصلی پیشنهاد شده بود <strong>حذف می‌شود</strong>. خالص تغییر: یک جدول کمتر.</p>
+<hr>
+<h2>۵. وضعیت ریسک R11</h2>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>وضعیت در سند اصلی</strong></td><td>باز، با کنترل پیشنهادی</td></tr><tr><td><strong>سه راه‌حل پیشنهادی بعدی</strong></td><td>هر سه ناکارآمد بودند (جزئیات در <code>MANAGER_PLAN_REVIEW_03_FA.md</code> بند ۱)</td></tr><tr><td><strong>راه‌حل مصوب</strong></td><td>ستون <code>ip_hash</code> + دو سقف: ۵/ساعت به ازای دستگاه، ۱۰۰/روز در کل</td></tr><tr><td><strong>الزام تازه</strong></td><td>رسیدن به سقف باید رویداد حسابرسی بسازد، در داشبورد منشی دیده شود، و پیام خطا شمارهٔ تماس کلینیک را بدهد تا مراجع واقعی بن‌بست نخورد</td></tr></tbody></table>
+<hr>
+<h2>۶. جدول تصمیم‌های درخواستی (جایگزین بند ۱۱ سند اصلی)</h2>
+<table><thead><tr><th>#</th><th>مورد</th><th>تأیید</th><th>رد</th></tr></thead><tbody><tr><td>۱</td><td>ساخت وصلهٔ <strong>۴.۲.۰</strong> طبق سند اصلی و این اصلاحیه</td><td>☐</td><td>☐</td></tr><tr><td>۲</td><td>ا-۱ — صفحهٔ عمومی بدون احراز هویت</td><td>☐</td><td>☐</td></tr><tr><td>۳</td><td>ا-۲ — دادهٔ شخصی در قرنطینه، انقضا ۱۸۰ روز</td><td>☐</td><td>☐</td></tr><tr><td>۴</td><td>ا-۳ — ذخیرهٔ <strong>هش</strong> IP و مرورگر</td><td>☐</td><td>☐</td></tr><tr><td>۵</td><td>ا-۴ — افزودن <code>&#x27;BOOKING_REQUEST&#x27;</code> به <code>otp_codes.purpose</code> (افزایشی)</td><td>☐</td><td>☐</td></tr><tr><td>۶</td><td><strong>ا-۵ — افزودن ستون nullable <code>ip_hash</code> به <code>otp_codes</code></strong></td><td>☐</td><td>☐</td></tr><tr><td>۷</td><td>ت-۵ تا ت-۸ با دو اصلاح بند ۳</td><td>☐</td><td>☐</td></tr><tr><td>۸</td><td>R11 به‌عنوان پیش‌نیاز انتشار</td><td>☐</td><td>☐</td></tr><tr><td>۹</td><td>بازنشستگی وب‌فرم دروپال پس از راه‌اندازی</td><td>☐</td><td>☐</td></tr></tbody></table>
+<p>&lt;br&gt;</p>
+<p>نام و امضای مدیر ارشد: ………………………………  تاریخ: …………………</p>
+<p>&lt;br&gt;&lt;br&gt;</p>
+<hr>
+<p><strong>پیوست‌ها:</strong> <code>BUILD_APPROVAL_REQUEST_FA.md</code> (سند اصلی) · <code>ONLINE_BOOKING_DESIGN_FA.md</code> (طراحی فنی) · <code>MANAGER_PLAN_REVIEW_03_FA.md</code> (بررسی فنی آخرین سند)</p>
+</div>
+</body>
+</html>

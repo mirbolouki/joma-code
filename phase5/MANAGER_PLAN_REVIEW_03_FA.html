@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بررسی سوم</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>بررسی سوم — «چهار تصمیم، جواب سریع»</h1>
+<p><strong>تاریخ:</strong> ۱۴۰۵/۰۷/۱۴</p>
+<hr>
+<h2>۰. حکم</h2>
+<p><strong>هر چهار تصمیم از نظر محتوا درست است و می‌پذیرم.</strong> یکی‌شان از پیشنهاد خودم بهتر است (بند ۲). ولی قطعه‌کدها باز هم ستونی را می‌خوانند که وجود ندارد — <strong>بار سوم، همان ریسک R11</strong>.</p>
+<hr>
+<h2>۱. د-۱ — سقف IP: سومین تلاش، همان شکست</h2>
+<pre><code>SELECT COUNT(*) FROM otp_codes WHERE ip_hash = ? AND purpose = &#x27;BOOKING_REQUEST&#x27; ...</code></pre>
+<p>ستون‌های واقعی <code>otp_codes</code>:</p>
+<pre><code>id · mobile_number · code_hash · purpose · expires_at · attempts · consumed_at · created_at</code></pre>
+<p><strong><code>ip_hash</code> هم وجود ندارد.</strong> فقط نام <code>ip_address</code> به <code>ip_hash</code> تغییر کرده؛ ستون همچنان ساخته نشده.</p>
+<p>تاریخچهٔ این ریسک:</p>
+<table><thead><tr><th>تلاش</th><th>راه‌حل پیشنهادی</th><th>چرا کار نکرد</th></tr></thead><tbody><tr><td>۱</td><td>شمارش از <code>booking_requests</code></td><td>طبق ت-۲ هنگام ارسال پیامک هنوز ردیفی نیست</td></tr><tr><td>۲</td><td>شمارش از <code>otp_codes.ip_address</code></td><td>ستون وجود ندارد</td></tr><tr><td>۳</td><td>شمارش از <code>otp_codes.ip_hash</code></td><td>ستون وجود ندارد</td></tr></tbody></table>
+<p><strong>تصمیم لازم — دو راه، هر دو درست:</strong></p>
+<p><strong>راه الف (ساده‌تر، توصیهٔ من):</strong> یک ستون به <code>otp_codes</code> اضافه شود.</p>
+<pre><code>ALTER TABLE otp_codes ADD COLUMN ip_hash CHAR(64) NULL AFTER purpose;
+ALTER TABLE otp_codes ADD KEY idx_otp_ip (ip_hash, created_at);</code></pre>
+<p>افزودن ستون <strong>nullable</strong> روی جدول موجود، برخلاف آن <code>MODIFY</code> روی ENUM، بی‌خطر است: هیچ ردیفی تغییر نمی‌کند و هیچ کدی نمی‌شکند.</p>
+<p>مزیت پنهانش از خود رزرو بزرگ‌تر است: سقف IP آنگاه برای <strong>همهٔ</strong> جریان‌های کد یک‌بارمصرف کار می‌کند، از جمله ورود مراجع به پورتال — که امروز هیچ سقف IP ندارد.</p>
+<p><strong>در این صورت جدول <code>public_rate_limits</code> که خودم پیشنهاد داده بودم لازم نیست و حذف می‌شود.</strong> یک جدول کمتر، یک منبع حقیقت.</p>
+<p><strong>راه ب:</strong> جدول شمارندهٔ مستقل <code>public_rate_limits</code>. مزیتش: هیچ تغییری در جدول‌های موجود. عیبش: یک جدول اضافه و سقف فقط برای رزرو.</p>
+<blockquote>این تغییر یک <strong><code>ALTER</code> دوم</strong> است و سند مجوز فقط یکی را برای تأیید برده بود. باید در اصلاحیه صریحاً ذکر شود.</blockquote>
+<hr>
+<h2>۲. د-۲ — گزینهٔ «شب» قابل ارائه نیست</h2>
+<p>تصمیم ۱ این بازه‌ها را می‌دهد: <code>MORNING / AFTERNOON / EVENING / FLEXIBLE</code>.</p>
+<p>ساعت کاری سامانه از فاز ۲ ثابت است:</p>
+<pre><code>CLINIC_DAY_START_HOUR = 9
+CLINIC_DAY_END_HOUR   = 20</code></pre>
+<p><strong>هیچ نوبتی بعد از ۲۰ وجود ندارد.</strong> پیشنهاد «شب» دقیقاً همان انتظار نادرستی را می‌سازد که تصمیم ت-۱ برای حذفش گرفته شد.</p>
+<p><strong>درست:</strong> سه گزینه با ساعت صریح — <code>صبح (۹ تا ۱۳)</code> · <code>عصر (۱۳ تا ۲۰)</code> · <code>فرقی ندارد</code></p>
+<hr>
+<h2>۳. د-۳ — سقف روزانه یک کلید قطع سرویس هم هست</h2>
+<p>«۱۰۰ پیامک در شبانه‌روز» عدد معقولی است. ولی وقتی پر شود، <strong>مراجع واقعی هم تا پایان روز نمی‌تواند درخواست بدهد</strong> — و شما خبردار نمی‌شوید.</p>
+<p>سه الزام:</p>
+<ol><li>رسیدن به سقف، رویداد حسابرسی <code>BOOKING_RATE_LIMIT_HIT</code> بسازد؛</li><li>در داشبورد منشی هشدار دیده شود؛</li><li>پیام خطا بن‌بست نباشد: «امکان ثبت درخواست اینترنتی موقتاً فراهم نیست؛ لطفاً با شمارهٔ ۰۹۹۶۷۹۷۹۴۷ تماس بگیرید.»</li></ol>
+<hr>
+<h2>۴. د-۴ — جدول نگاشت: دو اصلاح</h2>
+<pre><code>website_service_label VARCHAR(255) PRIMARY KEY</code></pre>
+<ul><li><strong>کلید اصلی متن فارسی خطرناک است.</strong> اصلاح یک نیم‌فاصله یا یک غلط</li></ul>
+<p>املایی، نگاشت را بی‌صدا می‌شکند.</p>
+<ul><li><code>VARCHAR(255)</code> با <code>utf8mb4</code> برابر ۱۰۲۰ بایت است و به سقف ایندکس</li></ul>
+<p>InnoDB نزدیک می‌شود.</p>
+<p><strong>درست:</strong> کلید جانشین عددی + ستون کد کوتاه و پایدار:</p>
+<pre><code>CREATE TABLE booking_service_options (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    option_code VARCHAR(50) NOT NULL UNIQUE,      -- &#x27;couples_therapy&#x27;
+    website_label VARCHAR(150) NOT NULL,          -- «زوج درمانی»
+    service_type_id BIGINT UNSIGNED NULL,
+    display_order SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    CONSTRAINT fk_bso_service FOREIGN KEY (service_type_id)
+        REFERENCES service_types(id) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;</code></pre>
+<p>و یک نکتهٔ مهم: <strong>منوی کشویی صفحهٔ عمومی از همین جدول رندر شود</strong>، نه از فهرست ثابت داخل کد. آنگاه افزودن یا حذف خدمت، کار پایگاه داده است نه کدنویسی. <code>service_type_id</code> را <code>NULL</code> بگذارید تا نگاشت‌نشده‌ها معلوم باشند.</p>
+<hr>
+<h2>۵. یک باگ واقعی در کد</h2>
+<pre><code>$clinic_service_id = (int)$_POST[&#x27;override_service_type_id&#x27;] ?? $clinic_service_id;</code></pre>
+<p><code>(int)</code> هرگز <code>null</code> برنمی‌گرداند؛ کلید غایب به <code>0</code> تبدیل می‌شود. پس <code>??</code> <strong>هیچ‌وقت فعال نمی‌شود</strong> و مقدار پیش‌فرض همیشه با صفر بازنویسی می‌شود.</p>
+<pre><code>$clinic_service_id = isset($_POST[&#x27;override_service_type_id&#x27;])
+    ? (int)$_POST[&#x27;override_service_type_id&#x27;]
+    : $clinic_service_id;</code></pre>
+<hr>
+<h2>۶. مواردی که از دور قبل باقی مانده‌اند</h2>
+<table><thead><tr><th>کد</th><th>مورد</th></tr></thead><tbody><tr><td>ج-۵</td><td>مسیرها: پروژه <code>.htaccess</code> و بازنویسی مسیر <strong>ندارد</strong>. <code>/pages/booking/step-1.php</code> و <code>/admin/booking-requests/list.php</code> کار نمی‌کنند. نام‌های پیشنهادی در بند ۷.</td></tr><tr><td>ج-۶</td><td>کارتابل باز هم «منوی مدیر» است. این کارِ <strong>منشی</strong> است؛ در <code>reception/</code> که طبق <code>ROLE_INHERITANCE</code> مدیر هم می‌بیند.</td></tr><tr><td>ج-۷</td><td><code>NOW()</code>، <code>CURDATE()</code>، <code>DATE_SUB(NOW(), ...)</code> منطقهٔ زمانی سرور را وارد اسکیمای تماماً UTC می‌کنند. بازه‌ها در PHP با <code>now_dt()</code> ساخته شوند. ضمناً <code>DATE(created_at) = CURDATE()</code> ایندکس را بی‌اثر می‌کند.</td></tr><tr><td>—</td><td><code>preferred_note TEXT</code> و <code>visitor_note</code> هر دو متن آزادند. یکی کافی است: <code>preferred_note VARCHAR(300)</code>.</td></tr><tr><td>—</td><td>ترتیب روزهای هفته از شنبه شروع شود، نه یکشنبه.</td></tr></tbody></table>
+<hr>
+<h2>۷. نام‌گذاری فایل‌ها، هم‌خوان با پروژه</h2>
+<pre><code>includes/booking_functions.php
+booking.php                      ← عمومی، سه گام با POST
+reception/booking_requests.php   ← کارتابل (منشی + مدیر)
+reception/booking_request_view.php
+database/phase4_2_schema.sql
+upgrade_phase4_2.php</code></pre>
+<hr>
+<h2>۸. پاسخ به «موازی یا ترتیبی؟»</h2>
+<p><strong>ترتیبی.</strong> موازی‌کاری اینجا سود ندارد و ریسک دارد: اگر مدیر ارشد یکی از دو <code>ALTER</code> را رد کند، کد نوشته‌شده باید دور ریخته شود.</p>
+<ol><li>اصلاحیهٔ سند مجوز (نوشته شد: <code>BUILD_APPROVAL_AMENDMENT_01_FA.md</code>)</li><li>پاسخ مدیر ارشد</li><li>مهاجرت <code>4.2.0</code></li><li>توابع، سپس صفحهٔ عمومی، سپس کارتابل</li></ol>
+</div>
+</body>
+</html>
