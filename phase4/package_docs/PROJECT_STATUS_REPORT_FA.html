@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>گزارش جامع وضعیت پروژهٔ جوما</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>گزارش جامع وضعیت پروژهٔ جوما</h1>
+<p><strong>تاریخ:</strong> ۱۴۰۵/۰۷/۱۴ (2026-10-06) · <strong>نسخهٔ در حال اجرا:</strong> ۴.۰.۱ روی <code>my.mirbolouki.com</code> <strong>مرجع سنجش:</strong> «سند مادر سامانه کلینیک جوما — پیوست الف: جدول مرجع تصمیمات معماری» (۱۱ مهر)</p>
+<hr>
+<h2>۱. پاسخ کوتاه به پرسش شما</h2>
+<p><strong>نه، پروژه کامل نشده — و این طبق برنامه است.</strong></p>
+<p>سند مادر در بخش الف.۶ پنج فاز تعریف کرده است. <strong>چهار فاز تحویل شده و روی سرور نصب است؛ فاز ۵ هنوز شروع نشده.</strong> از نظر دامنه، حدود <strong>۸۰ درصد</strong> مسیر طی شده.</p>
+<p>اما یک قید مهم: «تحویل‌شده» با «آزموده‌شده» یکی نیست. از ۳۵ آزمون فاز ۴ تنها <strong>۹ آزمون</strong> اجرا شده. تا وقتی بقیه اجرا نشده، درست‌تر است بگوییم فاز ۴ <strong>«تحویل‌شده و بخشاً تأییدشده»</strong> است، نه «بسته‌شده».</p>
+<hr>
+<h2>۲. وضعیت فازها</h2>
+<table><thead><tr><th>فاز</th><th>محور (طبق سند مادر)</th><th>نسخه</th><th>وضعیت</th></tr></thead><tbody><tr><td>۱</td><td>هستهٔ عملیاتی — پذیرش تا تشکیل پرونده</td><td>۱.۰.۱</td><td>✅ بسته</td></tr><tr><td>۲</td><td>نوبت‌دهی — تقویم و رزرو واقعی</td><td>۲.۰.۱</td><td>✅ بسته و پذیرفته‌شده (یک آزمون T5 مانده)</td></tr><tr><td>۳</td><td>پروندهٔ بالینی — یادداشت محرمانه</td><td>۳.۰.۴</td><td>⚠️ بسته‌شدهٔ مشروط (۲ قلم باز)</td></tr><tr><td>۴</td><td>تعامل مراجع — پورتال و فرم‌ها</td><td>۴.۰.۱</td><td>🔵 نصب‌شده، ۹ از ۳۵ آزمون اجرا شده</td></tr><tr><td>۵</td><td>یکپارچه‌سازی — وب‌هوک، گزارش، پشتیبان، مالی</td><td>—</td><td>⬜ شروع نشده</td></tr></tbody></table>
+<hr>
+<h2>۳. تطبیق تصمیم‌به‌تصمیم با سند روز اول</h2>
+<table><thead><tr><th>ADR</th><th>موضوع</th><th>وضعیت امروز</th></tr></thead><tbody><tr><td>ADR-001</td><td>دو شناسه: <code>id</code> داخلی + <code>public_id</code> عمومی</td><td>✅ پیاده شد — با یک تفاوت: <code>VARCHAR(30)</code> با پیشوند و ۲۰ کاراکتر هگز، به‌جای <code>CHAR(26)</code>. رفتار یکسان</td></tr><tr><td>ADR-002</td><td>رمزنگاری <code>AES-256-GCM</code> یادداشت‌ها</td><td>❌ <strong>اجرا نشد — به دستور صریح مالک.</strong> ریسک‌های P1 و P2 آگاهانه پذیرفته شدند</td></tr><tr><td>ADR-003</td><td>بازنویسی کامل از صفر</td><td>✅ رعایت شد؛ هیچ فایلی از نسخهٔ قبلی کپی نشد</td></tr><tr><td>ADR-004</td><td>وراثت مدیر هرگز به دادهٔ بالینی نمی‌رسد</td><td>⚠️ <strong>انحراف آگاهانه در فاز ۴</strong> — مدیر پاسخ فرم‌ها را می‌بیند (فقط خواندن، به‌ازای هر قالب قابل خاموش‌کردن، هر مشاهده حسابرسی می‌شود). ریسک P4. یادداشت‌های محرمانه همچنان از مدیر پنهان‌اند</td></tr><tr><td>ADR-005</td><td>ثبت نمرهٔ آزمون در جوما</td><td>✅ لغو شده بود؛ ساخته نشد</td></tr><tr><td>ADR-006</td><td>وب‌هوک اسناد سامانهٔ تست</td><td>⬜ فاز ۵ — ساخته نشده</td></tr><tr><td>ADR-007</td><td>فرم‌ساز مدیر، بدون متن‌آزاد پیش‌فرض</td><td>✅ پیاده شد؛ آزمون ۷ همین هفته قبول شد</td></tr><tr><td>ADR-008</td><td>تخصیص خودکار فرم پذیرش در لحظهٔ تثبیت نخستین نوبت</td><td>✅ کد نوشته شد — <strong>هنوز آزموده نشده (آزمون ۱۹)</strong></td></tr><tr><td>ADR-009</td><td>حذف ۵ جدول واسط، جایگزینی با <code>admissions</code> + <code>clinical_cases</code></td><td>✅ پیاده شد</td></tr><tr><td>ADR-009 اصلاحیه</td><td><code>clinical_case_status_events</code> برای بایگانی/بازگشایی</td><td>⬜ <strong>ساخته نشد</strong> — بایگانی به درخواست مالک به تعویق افتاد</td></tr><tr><td>ADR-010</td><td><code>lookup_lists</code> + <code>lookup_items</code> عمومی</td><td>✅ پیاده شد</td></tr><tr><td>ADR-011</td><td>ساخت کاربر پرسنلی با چند نقش، اتمیک</td><td>✅ پیاده شد</td></tr><tr><td>ADR-012</td><td>بازیابی رمز پرسنل روی زیرساخت <code>otp_codes</code></td><td>✅ پیاده شد</td></tr><tr><td>ADR-013</td><td>غیرفعال‌سازی فوری کاربر</td><td>✅ <code>auth_require_active_session()</code> در هر درخواست</td></tr><tr><td>ADR-014</td><td>موبایل به‌عنوان شناسهٔ یکپارچه + <code>normalize_mobile_number()</code></td><td>✅ پیاده شد</td></tr><tr><td>ADR-015</td><td>تغییر موبایل مراجع، دومرحله‌ای با OTP</td><td>⬜ فاز ۵ — دو جدولش ساخته نشده</td></tr><tr><td>ADR-016</td><td>ویرایش سادهٔ موبایل پرسنل</td><td>✅ پیاده شد</td></tr></tbody></table>
+<p><strong>جمع‌بندی:</strong> از ۱۷ تصمیم معماری، <strong>۱۲ پیاده شده</strong>، ۱ لغو شده بود، <strong>۳ به فاز ۵ موکول است</strong>، و <strong>۱ (رمزنگاری) به دستور مالک کنار گذاشته شد</strong>.</p>
+<hr>
+<h2>۴. جدول‌ها — طراحی در برابر واقعیت</h2>
+<p>سند مادر برای پایان فاز ۴ جمعاً <strong>۲۳ جدول</strong> پیش‌بینی کرده بود. امروز دقیقاً <strong>۲۳ جدول</strong> روی سرور است — ولی ترکیبشان یکی نیست:</p>
+<table><thead><tr><th>فاز</th><th>پیش‌بینی سند</th><th>ساخته‌شده</th><th>تفاوت</th></tr></thead><tbody><tr><td>۱</td><td>۱۱</td><td>۱۱</td><td>—</td></tr><tr><td>۲</td><td>۵</td><td>۵</td><td>—</td></tr><tr><td>۳</td><td>۲</td><td><strong>۱</strong></td><td><code>clinical_case_status_events</code> ساخته نشد (بایگانی معوق)</td></tr><tr><td>۴</td><td>۵</td><td><strong>۶</strong></td><td><code>form_draft_saves</code> اضافه شد (تصمیم P8 مالک: پیش‌نویس فقط برای مراجع)</td></tr><tr><td><strong>جمع</strong></td><td><strong>۲۳</strong></td><td><strong>۲۳</strong></td><td>یکی کم، یکی اضافه</td></tr></tbody></table>
+<p>فاز ۵ هفت جدول دیگر دارد (<code>api_clients</code>, <code>clinical_case_documents</code>, <code>clinical_reports</code>, <code>report_publications</code>, <code>pending_mobile_changes</code>, <code>person_mobile_change_log</code>, <code>clinic_settings</code>) که مجموع نهایی را به <strong>۳۰</strong> می‌رساند — سند مادر ۲۸ گفته بود؛ دو جدول تفاوت از همان دو موردی است که بالا توضیح داده شد.</p>
+<hr>
+<h2>۵. انحراف‌های آگاهانه از سند روز اول</h2>
+<p>هر پنج مورد تصمیم خود شما بوده و در مستندات ثبت شده است. هیچ‌کدام سهوی نیست.</p>
+<table><thead><tr><th>#</th><th>انحراف</th><th>چرا</th><th>هزینه‌ای که پذیرفته‌اید</th></tr></thead><tbody><tr><td>۱</td><td><strong>بدون رمزنگاری یادداشت‌ها</strong> (نقض ADR-002)</td><td>تصمیم صریح مالک</td><td>P1: هر پشتیبان پایگاه داده متن خام یادداشت‌ها را دارد. P2: هر کس به phpMyAdmin برسد همه را می‌خواند</td></tr><tr><td>۲</td><td><strong>مدیر پاسخ فرم‌ها را می‌بیند</strong> (نقض ADR-004)</td><td>انتخاب «ب» در پرسش ۲ فاز ۴</td><td>P4: مرز بین اداری و بالینی یک شکاف کنترل‌شده پیدا کرد</td></tr><tr><td>۳</td><td><strong>یادداشت فقط برای نویسنده</strong></td><td>تصمیم مالک در فاز ۳</td><td>P3: درمانگر بعدی تداوم درمان را از دست می‌دهد. در فاز ۴ برای <strong>فرم‌ها</strong> برعکسش تصمیم گرفته شد (P7: فرم سند پرونده است)</td></tr><tr><td>۴</td><td><strong>بایگانی پرونده به تعویق افتاد</strong></td><td>تصمیم مالک</td><td>جدول <code>clinical_case_status_events</code> و چرخهٔ بایگانی↔بازگشایی هنوز وجود ندارد</td></tr><tr><td>۵</td><td><strong>محیط استیجینگ لغو شد</strong></td><td>تصمیم مالک</td><td>هر ارتقا مستقیم روی سامانهٔ واقعی اجرا می‌شود؛ خطا بلافاصله کاربران را می‌بیند</td></tr></tbody></table>
+<hr>
+<h2>۶. آنچه ساخته نشده</h2>
+<p><strong>فاز ۵ (کل آن):</strong> وب‌هوک سامانهٔ آزمون و ذخیرهٔ اسناد، گزارش‌های تألیفی و انتشار آن‌ها برای مراجع، پشتیبان‌گیری، ماژول مالی، تغییر موبایل مراجع با OTP، و تنظیمات کلینیک.</p>
+<p><strong>بایگانی پرونده:</strong> ADR-009 اصلاحیه، معوق.</p>
+<p><strong>نوبت‌گیری عمومی اینترنتی:</strong> اصلاً در سند روز اول نبود. پورتال فاز ۴ برای مراجعِ <strong>موجود</strong> طراحی شده (نوبت‌های خودش + فرم‌های خودش). ثبت‌نام عمومی و رزرو آنلاین یک محصول تازه است که در جلسهٔ قبل تصمیم‌گیری‌اش را به بعد موکول کردید.</p>
+<p><strong>آنچه مراجع طبق سند باید ببیند:</strong> «نوبت‌های خودش، فرم‌های خودش، گزارش‌های منتشرشدهٔ خودش». دو مورد اول ساخته شد؛ سومی به فاز ۵ وابسته است.</p>
+<hr>
+<h2>۷. وضعیت کیفیت</h2>
+<table><thead><tr><th>شاخص</th><th>مقدار</th></tr></thead><tbody><tr><td>فایل‌های PHP</td><td>۷۹</td></tr><tr><td>خطای نحوی</td><td>۰</td></tr><tr><td>جدول‌های پایگاه داده</td><td>۲۳</td></tr><tr><td>مهاجرت‌های اعمال‌شده</td><td><code>1.0.0</code>, <code>2.0.0</code>, <code>3.0.0</code>, <code>4.0.0</code></td></tr><tr><td>آزمون‌های فاز ۴ اجراشده</td><td>۹ از ۳۵</td></tr><tr><td>نقص‌های یافت‌شده در آزمون</td><td>۱ (دسترسی به پیش‌نمایش فرم) — رفع شد در ۴.۰.۱</td></tr><tr><td>ریسک‌های باز ثبت‌شده</td><td>۹ مورد (P1 تا P9)</td></tr></tbody></table>
+<p><strong>نکته‌ای که باید صادقانه گفته شود:</strong> محیط ساخت این پروژه PHP و MySQL ندارد. هیچ خط کدی پیش از رسیدن به سرور شما اجرا نشده است. درستی نحوی تضمین‌شده است، درستی رفتاری فقط با همان ۳۵ آزمون اثبات می‌شود. همین دیروز آزمون ۶ نشان داد که کدِ درست می‌تواند تجربهٔ کاربری شکسته بدهد.</p>
+<hr>
+<h2>۸. ریسک‌های باز</h2>
+<table><thead><tr><th>کد</th><th>ریسک</th></tr></thead><tbody><tr><td>P1</td><td>پشتیبان پایگاه داده حاوی متن خام یادداشت‌هاست</td></tr><tr><td>P2</td><td>دسترسی به phpMyAdmin = دسترسی به همهٔ یادداشت‌ها</td></tr><tr><td>P3</td><td>درمانگر بعدی یادداشت‌های پیشین را نمی‌بیند</td></tr><tr><td>P4</td><td>مدیر پاسخ فرم‌های بالینی را می‌بیند (انحراف از ADR-004)</td></tr><tr><td>P5/P7</td><td>فرم سند پرونده است، نه سند نویسنده</td></tr><tr><td>P6</td><td>پورتال عمومی مراجع؛ تنها سد، امنیت نشست و محدودیت نرخ OTP است</td></tr><tr><td>P8</td><td>پیش‌نویس اعتبارسنجی‌نشدهٔ مراجع در پایگاه داده می‌ماند</td></tr><tr><td>P9</td><td>کد پیامکی هرگز نباید به پنل پرسنلی راه بدهد (D4-3)</td></tr><tr><td>—</td><td><code>install.php</code> هنوز روی سرور است (با <code>install.lock</code> مهار شده، ولی لازم نیست)</td></tr></tbody></table>
+<hr>
+<h2>۹. پیشنهاد مسیر</h2>
+<ol><li><strong>۲۶ آزمون باقی‌مانده</strong> را یکی‌یکی و بی‌عجله بزنید. فهرستشان در <code>REMAINING_TESTS_FA.md</code> است، با چهار مورد بحرانی در صدر.</li><li><strong>سه قلم بدهی فازهای پیشین</strong> را پیش از هر پاک‌سازی پایگاه داده تمام کنید — با DROP برای همیشه می‌روند.</li><li>بعد از آن، فاز ۴ رسماً بسته می‌شود و گزارش بستن نوشته می‌شود.</li><li><strong>فاز ۵</strong> یا <strong>نوبت‌گیری عمومی</strong> — هر کدام را خواستید، اول سند طراحی، بعد کد. همان روالی که تا امروز جواب داده است.</li></ol>
+<hr>
+<h2>۱۰. یک ارزیابی بی‌تعارف</h2>
+<p>آنچه خوب پیش رفته: معماری سند روز اول تقریباً دست‌نخورده باقی مانده. چهار فاز پشت سر هم بدون بازنویسی اساسی روی هم سوار شده‌اند، که نشانهٔ آن است که تصمیم‌های ADR درست بوده‌اند. حذف پنج جدول واسط در ADR-009 به‌ویژه خودش را ثابت کرد.</p>
+<p>آنچه نگران‌کننده است: <strong>فاصلهٔ بین «کد نوشته شده» و «کد آزموده شده»</strong>. چهار فاز نصب شده ولی هیچ‌کدام مجموعهٔ کامل آزمون‌هایش را پشت سر نگذاشته است. این بدهی انباشته می‌شود و هر فاز تازه، آزمون‌نشدگیِ فاز قبل را عمیق‌تر دفن می‌کند. اگر یک توصیهٔ واحد داشته باشم، این است: <strong>پیش از شروع فاز ۵، آزمون‌های فاز ۴ تمام شوند.</strong></p>
+<p>نکتهٔ دوم: نبود رمزنگاری (P1/P2) تصمیم شماست و محترم است، اما اگر روزی این سامانه از یک کلینیک فراتر برود یا بازرسی بیرونی بشود، همان تصمیم اولین چیزی است که زیر سؤال می‌رود. ارزش دارد که دلیلش را مکتوب و تاریخ‌دار نگه دارید.</p>
+</div>
+</body>
+</html>
