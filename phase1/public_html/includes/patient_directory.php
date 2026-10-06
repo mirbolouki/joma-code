@@ -168,7 +168,7 @@ function patient_directory_appointments($db, $person_id, $limit = 30)
         "SELECT ap.id, ap.public_id, ap.status,
                 ap.appointment_start_utc, ap.appointment_end_utc,
                 st.title AS service_title,
-                r.title  AS room_title,
+                r.name   AS room_title,
                 CONCAT(t.first_name, ' ', t.last_name) AS therapist_name
            FROM appointments ap
            INNER JOIN admissions a   ON a.id = ap.admission_id
