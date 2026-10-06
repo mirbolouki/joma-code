@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>طراحی رزرو نوبت اینترنتی</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>طراحی «رزرو نوبت اینترنتی» — اتصال mirbolouki.com به سامانهٔ جوما</h1>
+<p>سند طراحی · نسخهٔ ۱ · ۱۴۰۵/۰۷/۱۴ وضعیت: <strong>برای تصمیم‌گیری — هنوز هیچ کدی نوشته نشده</strong></p>
+<hr>
+<h2>۱. تشخیص شما درست است، ولی علتش آن چیزی نیست که فکر می‌کنید</h2>
+<p>گفتید «اگر باید حتماً از قبل پذیرش شده باشد، یعنی راه اخذ نوبتش بسته است». درست است. ولی این در، تصادفی بسته نشده — <strong>با چهار قفل در پایگاه داده بسته شده، و هر چهار قفل عمدی‌اند:</strong></p>
+<table><thead><tr><th>قفل</th><th>چه می‌گوید</th><th>یعنی چه</th></tr></thead><tbody><tr><td><code>admissions.created_by_person_id</code> <strong>NOT NULL</strong></td><td>هر پذیرش باید ثبت‌کنندهٔ انسانی داشته باشد</td><td>غریبه‌ای که در سامانه وجود ندارد، نمی‌تواند پذیرش بسازد</td></tr><tr><td><code>admissions.referred_therapist_person_id</code> <strong>NOT NULL</strong></td><td>هر پذیرش از ابتدا به یک درمانگر ارجاع شده</td><td>ارجاع یک تصمیم است، نه انتخاب مشتری</td></tr><tr><td><code>admissions.referral_reason_id</code> <strong>NOT NULL</strong></td><td>دلیل مراجعه از فهرست استاندارد</td><td>متن آزاد غریبه اینجا جا نمی‌شود</td></tr><tr><td><code>appointments.admission_id</code> <strong>NOT NULL</strong></td><td>نوبت بدون پذیرش وجود ندارد</td><td>حتی قفل موقت ۵ دقیقه‌ای (<code>appointment_holds</code>) هم به پذیرش گره خورده</td></tr></tbody></table>
+<p>و یک قفل پنجم که از همه مهم‌تر است:</p>
+<blockquote><code>persons.mobile_number</code> <strong>UNIQUE</strong> و همهٔ کلیدهای خارجی <strong>RESTRICT</strong> و «حذف فیزیکی ممنوع».</blockquote>
+<p>یعنی لحظه‌ای که اجازه دهید عموم مردم در جدول <code>persons</code> رکورد بسازند، یک راه نوشتن مستقیم به <strong>جدول هویت پروندهٔ بالینی</strong> به دست غریبه داده‌اید. اولین غلط املایی، اولین شمارهٔ اشتباه، اولین ربات اسپم — <strong>برای همیشه</strong> آنجا می‌ماند، چون سامانه عمداً حذف فیزیکی ندارد.</p>
+<p><strong>پس راه‌حل حرفه‌ای این نیست که این در را باز کنیم. این است که در دوم بسازیم.</strong></p>
+<hr>
+<h2>۲. اصل طراحی: «درخواست نوبت» ≠ «نوبت»</h2>
+<p>این یک جملهٔ ساده است ولی تمام معماری را حل می‌کند:</p>
+<blockquote>آنچه وب‌سایت تولید می‌کند یک <strong>درخواست</strong> است که در قرنطینهٔ خودش می‌نشیند. تبدیل آن به پذیرش و نوبت، کار یک انسان است.</blockquote>
+<p>و نکتهٔ کلیدی — همانی که نگرانی شما را برطرف می‌کند:</p>
+<blockquote><strong>این تفاوت برای بازدیدکنندهٔ سایت نامرئی است.</strong> او نام و شماره‌اش را می‌دهد، زمان دلخواهش را انتخاب می‌کند، پیامک تأیید می‌گیرد. از نظر او «نوبت گرفته». از نظر شما، هیچ ردیف ناخواسته‌ای وارد پروندهٔ بالینی نشده.</blockquote>
+<hr>
+<h2>۳. دو در، نه یکی</h2>
+<p>بزرگ‌ترین اشتباه رایج این است که برای همه یک مسیر بسازیم. دو نوع آدم روی سایت شما دکمهٔ «رزرو نوبت» را می‌زنند و نیازشان زمین تا آسمان فرق دارد:</p>
+<h3>در ۱ — غریبه (مراجع جدید)</h3>
+<pre><code>سایت mirbolouki.com
+   └─&gt; «درخواست نوبت»
+         ├─ نام، نام خانوادگی، موبایل
+         ├─ نوع خدمت  +  زمان‌های ترجیحی
+         ├─ تأیید شماره با کد پیامکی        ← فیلتر اسپم
+         └─&gt; ردیف در جدول booking_requests   ← قرنطینه
+                  │
+                  ▼
+         کارتابل منشی «درخواست‌های اینترنتی»
+                  │
+          ┌───────┴────────┐
+          ▼                ▼
+     تبدیل به پذیرش      رد / اسپم
+     (همان فرم موجود)    (با دلیل، بایگانی)
+          │
+          ▼
+     درمانگر می‌پذیرد → نوبت قطعی → پیامک</code></pre>
+<h3>در ۲ — مراجع قدیمی (پذیرش ACCEPTED دارد)</h3>
+<p>این آدم نباید دوباره درخواست بدهد. او <strong>همین حالا</strong> حساب پورتال دارد (فاز ۴ ساخته شد: ورود با کد پیامکی). فقط یک صفحه کم دارد:</p>
+<pre><code>پورتال مراجع → «نوبت جدید» → تقویم واقعی → رزرو مستقیم → تمام</code></pre>
+<p>و این در، تقریباً رایگان است: موتور نوبت‌دهی فاز ۲ از قبل همه‌چیز را دارد — محاسبهٔ اسلات‌های آزاد، قفل موقت ۳۰۰ ثانیه‌ای، کنترل تداخل درمانگر، تداخل اتاق، ساعت کاری ۹ تا ۲۰، افق ۳۰ روزه. فقط رویش رابط کاربری ندارد.</p>
+<p><strong>توصیهٔ من: در سایت فقط یک دکمه بگذارید.</strong> از کاربر شماره‌اش را بپرسید، کد بفرستید، و <strong>بعد از تأیید</strong> سامانه خودش تشخیص دهد او کدام در است. قبل از تأیید هیچ چیزی لو نمی‌رود — دقیقاً همان الگویی که در فاز ۴ تصویب کردیم: پیام یکسان، چه شماره وجود داشته باشد چه نداشته باشد.</p>
+<hr>
+<h2>۴. جدول‌های تازه</h2>
+<h3><code>booking_requests</code> — قرنطینه</h3>
+<pre><code>id, public_id (&#x27;br_&#x27;)
+first_name, last_name
+mobile_number          ← عمداً UNIQUE نیست، عمداً FK به persons ندارد
+mobile_verified_at     ← تا پر نشده، درخواست معتبر نیست
+service_type_id        NULL  (FK)
+preferred_therapist_person_id NULL (FK)
+referral_reason_id     NULL  (FK به lookup_items)
+visitor_note           VARCHAR(300) NULL   ← غیربالینی، جزو پرونده نیست
+status ENUM(&#x27;NEW&#x27;,&#x27;CONTACTED&#x27;,&#x27;CONVERTED&#x27;,&#x27;REJECTED&#x27;,&#x27;SPAM&#x27;,&#x27;EXPIRED&#x27;)
+converted_admission_id NULL (FK)  ← تنها پل به دنیای بالینی
+reject_reason_id       NULL (FK)
+handled_by_person_id   NULL (FK), handled_at
+source VARCHAR(30)     ← &#x27;website&#x27; / &#x27;instagram&#x27; / …
+ip_hash CHAR(64), user_agent_hash CHAR(64)   ← هش، نه خود داده
+created_at</code></pre>
+<p><strong>مهم‌ترین ویژگی این جدول چیزی است که ندارد:</strong> هیچ کلید خارجی‌ای به <code>persons</code>. یعنی حتی اگر فردا کسی اشتباه کند، آلودگی به پروندهٔ بالینی سرایت نمی‌کند. تنها پل، <code>converted_admission_id</code> است که فقط <strong>بعد از</strong> تصمیم انسانی پر می‌شود.</p>
+<h3><code>booking_request_slots</code> — زمان‌های ترجیحی</h3>
+<pre><code>id, booking_request_id (FK), preferred_start_utc, display_order</code></pre>
+<p>تا سه زمان. چرا سه تا؟ چون «۱۰ صبح سه‌شنبه» به تنهایی یعنی ۷۰٪ احتمال تماس تلفنی برای هماهنگی مجدد. سه گزینه یعنی منشی معمولاً در همان نگاه اول یکی را قطعی می‌کند.</p>
+<h3><code>public_rate_limits</code> — سپر</h3>
+<pre><code>bucket_key VARCHAR(100)   ← &#x27;ip:&lt;hash&gt;&#x27; یا &#x27;global:otp:&lt;روز&gt;&#x27;
+window_start, counter</code></pre>
+<p><strong>چرا لازم است — یک شکاف واقعی که در بررسی پیدا کردم:</strong> سقف فعلی ارسال کد در <code>otp_rate_limit_check()</code> فقط <strong>به ازای هر شماره</strong> است (۳ بار در ۱۰ دقیقه). در صفحهٔ داخلی که فقط کارمندان می‌بینند مشکلی ندارد. ولی روی یک صفحهٔ عمومی، یک ربات می‌تواند با شماره‌های متفاوت هزار پیامک پشت سر هم بفرستد و <strong>اعتبار پنل SMS.ir شما را در یک شب تمام کند</strong>. سقف به ازای IP و سقف کل روزانه، پیش‌نیاز غیرقابل‌مذاکرهٔ باز کردن این صفحه است.</p>
+<h3>تغییرات کوچک</h3>
+<ul><li><code>otp_codes.purpose</code> یک مقدار تازه می‌گیرد: <code>&#x27;BOOKING_REQUEST&#x27;</code></li><li>یک کلید تنظیمات برای <strong>خاموش کردن فوری</strong> صفحه («امروز ظرفیت نداریم»)</li></ul>
+<hr>
+<h2>۵. صفحه کجا میزبانی شود؟</h2>
+<table><thead><tr><th>گزینه</th><th>ارزیابی</th></tr></thead><tbody><tr><td><strong>صفحهٔ عمومی روی <code>my.mirbolouki.com</code>، لینک از وردپرس</strong></td><td>✅ <strong>توصیهٔ من.</strong> یک کد، یک پایگاه داده، یک حسابرسی. CSRF و نشست و ماژول پیامک از قبل کار می‌کنند. وردپرس فقط یک دکمه می‌گیرد.</td></tr><tr><td>iframe داخل وردپرس</td><td>قابل قبول. ظاهر یکپارچه‌تر، ولی دردسر ارتفاع و کوکی‌های third-party در مرورگرهای جدید.</td></tr><tr><td>افزونهٔ وردپرس که مستقیم در پایگاه دادهٔ کلینیک بنویسد</td><td>❌ <strong>قاطعانه نه.</strong> یعنی گذاشتن رمز پایگاه دادهٔ بالینی روی یک وردپرس عمومی.</td></tr><tr><td>API/وب‌هوک بین دو سایت</td><td>زودهنگام. وقتی معنی دارد که سایت سوم یا اپ موبایل داشته باشید.</td></tr></tbody></table>
+<hr>
+<h2>۶. امنیت — جایی که این طرح «حرفه‌ای» می‌شود</h2>
+<ol><li><strong>سقف IP + سقف روزانهٔ کل پیامک</strong> (شکاف بالا). بدون این، صفحه باز نشود.</li><li><strong>عدم افشای وجود شماره:</strong> پاسخ یکسان برای شمارهٔ موجود و ناموجود.</li><li><strong>تلهٔ ربات:</strong> یک فیلد مخفی + حداقل زمان پرکردن فرم. ارزان، بی‌دردسر، و معمولاً کافی. کپچا فقط اگر لازم شد.</li><li><strong>کمینهٔ داده:</strong> کد ملی، تاریخ تولد و شرح مشکل در فرم عمومی <strong>نیست</strong>. نام، شماره، نوع خدمت، زمان ترجیحی. همین. هر چیز بالینی بعد از پذیرش، در فرم پذیرش اولیه.</li><li><strong>صفحهٔ عمومی حق نوشتن در <code>persons</code>، <code>admissions</code> و <code>appointments</code> را ندارد</strong> — نه با قرارداد، بلکه چون جدولش اصلاً به آن‌ها FK ندارد.</li><li><strong>بدون حذف فیزیکی:</strong> درخواست‌های رد یا اسپم می‌مانند، فقط بعد از N روز <code>EXPIRED</code> می‌شوند. سازگار با قاعدهٔ همیشگی سامانه.</li><li>هر رویداد حسابرسی می‌شود: <code>BOOKING_REQUEST_CREATED / OTP_SENT / CONVERTED / REJECTED / RATE_LIMITED</code>.</li></ol>
+<hr>
+<h2>۷. پیشنهاد مرحله‌بندی</h2>
+<table><thead><tr><th>مرحله</th><th>محتوا</th><th>چرا این ترتیب</th></tr></thead><tbody><tr><td><strong>۵-الف</strong></td><td>در ۱: صفحهٔ عمومی + قرنطینه + کارتابل منشی</td><td>بیشترین ارزش، کمترین ریسک. به تنهایی مشکل شما را حل می‌کند.</td></tr><tr><td><strong>۵-ب</strong></td><td>در ۲: رزرو مستقیم در پورتال مراجع</td><td>ارزان است چون موتورش هست؛ ولی قواعدش تصمیم می‌خواهد (لغو؟ سقف نوبت باز؟).</td></tr><tr><td><strong>۵-ج</strong></td><td>دکمه و ظاهر در وردپرس، گزارش نرخ تبدیل</td><td>آرایش نهایی.</td></tr></tbody></table>
+<p><strong>هر دو در را هم‌زمان نسازیم.</strong> ۵-الف را بسازیم، یک هفته واقعی کار کند، بعد ۵-ب.</p>
+<hr>
+<h2>۸. چیزهایی که باید شما تصمیم بگیرید</h2>
+<ol><li>بازدیدکننده <strong>ساعت دقیق</strong> انتخاب کند یا فقط <strong>روز و بازهٔ ترجیحی</strong>؟</li><li>تأیید پیامکی <strong>قبل</strong> از ثبت درخواست، یا ثبت اول و تأیید بعد؟</li><li>در ۲ (رزرو مستقیم مراجع قدیمی) حالا یا بعداً؟</li><li>میزبانی: صفحهٔ مستقل روی <code>my.</code> یا iframe در وردپرس؟</li></ol>
+</div>
+</body>
+</html>
