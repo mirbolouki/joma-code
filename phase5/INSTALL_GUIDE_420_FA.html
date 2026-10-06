@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>راهنمای نصب وصلهٔ ۴.۲.۰ — جوما</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>راهنمای نصب وصلهٔ ۴.۲.۰ — «درخواست نوبت اینترنتی»</h1>
+<p><strong>تاریخ:</strong> ۱۴۰۵/۰۷/۱۴ · <strong>نسخهٔ مهاجرت:</strong> <code>4.2.0</code> · <strong>دامنه:</strong> <code>my.mirbolouki.com</code> <strong>بستهٔ نصب:</strong> <code>phase5/joma-patch-v4.2.0.zip</code> — ۴۱٬۲۹۱ بایت <strong>SHA-256:</strong> <code>02336e6e67199e1950eaf4fffa358fb0c69dc33d5cca28f776a6138b69c75036</code></p>
+<blockquote><strong>این کد هنوز هیچ‌جا اجرا نشده است.</strong> در محیط ساخت نه PHP هست نه MySQL؛ هر چه نوشته شده با تحلیل ایستا بررسی شده، نه با اجرا. نخستین اجرای واقعی، همین نصب است. برای همین گام ۰ (پشتیبان) اختیاری نیست.</blockquote>
+<hr>
+<h2>خلاصهٔ آنچه نصب می‌شود</h2>
+<table><thead><tr><th>چه چیزی</th><th>مقدار</th></tr></thead><tbody><tr><td>جدول تازه</td><td><strong>۱</strong> — <code>booking_requests</code></td></tr><tr><td>تغییر روی جدول قدیمی</td><td><strong>۲ مورد افزایشی</strong> روی <code>otp_codes</code></td></tr><tr><td>فایل تازه</td><td><strong>۸</strong></td></tr><tr><td>فایل تغییریافته</td><td><strong>۳</strong></td></tr><tr><td>صفحهٔ عمومی تازه</td><td><strong>۳</strong> (<code>booking</code>, <code>booking_verify</code>, <code>booking_success</code>)</td></tr><tr><td>صفحهٔ منشی تازه</td><td><strong>۲</strong></td></tr><tr><td>ردیف دادهٔ مرجع</td><td><strong>۱۷</strong> (۱۲ خدمت + ۵ دلیل رد)</td></tr><tr><td>جدول حذف‌شده یا بازسازی‌شده</td><td><strong>۰</strong></td></tr></tbody></table>
+<hr>
+<h2>گام ۰ — پشتیبان (اجباری)</h2>
+<p>cPanel ← <strong>phpMyAdmin</strong> ← پایگاه دادهٔ <code>mirbolouki_clinic</code> ← زبانهٔ <strong>Export</strong> ← روش <strong>Quick</strong> ← قالب <strong>SQL</strong> ← <strong>Go</strong>.</p>
+<p>فایل را جایی نگه دارید که پیدایش کنید. <strong>تنها راه بازگشت کامل همین است</strong>، چون MySQL دستورهای <code>CREATE TABLE</code> و <code>ALTER TABLE</code> را داخل تراکنش برنمی‌گرداند.</p>
+<p>از پوشهٔ <code>public_html</code> هم یک کپی بگیرید (cPanel ← File Manager ← Compress).</p>
+<hr>
+<h2>گام ۱ — ساخت کلید <code>IP_HASH_KEY</code></h2>
+<p>این کلید، نشانی IP بازدیدکننده را به یک هش برگشت‌ناپذیر تبدیل می‌کند. بدون آن، یا باید IP خام ذخیره می‌شد یا سقف مبتنی بر IP اصلاً کار نمی‌کرد؛ پس اسکریپت ارتقا <strong>بدون این کلید اجرا نمی‌شود</strong> و دکمه‌اش غیرفعال می‌ماند.</p>
+<ol><li>cPanel ← <strong>File Manager</strong> ← <code>public_html/includes/config.php</code> ← <strong>Edit</strong></li><li>این دو خط را به <strong>انتهای فایل</strong> اضافه کنید — اگر فایل با <code>?&gt;</code> تمام می‌شود، <strong>پیش از</strong> آن:</li></ol>
+<pre><code>define(&#x27;IP_HASH_KEY&#x27;, &#x27;اینجا-کلید-۶۴-نویسه-ای-را-بچسبانید&#x27;);
+define(&#x27;CLINIC_PHONE&#x27;, &#x27;۰۲۱-XXXXXXXX&#x27;);</code></pre>
+<p><strong>کلید را از کجا بیاورم؟</strong> صفحهٔ <code>upgrade_phase4_2.php</code> (گام ۳) یک کلید تصادفی آمادهٔ کپی نشانتان می‌دهد. همان را بردارید. اگر ترجیح می‌دهید خودتان بسازید، باید <strong>دقیقاً ۶۴ نویسهٔ هگز</strong> (<code>0-9a-f</code>) باشد — یعنی ۳۲ بایت تصادفی.</p>
+<p><code>CLINIC_PHONE</code> اختیاری است ولی توصیه می‌شود: هر جا کاربر به سقف بخورد یا سامانه غیرفعال باشد، همین شماره به او نشان داده می‌شود تا به بن‌بست نرسد.</p>
+<blockquote>⚠️ <strong>این کلید را بعداً عوض نکنید.</strong> با تغییرش همهٔ هش‌های قبلی بی‌معنا می‌شوند و شمارنده‌های سقف در جریان صفر می‌شوند. خطرناک نیست، ولی باید بدانید. کلید را با بقیهٔ رمزها جای امن نگه دارید.</blockquote>
+<p><strong>بررسی:</strong> صفحهٔ ورود سامانه را باز کنید. اگر بالا آمد، <code>config.php</code> سالم است. اگر صفحهٔ سفید دیدید، احتمالاً یک <code>;</code> یا <code>&#x27;</code> جا افتاده — فایل را برگردانید و دوباره ویرایش کنید.</p>
+<hr>
+<h2>گام ۲ — آپلود ۱۱ فایل</h2>
+<p><code>joma-patch-v4.2.0.zip</code> را باز کنید. ساختار پوشه‌ها <strong>عیناً</strong> همان ساختار <code>public_html</code> است؛ فقط محتوا را روی هم بریزید.</p>
+<h3>۸ فایل تازه</h3>
+<table><thead><tr><th>مسیر روی هاست</th><th>کار</th></tr></thead><tbody><tr><td><code>booking.php</code></td><td>صفحهٔ عمومی، گام ۱ (فرم)</td></tr><tr><td><code>booking_verify.php</code></td><td>صفحهٔ عمومی، گام ۲ (تأیید پیامکی)</td></tr><tr><td><code>booking_success.php</code></td><td>صفحهٔ عمومی، گام ۳ (رسید)</td></tr><tr><td><code>upgrade_phase4_2.php</code></td><td>اسکریپت مهاجرت — <strong>پس از کار حذف می‌شود</strong></td></tr><tr><td><code>database/phase4_2_schema.sql</code></td><td>سند اسکیما</td></tr><tr><td><code>includes/booking_functions.php</code></td><td>موتور: سقف‌ها، هش IP، تریاژ</td></tr><tr><td><code>reception/booking_requests.php</code></td><td>فهرست درخواست‌ها (منشی)</td></tr><tr><td><code>reception/booking_request_view.php</code></td><td>جزئیات و تصمیم (منشی)</td></tr></tbody></table>
+<h3>۳ فایل تغییریافته — روی نسخهٔ قبلی بازنویسی می‌شوند</h3>
+<table><thead><tr><th>مسیر</th><th>چه چیزی عوض شد</th></tr></thead><tbody><tr><td><code>includes/bootstrap.php</code></td><td>یک خط <code>require_once</code> برای <code>booking_functions.php</code></td></tr><tr><td><code>reception/admission_new.php</code></td><td>قلاب «تبدیل درخواست به پذیرش»</td></tr><tr><td><code>templates/sidebar.php</code></td><td>آیتم منوی «📨 درخواست‌های نوبت» با شمارنده</td></tr></tbody></table>
+<blockquote>اگر از File Manager استفاده می‌کنید، zip را در <code>public_html</code> آپلود و <strong>Extract</strong> کنید، سپس پوشهٔ <code>joma-patch-v4.2.0</code> را که ساخته می‌شود باز کرده و محتوایش را یک سطح بالاتر منتقل کنید. دقت کنید فایل‌ها <strong>داخل</strong> پوشهٔ زیپ‌اند، نه در ریشه.</blockquote>
+<p><strong>بررسی:</strong> وارد سامانه شوید. همه‌چیز باید دقیقاً مثل قبل کار کند. هنوز هیچ منوی تازه‌ای نمی‌بینید — چون جدولش ساخته نشده. این درست است.</p>
+<hr>
+<h2>گام ۳ — اجرای مهاجرت</h2>
+<ol><li>با حساب <strong>مدیر</strong> وارد سامانه شوید (اسکریپت نقش مدیر می‌خواهد).</li><li>در همان مرورگر باز کنید: <code>https://my.mirbolouki.com/upgrade_phase4_2.php</code></li><li>صفحه وضعیت فعلی را نشان می‌دهد. اگر <code>IP_HASH_KEY</code> را در گام ۱ نگذاشته باشید، اینجا یک کلید آماده می‌بینید: برگردید، بگذاریدش، صفحه را تازه کنید.</li><li>دکمهٔ <strong>🚀 اجرای مهاجرت ۴.۲.۰</strong> را بزنید.</li></ol>
+<h3>گزارشی که باید ببینید</h3>
+<pre><code>جدول «booking_requests» ساخته شد.                         انجام شد
+مقدار BOOKING_REQUEST به ستون otp_codes.purpose افزوده شد.  انجام شد
+ستون otp_codes.ip_hash افزوده شد.                          انجام شد
+نمایهٔ idx_otp_ip (ip_hash, created_at) افزوده شد.          انجام شد
+فهرست «خدمات قابل انتخاب…»: ۱۲ گزینهٔ تازه افزوده شد.        انجام شد
+فهرست «دلیل رد درخواست نوبت»: ۵ گزینهٔ تازه افزوده شد.       انجام شد
+راستی‌آزمایی … موفق بود.                                    بدون تغییر
+نسخهٔ 4.2.0 در جدول migrations ثبت شد.                      انجام شد</code></pre>
+<p>اجرای دوباره بی‌خطر است: گام‌های انجام‌شده «بدون تغییر» می‌خورند.</p>
+<p><strong>اگر خطا دیدید:</strong> پیام خطا را بفرستید. هیچ گامی نیمه‌کاره نمی‌ماند — هر گام جداگانه بررسی می‌شود، پس پس از رفع ایراد فقط دوباره دکمه را بزنید.</p>
+<hr>
+<h2>گام ۴ — بررسی چشمی</h2>
+<ol><li><strong>منو:</strong> در نقش منشی یا مدیر، آیتم <strong>«📨 درخواست‌های نوبت»</strong> باید در منوی کناری پیدا شود.</li><li>رویش کلیک کنید: فهرست خالی با پیام «در این وضعیت درخواستی وجود ندارد».</li><li><strong>صفحهٔ عمومی:</strong> در یک پنجرهٔ <strong>ناشناس (Incognito)</strong> باز کنید: <code>https://my.mirbolouki.com/booking.php</code> باید فرم را ببینید، <strong>بدون اینکه وارد سامانه شده باشید</strong>. فهرست «نوع خدمت» باید ۱۲ گزینه داشته باشد.</li></ol>
+<p>اگر صفحهٔ عمومی پیام «ثبت درخواست اینترنتی در حال حاضر فعال نیست» داد، یعنی یا مهاجرت اجرا نشده یا <code>IP_HASH_KEY</code> تعریف نشده.</p>
+<hr>
+<h2>گام ۵ — آزمون دود با شمارهٔ خودتان</h2>
+<p><strong>این گام را رد نکنید.</strong> تا اینجا فقط می‌دانیم کد بالا می‌آید؛ نمی‌دانیم کار می‌کند.</p>
+<ol><li>در پنجرهٔ ناشناس، فرم را با <strong>شمارهٔ موبایل خودتان</strong> پر کنید.</li><li>دکمهٔ «ارسال کد تأیید» را بزنید → باید پیامک برسد.</li><li>کد را وارد کنید → باید صفحهٔ رسید با یک <strong>شناسهٔ پیگیری</strong> مثل <code>br_3f9c…</code> ببینید.</li><li>حالا در پنل منشی، <strong>«درخواست‌های نوبت»</strong> را باز کنید. درخواست شما باید در برگهٔ <strong>«تازه»</strong> باشد.</li><li>«جزئیات» را بزنید. همه‌چیز درست است؟ نام، خدمت، زمان ترجیحی؟</li><li><strong>این درخواست آزمایشی را «اسپم» علامت بزنید</strong> تا در صف واقعی نماند.</li></ol>
+<h3>آنچه باید همین‌جا ثابت شود</h3>
+<table><thead><tr><th>ادعا</th><th>چطور ثابت می‌شود</th></tr></thead><tbody><tr><td>ردیف پیش از تأیید پیامکی ساخته نمی‌شود</td><td>پس از گام ۲ ولی <strong>پیش از</strong> وارد کردن کد، فهرست منشی را ببینید: باید خالی باشد</td></tr><tr><td>IP خام ذخیره نمی‌شود</td><td>phpMyAdmin ← <code>booking_requests</code> ← ستون <code>ip_hash</code> باید ۶۴ نویسهٔ هگز باشد، نه چیزی شبیه IP</td></tr><tr><td>کد خام ذخیره نمی‌شود</td><td><code>otp_codes</code> ← <code>code_hash</code> باید با <code>$2y$</code> شروع شود</td></tr></tbody></table>
+<hr>
+<h2>گام ۶ — حذف اسکریپت ارتقا</h2>
+<pre><code>public_html/upgrade_phase4_2.php   →   Delete</code></pre>
+<p>تا وقتی روی هاست باشد، یک صفحهٔ اجرایی اضافی است که دلیلی برای ماندن ندارد.</p>
+<hr>
+<h2>گام ۷ — اتصال سایت اصلی (پس از موفقیت گام ۵)</h2>
+<ol><li>در <code>mirbolouki.com</code> (دروپال)، دکمه یا منوی «رزرو نوبت» را به این نشانی وصل کنید: <code>https://my.mirbolouki.com/booking.php</code></li><li>وب‌فرم قدیمی <code>/form/reservation</code> را <strong>غیرفعال</strong> کنید، <strong>نه حذف</strong> (تصمیم ت-۴). در دروپال: Structure ← Webforms ← reservation ← Settings ← <strong>Closed</strong>. داده‌های قبلی‌اش دست‌نخورده می‌مانند.</li><li>غلط تایپی فهرست خدمات سایت را اصلاح کنید: <strong>«طزحواره درمانی» ← «طرحواره درمانی»</strong>. (در جوما از همان اول درست ثبت شده است.)</li></ol>
+<blockquote>پیشنهاد: بین گام ۵ و گام ۷ یک روز فاصله بگذارید و در این فاصله خودتان دو سه درخواست آزمایشی ثبت کنید. اگر صفحهٔ عمومی زنده شود و منشی نتواند ببیندش، به بازدیدکننده گفته‌ایم «تماس می‌گیریم» و هیچ‌کس خبر ندارد.</blockquote>
+<hr>
+<h2>اگر چیزی خراب شد</h2>
+<table><thead><tr><th>نشانه</th><th>علت محتمل</th><th>کار</th></tr></thead><tbody><tr><td>صفحهٔ سفید در کل سامانه</td><td>خطای نحوی در <code>config.php</code> یا <code>bootstrap.php</code></td><td>فایل را از پشتیبان برگردانید</td></tr><tr><td>«وصلهٔ ۴.۲.۰ هنوز اجرا نشده» در پنل منشی</td><td>جدول ساخته نشده</td><td>گام ۳ را دوباره اجرا کنید</td></tr><tr><td>صفحهٔ عمومی «فعال نیست» می‌دهد</td><td><code>IP_HASH_KEY</code> تعریف نشده</td><td>گام ۱</td></tr><tr><td>پیامک نمی‌رسد</td><td>اعتبار SMS.ir یا تنظیمات پنل</td><td>مدیر ← تنظیمات پیامک</td></tr><tr><td>«ظرفیت امروز تکمیل شده»</td><td>سقف سراسری ۱۰۰ پیامک در شبانه‌روز</td><td>طبیعی است؛ فردا صفر می‌شود</td></tr><tr><td>«از این اتصال درخواست‌های زیادی…»</td><td>سقف ۱۰ در ساعت برای یک IP</td><td>طبیعی است؛ هنگام آزمون پشت‌سرهم رخ می‌دهد</td></tr><tr><td>منوی «درخواست‌های نوبت» دیده نمی‌شود</td><td><code>sidebar.php</code> آپلود نشده</td><td>گام ۲</td></tr></tbody></table>
+<h3>بازگشت کامل</h3>
+<p>اگر خواستید همه‌چیز به قبل برگردد:</p>
+<ol><li>سه صفحهٔ عمومی و دو صفحهٔ منشی را از هاست حذف کنید.</li><li><code>includes/bootstrap.php</code>، <code>reception/admission_new.php</code> و <code>templates/sidebar.php</code> را از پشتیبان برگردانید.</li><li>پایگاه داده را از فایل Export گام ۰ بازگردانید.</li></ol>
+<p><strong>جدول را دستی <code>DROP</code> نکنید</strong> مگر اینکه مطمئن باشید هیچ درخواست واقعی ثبت نشده است.</p>
+<hr>
+<h2>آنچه این وصله <strong>نمی‌کند</strong></h2>
+<p>تا اینجا روشن باشد تا انتظار اشتباهی شکل نگیرد:</p>
+<ul><li><strong>هیچ نوبتی خودکار رزرو نمی‌شود.</strong> خروجی این وصله فقط یک ردیف در صف</li></ul>
+<p>تریاژ است. تقویم واقعی هیچ‌وقت به بیرون نشان داده نمی‌شود.</p>
+<ul><li><strong>هیچ شخصی خودکار ساخته نمی‌شود.</strong> <code>booking_requests</code> عمداً هیچ کلید</li></ul>
+<p>خارجی‌ای به <code>persons</code> برای متقاضی ندارد.</p>
+<ul><li><strong>پرونده‌ای ساخته نمی‌شود.</strong> تبدیل به پذیرش، تصمیم منشی است و از همان</li></ul>
+<p>فرم همیشگی <code>admission_new.php</code> می‌گذرد.</p>
+<ul><li><strong>مراجع قدیمی نمی‌تواند خودش نوبت بگیرد</strong> (در ۲ / تصمیم ت-۳ — بعداً).</li></ul>
+</div>
+</body>
+</html>
