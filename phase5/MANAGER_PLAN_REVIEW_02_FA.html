@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بررسی دوم سند تصمیم نهایی</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>بررسی دوم — سند «تصمیم نهایی، بازبینی و تصحیح»</h1>
+<p><strong>تاریخ:</strong> ۱۴۰۵/۰۷/۱۴ · <strong>روش:</strong> مقابلهٔ هر ادعا با اسکیما و کد زنده.</p>
+<hr>
+<h2>۰. حکم</h2>
+<table><thead><tr><th>موضوع</th><th>حکم</th></tr></thead><tbody><tr><td>پذیرش سه ایراد بحرانی و برگرداندن تصمیم ۲</td><td>✅ <strong>درست و ارزشمند</strong></td></tr><tr><td>نام‌گذاری ۴.۲.۰ و «فاز ۲ وابستگی نیست»</td><td>✅ <strong>تأیید</strong></td></tr><tr><td>ادعای «R11 حل شد»</td><td>❌ <strong>حل نشده. بار دوم.</strong></td></tr><tr><td>ادعای «۱۷ نکتهٔ اصلاح در میانه»</td><td>❌ از ۱۴ ایراد ساختاری، <strong>۱ مورد</strong> اصلاح شده</td></tr><tr><td>جدول پیشنهادی</td><td>⚠️ <strong>دو ایراد تازهٔ بحرانی</strong> + یک پس‌رفت جدی</td></tr></tbody></table>
+<p>سند دور قبل را درست فهمیده و شجاعانه برگشته. ولی <strong>کد تقریباً دست‌نخورده کپی شده</strong> و دو مشکل تازه هم وارد شده است.</p>
+<hr>
+<h2>۱. ایرادهای تازهٔ بحرانی</h2>
+<h3>ج-۱ — کد تأیید به‌صورت <strong>متن خام</strong> ذخیره می‌شود</h3>
+<pre><code>otp_verification_code VARCHAR(6),</code></pre>
+<p>سامانه از فاز ۱ کد را <strong>هرگز خام نگه نمی‌دارد</strong>:</p>
+<pre><code>$code_hash = password_hash($code, PASSWORD_BCRYPT);   // otp_functions.php:116</code></pre>
+<p>ستون پیشنهادی یعنی کدهای تأیید <strong>زنده</strong> در یک جدول دوم، بدون رمز، در دسترس هر نسخهٔ پشتیبان و هر خطای نشت داده. ضمناً دو منبع حقیقت برای یک چیز می‌سازد.</p>
+<p><strong>درست:</strong> این ستون حذف شود. <code>otp_codes</code> از قبل این کار را امن انجام می‌دهد و <code>otp_verify()</code> هم موجود است.</p>
+<h3>ج-۲ — سقف IP باز هم کار نمی‌کند؛ <strong>ستونی که می‌خواند وجود ندارد</strong></h3>
+<pre><code>SELECT COUNT(*) FROM otp_codes WHERE ip_address = ? AND purpose = &#x27;BOOKING_REQUEST&#x27; ...</code></pre>
+<p>ستون‌های واقعی <code>otp_codes</code>:</p>
+<pre><code>id · mobile_number · code_hash · purpose · expires_at · attempts · consumed_at · created_at</code></pre>
+<p><strong><code>ip_address</code> وجود ندارد.</strong> این پرس‌وجو خطای SQL می‌دهد.</p>
+<p>پس جملهٔ «✅ R11 حل شد» نادرست است. دور قبل سقف روی جدول اشتباه بود؛ این بار روی ستون ناموجود است. <strong>R11 هنوز باز است.</strong></p>
+<p>و حتی اگر ستون اضافه شود، <strong>سقف فقط به ازای IP کافی نیست</strong>: یک ربات با چرخاندن IP آن را دور می‌زند. <strong>سقف کل روزانه</strong> هم لازم است — همان که در سند طراحی به‌صورت سطل <code>global:&lt;روز&gt;</code> آمده بود و اینجا حذف شده.</p>
+<hr>
+<h2>۲. یک پس‌رفت جدی نسبت به نسخهٔ قبل خودِ سند</h2>
+<h3>ج-۳ — ستون‌های پیگیری تبدیل <strong>حذف شده‌اند</strong></h3>
+<p>نسخهٔ قبل این سه ستون را داشت:</p>
+<pre><code>converted_to_admission_id, converted_by_person_id, converted_at</code></pre>
+<p>نسخهٔ تازه هر سه را برداشته و افتخار می‌کند: «✅ هیچ FK به <code>admissions</code>».</p>
+<p><strong>این سوءبرداشت از نقد من است.</strong> حرف من این بود که جدول نباید FK به <code>persons</code> داشته باشد، چون آلودگی نباید به جدول هویت بالینی سرایت کند. <code>converted_admission_id</code> دقیقاً برعکس است: <strong>تنها پل کنترل‌شده</strong> میان دو دنیا، که فقط پس از تصمیم انسانی پر می‌شود.</p>
+<p>با حذف آن:</p>
+<ul><li>معلوم نیست کدام درخواست به کدام پذیرش تبدیل شد؛</li><li><strong>نرخ تبدیل — که هدف اعلام‌شدهٔ کل پروژه بود — قابل محاسبه نیست؛</strong></li><li>وضعیت <code>CONVERTED</code> در ENUM می‌ماند ولی هیچ‌جا نمی‌گوید به چه چیزی.</li></ul>
+<p>ضمناً <code>rejection_by_person_id</code> اضافه شده ولی <code>converted_by_person_id</code> نه — یعنی می‌دانیم چه کسی رد کرد، ولی نمی‌دانیم چه کسی پذیرفت.</p>
+<hr>
+<h2>۳. ایرادهایی که اصلاح نشدند</h2>
+<table><thead><tr><th>کد</th><th>مورد</th><th>وضعیت</th></tr></thead><tbody><tr><td>ب-۴</td><td><code>gender ENUM(&#x27;M&#x27;,&#x27;F&#x27;,&#x27;O&#x27;)</code> ↔ <code>persons.gender</code> = <code>ENUM(&#x27;MALE&#x27;,&#x27;FEMALE&#x27;)</code></td><td>بدون تغییر</td></tr><tr><td>ب-۵</td><td><code>public_id CHAR(26)</code> ↔ قرارداد <code>VARCHAR(30)</code> + <code>generate_public_id()</code></td><td>بدون تغییر</td></tr><tr><td>ب-۶</td><td><code>DEFAULT CURRENT_TIMESTAMP</code> و <code>DEFAULT (DATE_ADD(...))</code> ↔ قاعدهٔ UTC با <code>now_dt()</code></td><td>بدون تغییر</td></tr><tr><td>ب-۷</td><td><code>ip_address</code>/<code>user_agent</code> خام</td><td>بدون تغییر — <strong>و حالا روی IP خام ایندکس هم ساخته می‌شود</strong></td></tr><tr><td>ب-۸</td><td><code>rejection_reason TEXT</code> ↔ FK به <code>lookup_items</code></td><td>بدون تغییر</td></tr><tr><td>ب-۹</td><td>وضعیت‌های <code>PENDING</code>/<code>OTP_SENT</code> ↔ تصمیم ت-۲</td><td>بدون تغییر، و حالا تشدید شده (بند ۴)</td></tr><tr><td>ب-۱۰</td><td>نبود <code>service_type_id</code></td><td>بدون تغییر</td></tr><tr><td>ب-۱۱</td><td><code>ON UPDATE RESTRICT</code> قید نشده</td><td>بدون تغییر</td></tr><tr><td>ب-۱۲</td><td><code>mobile_number CHAR(11)</code> ↔ <code>VARCHAR(15)</code></td><td>بدون تغییر</td></tr><tr><td>ب-۱۳</td><td>نبود <code>mobile_verified_at</code>، <code>handled_by/at</code>، <code>source</code></td><td>ناقص</td></tr><tr><td>ب-۱۶</td><td>دروازهٔ درمانگر</td><td>✅ <strong>اصلاح شد</strong> — <code>AWAITING_THERAPIST</code> و تصمیم درمانگر برگشت</td></tr><tr><td>ب-۱۷</td><td>ابهام شمارهٔ تکراری</td><td>✅ تا حدی — «با تحقق ابهام» آمده ولی تعریف نشده</td></tr></tbody></table>
+<hr>
+<h2>۴. تصمیم ت-۲ بی‌اعلام نقض شده است</h2>
+<p>مالک تصمیم گرفت: <strong>تأیید پیامکی پیش از ثبت درخواست.</strong></p>
+<p>جریان تازه در گام ۲ می‌نویسد:</p>
+<pre><code>INSERT INTO booking_requests (status=&#x27;PENDING&#x27;, ...)
+INSERT INTO otp_codes (...)</code></pre>
+<p>یعنی ردیف <strong>پیش از</strong> تأیید ساخته می‌شود. نتیجه همان چیزی است که ت-۲ برای جلوگیری از آن وضع شد: انباشت ردیف‌های تأییدنشده.</p>
+<p><strong>و این تناقض لازم نیست.</strong> برای سقف‌گذاری نیازی به نوشتن در <code>booking_requests</code> نیست؛ شمارنده در جدول مستقل <code>public_rate_limits</code> می‌نشیند و دادهٔ فرم تا لحظهٔ تأیید در <code>$_SESSION</code> می‌ماند. ت-۲ حفظ می‌شود و سقف هم کار می‌کند.</p>
+<hr>
+<h2>۵. چند ایراد کوچک‌تر</h2>
+<table><thead><tr><th>کد</th><th>مورد</th></tr></thead><tbody><tr><td>ج-۴</td><td><code>UPDATE otp_codes SET consumed_at=NOW() WHERE mobile=? AND code=?</code> — ستون <code>code</code> وجود ندارد (<code>code_hash</code> است) و این کار <code>attempts</code> و <code>OTP_MAX_ATTEMPTS</code> را دور می‌زند. تابع <code>otp_verify()</code> از قبل هست و باید استفاده شود.</td></tr><tr><td>ج-۵</td><td><code>/book/step-1</code> و <code>/admin/booking-requests</code> — پروژه <strong>بازنویسی مسیر ندارد</strong> (هیچ <code>.htaccess</code>). همهٔ صفحه‌ها فایل <code>.php</code> تخت‌اند: <code>reception/patients.php</code>.</td></tr><tr><td>ج-۶</td><td>کارتابل «پانل مدیر» نامیده شده. این کارِ <strong>منشی</strong> است. در <code>reception/</code> بگذاریم تا طبق <code>ROLE_INHERITANCE</code> مدیر هم ببیند.</td></tr><tr><td>ج-۷</td><td><code>NOW()</code> و <code>DATE_SUB(NOW())</code> منطقهٔ زمانی سرور را وارد اسکیمای تماماً UTC می‌کنند.</td></tr><tr><td>ج-۸</td><td>گام‌های ۲ و ۳ هر دو «کد را وارد کنید» را نشان می‌دهند — یک گام اضافه.</td></tr><tr><td>ج-۹</td><td>«وب‌هوک <code>test.mirbolouki.com</code>» در خط‌زمانی ظاهر شده. <strong>اصلاحیهٔ شمارهٔ ۱ محیط آزمایشی جداگانه را لغو کرده است.</strong></td></tr></tbody></table>
+<hr>
+<h2>۶. جدول صحیح — نسخهٔ قابل اجرا</h2>
+<pre><code>CREATE TABLE booking_requests (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    public_id VARCHAR(30) NOT NULL UNIQUE,          -- generate_public_id(&#x27;br&#x27;)
+
+    first_name  VARCHAR(100) NOT NULL,
+    last_name   VARCHAR(100) NOT NULL,
+    mobile_number VARCHAR(15) NOT NULL,             -- عمداً UNIQUE نیست
+    gender ENUM(&#x27;MALE&#x27;,&#x27;FEMALE&#x27;) NULL,
+
+    requested_service_label VARCHAR(150) NULL,      -- عین متنی که کاربر دید
+    service_type_id BIGINT UNSIGNED NULL,           -- نگاشت، توسط منشی
+    preferred_text VARCHAR(100) NULL,               -- «سه‌شنبه صبح»
+    visitor_note VARCHAR(300) NULL,                 -- غیربالینی
+
+    mobile_verified_at DATETIME NOT NULL,           -- ت-۲: همیشه پر
+    status ENUM(&#x27;NEW&#x27;,&#x27;CONTACTED&#x27;,&#x27;CONVERTED&#x27;,&#x27;REJECTED&#x27;,&#x27;SPAM&#x27;,&#x27;EXPIRED&#x27;)
+           NOT NULL DEFAULT &#x27;NEW&#x27;,
+
+    converted_admission_id BIGINT UNSIGNED NULL,    -- تنها پل
+    reject_reason_id BIGINT UNSIGNED NULL,
+    handled_by_person_id BIGINT UNSIGNED NULL,
+    handled_at DATETIME NULL,
+
+    source VARCHAR(30) NOT NULL DEFAULT &#x27;website&#x27;,
+    ip_hash CHAR(64) NULL,
+    user_agent_hash CHAR(64) NULL,
+
+    created_at DATETIME NOT NULL,                   -- now_dt() از PHP
+    expires_at DATETIME NOT NULL,                   -- +۱۸۰ روز، از PHP
+
+    CONSTRAINT fk_br_service  FOREIGN KEY (service_type_id)
+        REFERENCES service_types(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT fk_br_admission FOREIGN KEY (converted_admission_id)
+        REFERENCES admissions(id)  ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT fk_br_reason   FOREIGN KEY (reject_reason_id)
+        REFERENCES lookup_items(id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT fk_br_handler  FOREIGN KEY (handled_by_person_id)
+        REFERENCES persons(id)     ON DELETE RESTRICT ON UPDATE RESTRICT,
+
+    KEY idx_br_status  (status, created_at),
+    KEY idx_br_mobile  (mobile_number),
+    KEY idx_br_ip      (ip_hash, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE public_rate_limits (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    bucket_key  VARCHAR(100) NOT NULL,    -- &#x27;ip:&lt;hash&gt;&#x27; | &#x27;global:&lt;YYYY-MM-DD&gt;&#x27;
+    window_start DATETIME NOT NULL,
+    counter INT UNSIGNED NOT NULL DEFAULT 0,
+    UNIQUE KEY uq_bucket (bucket_key, window_start)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- افزایشی، با حفظ هر چهار مقدار موجود
+ALTER TABLE otp_codes MODIFY purpose
+  ENUM(&#x27;REGISTER&#x27;,&#x27;RESET_PASSWORD&#x27;,&#x27;CONFIRM_MOBILE_CHANGE&#x27;,
+       &#x27;PATIENT_LOGIN&#x27;,&#x27;BOOKING_REQUEST&#x27;) NOT NULL;</code></pre>
+<p><code>handled_by_person_id</code> برای هر دو مسیر (تبدیل و رد) یکی است — نیازی به دو ستون جدا نیست.</p>
+<hr>
+<h2>۷. جریان صحیح، سازگار با ت-۲</h2>
+<pre><code>گام ۱  فرم  → اعتبارسنجی → دادهٔ فرم در $_SESSION
+         ↓
+       سقف:  public_rate_limits  (ip:&lt;hash&gt;  و  global:&lt;روز&gt;)
+         ↓   ← شمارنده همین‌جا، پیش از ارسال پیامک، افزایش می‌یابد
+       otp_create_and_send($db, $mobile, &#x27;BOOKING_REQUEST&#x27;)
+         ↓
+گام ۲  otp_verify($db, $mobile, &#x27;BOOKING_REQUEST&#x27;, $code)
+         ↓  فقط در صورت موفقیت:
+       INSERT INTO booking_requests (... mobile_verified_at = now_dt(), status=&#x27;NEW&#x27;)
+         ↓
+گام ۳  صفحهٔ موفقیت + کد پیگیری</code></pre>
+<p>هیچ ردیف تأییدنشده‌ای ساخته نمی‌شود، و شمارنده پیش از خرج شدن پیامک بالا می‌رود.</p>
+<hr>
+<h2>۸. پاسخ به «کدام یک اول؟»</h2>
+<p><strong>هیچ‌کدام.</strong> سند تأیید مدیر ارشد از قبل نوشته شده (<code>phase5/BUILD_APPROVAL_REQUEST_FA.md</code>) و فقط یک اصلاحیهٔ کوچک می‌خواهد: نام ۴.۲.۰ و حذف وابستگی به فاز ۲.</p>
+<p>ترتیب درست:</p>
+<ol><li>مالک چهار تصمیم باقی‌مانده را بگوید (بند ۹)؛</li><li>اصلاحیهٔ سند تأیید، یک صفحه؛</li><li>کدنویسی از مهاجرت <code>4.2.0</code>.</li></ol>
+<hr>
+<h2>۹. چهار تصمیم باقی‌مانده</h2>
+<ol><li><strong>ترجیح زمانی:</strong> متن آزاد (<code>preferred_text</code>) ساده‌تر است ولی گزارش‌گیری ندارد؛ <code>preferred_date</code> + <code>صبح/عصر</code> ساختاریافته است. یا هر دو.</li><li><strong>سقف کل روزانهٔ پیامک:</strong> چند تا؟ پیشنهاد ۱۰۰ در شبانه‌روز.</li><li><strong>سقف هر IP:</strong> پیشنهاد ۵ در ساعت (همان عدد سند).</li><li><strong>نمایش ۱۲ خدمت سایت:</strong> از جدول <code>service_types</code> خوانده شود یا فهرست ثابت سایت با نگاشت دستی منشی؟</li></ol>
+</div>
+</body>
+</html>
