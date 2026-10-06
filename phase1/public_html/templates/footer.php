@@ -4,7 +4,9 @@ $asset_base = defined('APP_BASE_URL') ? APP_BASE_URL : '';
 if (!isset($layout)) { $layout = 'app'; }
 $joma_version_label = 'نسخهٔ ۱.۰.۱ (فاز ۱)';
 if (isset($GLOBALS['db'])) {
-    if (function_exists('phase4_ready') && phase4_ready($GLOBALS['db'])) {
+    if (function_exists('phase4_2_ready') && phase4_2_ready($GLOBALS['db'])) {
+        $joma_version_label = 'نسخهٔ ۴.۲.۰ (وصلهٔ ۴.۲ — درخواست نوبت اینترنتی)';
+    } elseif (function_exists('phase4_ready') && phase4_ready($GLOBALS['db'])) {
         $joma_version_label = 'نسخهٔ ۴.۱.۱ (فاز ۴ — فرم‌ها، پورتال مراجع و دفترچهٔ مراجعان)';
     } elseif (function_exists('phase3_ready') && phase3_ready($GLOBALS['db'])) {
         $joma_version_label = 'نسخهٔ ۳.۰.۴ (فاز ۳ — پروندهٔ بالینی)';
