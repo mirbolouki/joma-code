@@ -43,6 +43,7 @@ require_once __DIR__ . '/form_submission_functions.php';
 require_once __DIR__ . '/form_render.php';
 require_once __DIR__ . '/patient_auth.php';
 require_once __DIR__ . '/patient_directory.php';
+require_once __DIR__ . '/booking_functions.php';
 
 /* منطقهٔ زمانی داخلی PHP روی UTC؛ تبدیل به وقت تهران فقط هنگام نمایش */
 date_default_timezone_set('UTC');
