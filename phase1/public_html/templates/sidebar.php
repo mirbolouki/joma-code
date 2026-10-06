@@ -11,6 +11,18 @@ $menu = array();
 $p2 = (isset($GLOBALS['db']) && function_exists('phase2_ready')) ? phase2_ready($GLOBALS['db']) : false;
 $p3 = (isset($GLOBALS['db']) && function_exists('phase3_ready')) ? phase3_ready($GLOBALS['db']) : false;
 $p4 = (isset($GLOBALS['db']) && function_exists('phase4_ready')) ? phase4_ready($GLOBALS['db']) : false;
+$p42 = (isset($GLOBALS['db']) && function_exists('phase4_2_ready')) ? phase4_2_ready($GLOBALS['db']) : false;
+
+/* شمار درخواست‌های تازهٔ نوبت اینترنتی — روی خودِ آیتم منو دیده می‌شود،
+   تا صفی که هیچ‌کس سر نمی‌زند بی‌صدا رشد نکند. */
+$booking_new = 0;
+if ($p42 && function_exists('booking_status_counts')
+    && ($role === ROLE_SECRETARY || $role === ROLE_ADMIN)) {
+    $bc = booking_status_counts($GLOBALS['db']);
+    $booking_new = isset($bc['NEW']) ? (int)$bc['NEW'] : 0;
+}
+$booking_label = '📨 درخواست‌های نوبت'
+    . ($booking_new > 0 ? ' (' . to_persian_digits($booking_new) . ')' : '');
 
 if ($role === ROLE_ADMIN) {
     $menu = array(
@@ -34,6 +46,9 @@ if ($role === ROLE_ADMIN) {
     } elseif ($p3) {
         $menu[] = array('label' => '🧩 ارتقا به فاز ۴', 'url' => $base . '/upgrade_phase4.php', 'key' => 'upgrade4');
     }
+    if ($p42) {
+        $menu[] = array('label' => $booking_label, 'url' => $base . '/reception/booking_requests.php', 'key' => 'booking_requests');
+    }
     $menu[] = array('label' => '📂 پرونده‌ها',      'url' => '', 'key' => '', 'soon' => true);
     $menu[] = array('label' => '⚙️ تنظیمات کلینیک', 'url' => '', 'key' => '', 'soon' => true);
 } elseif ($role === ROLE_SECRETARY) {
@@ -42,6 +57,9 @@ if ($role === ROLE_ADMIN) {
         array('label' => '➕ ثبت پذیرش جدید',    'url' => $base . '/reception/admission_new.php', 'key' => 'admission_new'),
         array('label' => '👥 مراجعان',           'url' => $base . '/reception/patients.php',      'key' => 'patients'),
     );
+    if ($p42) {
+        $menu[] = array('label' => $booking_label, 'url' => $base . '/reception/booking_requests.php', 'key' => 'booking_requests');
+    }
     if ($p2) {
         $menu[] = array('label' => '📅 تقویم نوبت‌ها', 'url' => $base . '/reception/appointments.php',    'key' => 'appointments');
         $menu[] = array('label' => '🗓️ ثبت نوبت',      'url' => $base . '/reception/appointment_new.php', 'key' => 'appointment_new');

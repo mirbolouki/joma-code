@@ -416,3 +416,213 @@ function booking_expire_overdue($db)
         's', array(now_dt()));
     return (int)$res['affected'];
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  میز تریاژ منشی
+ * ═══════════════════════════════════════════════════════════════════ */
+
+/** برچسب فارسی هر وضعیت */
+function booking_status_label($status)
+{
+    $map = array(
+        'NEW'       => 'تازه',
+        'CONTACTED' => 'تماس گرفته شد',
+        'CONVERTED' => 'تبدیل به پذیرش',
+        'REJECTED'  => 'رد شد',
+        'SPAM'      => 'اسپم',
+        'EXPIRED'   => 'منقضی',
+    );
+    return isset($map[$status]) ? $map[$status] : $status;
+}
+
+/** کلاس نشان برای هر وضعیت */
+function booking_status_badge($status)
+{
+    $map = array(
+        'NEW'       => 'badge-warning',
+        'CONTACTED' => 'badge-primary',
+        'CONVERTED' => 'badge-success',
+        'REJECTED'  => 'badge-danger',
+        'SPAM'      => 'badge-danger',
+        'EXPIRED'   => 'badge-muted',
+    );
+    return isset($map[$status]) ? $map[$status] : 'badge-muted';
+}
+
+/** شمار درخواست‌ها به تفکیک وضعیت — برای برگه‌ها و نشان منو */
+function booking_status_counts($db)
+{
+    $rows = db_select_all($db,
+        "SELECT status, COUNT(*) AS cnt FROM booking_requests GROUP BY status");
+    $out = array('NEW' => 0, 'CONTACTED' => 0, 'CONVERTED' => 0,
+                 'REJECTED' => 0, 'SPAM' => 0, 'EXPIRED' => 0);
+    foreach ($rows as $r) {
+        $out[$r['status']] = (int)$r['cnt'];
+    }
+    return $out;
+}
+
+/**
+ * فهرست درخواست‌ها.
+ *
+ * فیلتر وضعیت از یک فهرست سفید می‌آید، نه از ورودی خام — تا رشتهٔ
+ * دلخواه کاربر هیچ‌وقت به SQL نرسد.
+ */
+function booking_requests_search($db, $status, $term, $limit = 100)
+{
+    $allowed = array('NEW', 'CONTACTED', 'CONVERTED', 'REJECTED', 'SPAM', 'EXPIRED');
+    $sql = "SELECT id, public_id, first_name, last_name, mobile_number, gender,
+                   requested_service_label, preferred_text, status, created_at,
+                   handled_at, converted_admission_id
+              FROM booking_requests";
+    $where = array();
+    $types = '';
+    $params = array();
+
+    if (in_array($status, $allowed, true)) {
+        $where[] = "status = ?";
+        $types .= 's';
+        $params[] = $status;
+    }
+
+    $term = trim((string)$term);
+    if ($term !== '') {
+        $digits = preg_replace('/\D/', '', to_latin_digits($term));
+        if ($digits !== '' && strlen($digits) >= 4) {
+            $where[] = "mobile_number LIKE ?";
+            $types .= 's';
+            $params[] = '%' . $digits . '%';
+        } else {
+            $where[] = "(first_name LIKE ? OR last_name LIKE ? OR public_id = ?)";
+            $types .= 'sss';
+            $params[] = '%' . $term . '%';
+            $params[] = '%' . $term . '%';
+            $params[] = $term;
+        }
+    }
+
+    if ($where !== array()) {
+        $sql .= " WHERE " . implode(' AND ', $where);
+    }
+    $sql .= " ORDER BY created_at DESC LIMIT " . (int)$limit;
+
+    return db_select_all($db, $sql, $types, $params);
+}
+
+/** یک درخواست با شناسهٔ عمومی */
+function booking_request_find($db, $public_id)
+{
+    return db_select_one($db,
+        "SELECT * FROM booking_requests WHERE public_id = ?", 's', array($public_id));
+}
+
+/**
+ * تغییر وضعیت دستی — «تماس گرفته شد»، «رد شد»، «اسپم».
+ *
+ * تبدیل به پذیرش از این راه انجام *نمی‌شود*؛ آن مسیر جداست و از
+ * دل admission_new.php می‌گذرد.
+ */
+function booking_request_set_status($db, $id, $new_status, $reason_id, $actor_person_id, $actor_role)
+{
+    $allowed = array('NEW', 'CONTACTED', 'REJECTED', 'SPAM');
+    if (!in_array($new_status, $allowed, true)) {
+        throw new Exception('وضعیت نامعتبر است.');
+    }
+
+    $row = db_select_one($db,
+        "SELECT id, status FROM booking_requests WHERE id = ?", 'i', array((int)$id));
+    if (!$row) {
+        throw new Exception('درخواست یافت نشد.');
+    }
+    if ($row['status'] === 'CONVERTED') {
+        throw new Exception('این درخواست قبلاً به پذیرش تبدیل شده است و وضعیتش تغییر نمی‌کند.');
+    }
+
+    $reason_id = ($new_status === 'REJECTED' && (int)$reason_id > 0) ? (int)$reason_id : null;
+    if ($new_status === 'REJECTED' && $reason_id === null) {
+        throw new Exception('برای رد درخواست، دلیل را انتخاب کنید.');
+    }
+
+    db_execute($db,
+        "UPDATE booking_requests
+            SET status = ?, reject_reason_id = ?,
+                handled_by_person_id = ?, handled_at = ?
+          WHERE id = ?",
+        'siisi', array($new_status, $reason_id, (int)$actor_person_id, now_dt(), (int)$id));
+
+    audit_log_write($db, $actor_person_id, $actor_role,
+        $new_status === 'REJECTED' ? 'BOOKING_REQUEST_REJECTED' : 'BOOKING_REQUEST_STATUS_CHANGED',
+        'booking_request', (int)$id,
+        array('from' => $row['status'], 'to' => $new_status));
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+ *  تبدیل به پذیرش — گزینهٔ الف
+ *
+ *  هیچ پذیرشی اینجا ساخته نمی‌شود. فقط یک «قصد» در نشست گذاشته
+ *  می‌شود و کاربر به همان صفحهٔ آزموده‌شدهٔ admission_new.php می‌رود.
+ *  نوشتن دوبارهٔ آن فرم یعنی دوباره‌نویسی همهٔ اعتبارسنجی‌هایش.
+ * ═══════════════════════════════════════════════════════════════════ */
+
+/** گذاشتن قصد تبدیل در نشست */
+function booking_convert_start($row)
+{
+    $_SESSION['booking_convert'] = array(
+        'id'         => (int)$row['id'],
+        'public_id'  => $row['public_id'],
+        'first_name' => $row['first_name'],
+        'last_name'  => $row['last_name'],
+        'mobile'     => $row['mobile_number'],
+        'service'    => $row['requested_service_label'],
+        'preferred'  => $row['preferred_text'],
+    );
+}
+
+/** خواندن قصد تبدیل، اگر هست */
+function booking_convert_pending()
+{
+    return (isset($_SESSION['booking_convert']) && is_array($_SESSION['booking_convert']))
+        ? $_SESSION['booking_convert'] : null;
+}
+
+function booking_convert_cancel()
+{
+    unset($_SESSION['booking_convert']);
+}
+
+/**
+ * بستن حلقه پس از ساخته‌شدن پذیرش.
+ *
+ * ★ باید *داخل* همان تراکنشی صدا زده شود که پذیرش را می‌سازد،
+ *   پیش از commit. وگرنه ممکن است پذیرش ساخته شود ولی درخواست
+ *   NEW بماند و منشی دوباره تبدیلش کند.
+ *
+ * شرط status <> 'CONVERTED' در خودِ UPDATE، تبدیل دوباره را حتی در
+ * شرایط رقابتی غیرممکن می‌کند.
+ */
+function booking_convert_finish($db, $admission_id, $actor_person_id, $actor_role)
+{
+    $pending = booking_convert_pending();
+    if ($pending === null) {
+        return null;
+    }
+
+    $res = db_execute($db,
+        "UPDATE booking_requests
+            SET status = 'CONVERTED', converted_admission_id = ?,
+                handled_by_person_id = ?, handled_at = ?
+          WHERE id = ? AND status <> 'CONVERTED'",
+        'iisi', array((int)$admission_id, (int)$actor_person_id, now_dt(), (int)$pending['id']));
+
+    if ((int)$res['affected'] !== 1) {
+        throw new Exception('این درخواست پیش‌تر به پذیرش تبدیل شده است.');
+    }
+
+    audit_log_write($db, $actor_person_id, $actor_role, 'BOOKING_REQUEST_CONVERTED',
+        'booking_request', (int)$pending['id'],
+        array('admission_id' => (int)$admission_id, 'public_id' => $pending['public_id']));
+
+    return $pending['public_id'];
+}

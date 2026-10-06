@@ -49,6 +49,16 @@ $form = array(
     'referred_therapist_person_id' => '',
 );
 
+/* ── آمدن از میز تریاژ درخواست‌های اینترنتی (وصلهٔ ۴.۲.۰) ──────────
+   فقط سه فیلد هویتی پیش‌پر می‌شود. خدمت، درمانگر و دلیل ارجاع عمداً
+   خالی می‌مانند: آن‌ها تصمیم کلینیک‌اند، نه خواستهٔ متقاضی. */
+$booking_pending = function_exists('booking_convert_pending') ? booking_convert_pending() : null;
+if ($booking_pending !== null && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+    $form['mobile_number'] = $booking_pending['mobile'];
+    $form['first_name']    = $booking_pending['first_name'];
+    $form['last_name']     = $booking_pending['last_name'];
+}
+
 /* ── جست‌وجوی بدون جاوااسکریپت ──────────────────────────────────── */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'lookup') {
     csrf_check();
@@ -129,10 +139,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 'referral_reason_id' => (int)$form['referral_reason_id'],
             ), (int)$_SESSION['person_id']);
 
+            /* اگر این پذیرش از دل یک درخواست اینترنتی آمده، حلقه را
+               *داخل همین تراکنش* می‌بندیم. اگر بیرون از تراکنش بود،
+               ممکن بود پذیرش ساخته شود ولی درخواست NEW بماند و فردا
+               دوباره تبدیل شود. */
+            $converted_booking = null;
+            if (isset($_POST['from_booking']) && function_exists('booking_convert_finish')) {
+                $converted_booking = booking_convert_finish(
+                    $db, $admission_id, (int)$_SESSION['person_id'], ROLE_SECRETARY);
+            }
+
             mysqli_commit($db);
 
-            flash_set('reception_success',
-                'پذیرش با موفقیت ثبت شد و برای تصمیم‌گیری به کارتابل درمانگر ارسال گردید.');
+            if ($converted_booking !== null) {
+                booking_convert_cancel();
+                flash_set('reception_success',
+                    'درخواست اینترنتی به پذیرش تبدیل شد و برای تصمیم‌گیری به کارتابل درمانگر ارسال گردید.');
+            } else {
+                flash_set('reception_success',
+                    'پذیرش با موفقیت ثبت شد و برای تصمیم‌گیری به کارتابل درمانگر ارسال گردید.');
+            }
             redirect(APP_BASE_URL . '/reception/index.php');
         } catch (Exception $ex) {
             mysqli_rollback($db);
@@ -175,8 +201,27 @@ require __DIR__ . '/../templates/header.php';
   <div class="alert alert-error">✗ <?php echo e($general_error); ?></div>
 <?php } ?>
 
+<?php if ($booking_pending !== null) { ?>
+  <div class="alert alert-info">
+    📨 این پذیرش از <strong>درخواست نوبت اینترنتی</strong>
+    <span class="mono" dir="ltr"><?php echo e($booking_pending['public_id']); ?></span> می‌آید.
+    خدمت درخواستیِ متقاضی: <strong><?php echo e($booking_pending['service']); ?></strong> —
+    زمان ترجیحی: <?php echo e($booking_pending['preferred']); ?>.<br>
+    <span class="text-small">این‌ها فقط خواستهٔ متقاضی‌اند؛ خدمت، درمانگر و دلیل ارجاع را
+    شما تعیین می‌کنید. با ثبت این فرم، درخواست «تبدیل‌شده» علامت می‌خورد.</span>
+    <div class="form-actions">
+      <a class="btn btn-secondary btn-sm"
+         href="booking_request_view.php?id=<?php echo e($booking_pending['public_id']); ?>">
+        بازگشت به درخواست</a>
+    </div>
+  </div>
+<?php } ?>
+
 <form method="post" action="admission_new.php" data-guard>
   <?php echo csrf_field(); ?>
+<?php if ($booking_pending !== null) { ?>
+  <input type="hidden" name="from_booking" value="1">
+<?php } ?>
 
   <div class="card">
     <div class="card-header">مرحلهٔ ۱ — یافتن یا ایجاد مراجع</div>
