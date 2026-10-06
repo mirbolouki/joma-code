@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>درخواست مجوز ساخت — فاز ۵-الف</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>درخواست مجوز ساخت — فاز ۵-الف: «درخواست نوبت اینترنتی»</h1>
+<p><strong>تاریخ:</strong> ۱۴۰۵/۰۷/۱۴ <strong>موضوع:</strong> اتصال فرم رزرو وب‌سایت <code>mirbolouki.com</code> به سامانهٔ جوما <strong>تقدیم به:</strong> مدیر ارشد <strong>وضعیت:</strong> در انتظار تصمیم. <strong>تا صدور مجوز، هیچ کدی نوشته نمی‌شود.</strong> <strong>سند فنی پشتیبان:</strong> <code>phase5/ONLINE_BOOKING_DESIGN_FA.md</code></p>
+<hr>
+<h2>۱. خلاصهٔ مدیریتی</h2>
+<p>وب‌سایت کلینیک از قبل یک فرم رزرو دارد (<code>mirbolouki.com/form/reservation</code>) که نام، نام خانوادگی، جنسیت، وضعیت تأهل، نوع خدمت و شمارهٔ همراه را می‌گیرد. این فرم روی دروپال است و <strong>هیچ اتصالی به سامانهٔ جوما ندارد</strong>.</p>
+<p>بنابراین مسئله آن چیزی نیست که در نگاه اول به نظر می‌رسد. راه گرفتن نوبت «بسته» نیست؛ <strong>دو مسیر موازی وجود دارد که به دو انبار داده‌ٔ جدا می‌ریزند</strong> و یک نیروی انسانی باید وسطشان داده را دستی دوباره وارد کند.</p>
+<p><strong>درخواست:</strong> مجوز ساخت یک مسیر واحد — صفحهٔ عمومی «درخواست نوبت» روی <code>my.mirbolouki.com</code> با تأیید شمارهٔ موبایل، که خروجی‌اش در یک <strong>جدول قرنطینهٔ جداگانه</strong> می‌نشیند و با تصمیم انسانی به پذیرش رسمی تبدیل می‌شود.</p>
+<p><strong>آنچه این پروژه نیست:</strong> رزرو خودکار نوبت. هیچ غریبه‌ای نمی‌تواند نوبت قطعی بگیرد، هیچ غریبه‌ای در جدول‌های بالینی چیزی نمی‌نویسد، و دروازهٔ «پذیرش درمانگر» دست‌نخورده باقی می‌ماند.</p>
+<hr>
+<h2>۲. هزینهٔ وضع موجود</h2>
+<table><thead><tr><th>مشکل</th><th>چرا مهم است</th></tr></thead><tbody><tr><td><strong>ورود دوبارهٔ دستی داده</strong></td><td>هر درخواست دو بار تایپ می‌شود. یک رقم غلط در موبایل یعنی مراجعی که دیگر قابل پیگیری نیست.</td></tr><tr><td><strong>شمارهٔ موبایل تأیید نشده</strong></td><td>فرم فعلی هیچ تأییدی ندارد. شمارهٔ جعلی و ربات، بدون هیچ مانعی وارد صف می‌شود.</td></tr><tr><td><strong>هیچ ردیابی‌ای وجود ندارد</strong></td><td>معلوم نیست کدام درخواست پیگیری شده، کدام نشده، و چقدر طول کشیده.</td></tr><tr><td><strong>هیچ عددی وجود ندارد</strong></td><td>نرخ تبدیل «بازدیدکننده ← مراجع» قابل محاسبه نیست. امروز نمی‌دانیم این فرم اصلاً جواب می‌دهد یا نه.</td></tr><tr><td><strong>هیچ ردّ حسابرسی‌ای وجود ندارد</strong></td><td>داده‌ٔ شخصی شهروندان در سامانه‌ای بیرون از دامنهٔ حسابرسی جوما جمع می‌شود.</td></tr></tbody></table>
+<p>مورد آخر از بقیه جدی‌تر است و به‌تنهایی دلیل کافی برای این پروژه است.</p>
+<hr>
+<h2>۳. چرا نمی‌توان فرم سایت را مستقیم به «پذیرش» وصل کرد</h2>
+<p>این محدودیت، نقص طراحی نیست؛ <strong>محافظ عمدی</strong> است. چهار ستون در پایگاه داده اجازه نمی‌دهند:</p>
+<table><thead><tr><th>ستون</th><th>معنای تجاری</th></tr></thead><tbody><tr><td><code>admissions.created_by_person_id</code> <strong>NOT NULL</strong></td><td>هر پذیرش مسئول انسانی دارد</td></tr><tr><td><code>admissions.referred_therapist_person_id</code> <strong>NOT NULL</strong></td><td>ارجاع به درمانگر یک تصمیم بالینی است، نه انتخاب مشتری</td></tr><tr><td><code>admissions.referral_reason_id</code> <strong>NOT NULL</strong></td><td>دلیل مراجعه از فهرست استاندارد</td></tr><tr><td><code>appointments.admission_id</code> <strong>NOT NULL</strong></td><td>نوبت بدون پذیرش وجود ندارد</td></tr></tbody></table>
+<p>و محافظ پنجم که از همه مهم‌تر است: <code>persons.mobile_number</code> <strong>یکتا</strong>، همهٔ کلیدهای خارجی <strong>RESTRICT</strong>، و <strong>حذف فیزیکی ممنوع</strong>.</p>
+<blockquote>اگر به عموم مردم اجازهٔ نوشتن در <code>persons</code> داده شود، عملاً یک راه نوشتن مستقیم به <strong>جدول هویت پروندهٔ بالینی</strong> در اختیار غریبه گذاشته‌ایم. اولین شمارهٔ اشتباه یا ربات اسپم، <strong>برای همیشه</strong> در آن جدول می‌ماند، چون سامانه عامدانه قابلیت حذف فیزیکی ندارد.</blockquote>
+<p><strong>راه‌حل پیشنهادی این محافظ‌ها را دور نمی‌زند. یک اتاق انتظار جداگانه می‌سازد.</strong></p>
+<hr>
+<h2>۴. طرح پیشنهادی در یک نگاه</h2>
+<pre><code>سایت دروپال ──&gt; my.mirbolouki.com/booking.php
+                       │
+                       ├─ گام ۱: نام، جنسیت، نوع خدمت، موبایل
+                       ├─ گام ۲: تا سه ترجیح (روز + صبح/عصر)
+                       └─ گام ۳: تأیید با کد پیامکی
+                              │
+                              ▼
+                   جدول booking_requests (قرنطینه)
+                              │
+                   کارتابل منشی «درخواست‌های اینترنتی»
+                              │
+                    ┌─────────┴──────────┐
+                    ▼                    ▼
+            تبدیل به پذیرش          رد / اسپم
+            (فرآیند فعلی،          (با دلیل، بایگانی،
+             دست‌نخورده)            بدون حذف فیزیکی)</code></pre>
+<p>جدول قرنطینه <strong>هیچ کلید خارجی‌ای به <code>persons</code> ندارد</strong>. تنها پل میان دنیای عمومی و دنیای بالینی، ستون <code>converted_admission_id</code> است که فقط پس از تصمیم یک کارمند پر می‌شود.</p>
+<hr>
+<h2>۵. تصمیم‌هایی که مالک قبلاً گرفته است</h2>
+<table><thead><tr><th>#</th><th>تصمیم</th></tr></thead><tbody><tr><td><strong>ت-۱</strong></td><td>بازدیدکننده فقط <strong>روز و بازهٔ ترجیحی</strong> می‌دهد. <strong>وقت قطعی را منشی طی تماس تلفنی اعلام می‌کند</strong> و این جمله صریحاً روی فرم نوشته می‌شود.</td></tr><tr><td><strong>ت-۲</strong></td><td>تأیید پیامکی <strong>پیش از</strong> ثبت درخواست.</td></tr><tr><td><strong>ت-۳</strong></td><td>رزرو مستقیم برای مراجعان قدیمی فعلاً ساخته نمی‌شود.</td></tr><tr><td><strong>ت-۴</strong></td><td>سایت دروپال است؛ وب‌فرم فعلی بازنشسته (نه حذف) می‌شود.</td></tr></tbody></table>
+<p><strong>ت-۱ از نظر مدیریتی مهم‌ترین تصمیم است:</strong> تقویم و ظرفیت خالی کلینیک هرگز در معرض دید عموم قرار نمی‌گیرد، هیچ‌کس نمی‌تواند با انتخاب‌های ساختگی ساعت‌های درمانگر را اشغال کند، و هیچ تعهد زمانی‌ای به بازدیدکننده داده نمی‌شود که بعداً مجبور به نقضش باشیم.</p>
+<hr>
+<h2>۶. مواردی که نیاز به تأیید صریح مدیر ارشد دارند</h2>
+<p>این چهار مورد، انحراف از رویهٔ تاکنونی سامانه‌اند و نباید در لابه‌لای سند فنی پنهان بمانند:</p>
+<h3>ا-۱ — نخستین صفحهٔ بدون احراز هویت در تاریخ سامانه</h3>
+<p>تا امروز هر صفحهٔ جوما پشت ورود بوده است. این صفحه نخواهد بود. <strong>کنترل‌ها:</strong> CSRF و نشست فعال‌اند؛ صفحه هیچ‌یک از توابع پورتال مراجع را بارگذاری نمی‌کند؛ حق نوشتن در <code>persons</code>، <code>admissions</code> و <code>appointments</code> ندارد — نه با قرارداد، بلکه چون جدولش به آن‌ها کلید خارجی ندارد.</p>
+<h3>ا-۲ — ذخیرهٔ داده‌ٔ شخصی از شخص احرازهویت‌نشده</h3>
+<p>نام و شمارهٔ موبایل افرادی که هنوز مراجع نیستند ذخیره می‌شود. <strong>کنترل‌ها:</strong> کمینهٔ داده (کد ملی، تاریخ تولد و شرح مشکل پرسیده نمی‌شود)؛ داده در قرنطینه است نه در پروندهٔ بالینی؛ انقضای خودکار پس از N روز. <strong>تصمیم لازم: مقدار N چند روز باشد؟</strong> پیشنهاد: ۱۸۰ روز.</p>
+<h3>ا-۳ — ذخیرهٔ هش IP و مرورگر</h3>
+<p>برای سقف‌گذاری و مقابله با سوءاستفاده لازم است. خودِ IP ذخیره نمی‌شود، فقط هش یک‌طرفه.</p>
+<h3>ا-۴ — یک <code>ALTER</code> روی جدول موجود</h3>
+<p><code>otp_codes.purpose</code> یک مقدار تازه می‌گیرد: <code>&#x27;BOOKING_REQUEST&#x27;</code>. این تنها تغییر در ساختار جدول‌های موجود است. بدون بازنویسی داده، برگشت‌پذیر. تمام جدول‌های دیگر <strong>تازه</strong> هستند و هیچ جدول موجودی دست نمی‌خورد.</p>
+<hr>
+<h2>۷. ریسک‌ها</h2>
+<table><thead><tr><th>کد</th><th>ریسک</th><th>کنترل</th></tr></thead><tbody><tr><td><strong>R11</strong></td><td><strong>تخلیهٔ اعتبار پیامک.</strong> سقف فعلی <code>otp_rate_limit_check()</code> فقط به‌ازای هر شماره است (۳ بار در ۱۰ دقیقه). روی صفحهٔ عمومی، یک ربات با شماره‌های متفاوت می‌تواند در یک شب کل اعتبار پنل SMS.ir را بسوزاند. <strong>این یک هزینهٔ مالی مستقیم است.</strong></td><td>جدول <code>public_rate_limits</code>: سقف به‌ازای IP <strong>و</strong> سقف کل روزانه. <strong>پیش‌نیاز غیرقابل‌مذاکره؛ صفحه بدون آن منتشر نمی‌شود.</strong></td></tr><tr><td><strong>R12</strong></td><td>انباشت درخواست اسپم در کارتابل منشی</td><td>ت-۲ (تأیید پیامکی پیش از ثبت) + تلهٔ ربات + حداقل زمان پرکردن فرم</td></tr><tr><td><strong>R13</strong></td><td>افشای اینکه یک شماره مراجع کلینیک است</td><td>پاسخ یکسان برای شمارهٔ موجود و ناموجود — همان الگوی مصوب فاز ۴</td></tr><tr><td><strong>R14</strong></td><td>درخواست‌های بی‌پاسخ ماندن و آسیب به اعتبار کلینیک</td><td>نشانگر تعداد در منو + نمایش سن هر درخواست + گزارش «قدیمی‌تر از ۴۸ ساعت»</td></tr><tr><td><strong>R15</strong></td><td>افت نرخ تبدیل به دلیل افزودن مرحلهٔ کد پیامکی</td><td>پذیرفته‌شده و عامدانه. کیفیت سرنخ بر کمیت آن ترجیح دارد. پس از یک ماه قابل اندازه‌گیری و بازبینی.</td></tr><tr><td><strong>R10</strong> (موجود)</td><td>آزمون روی همان محیط بهره‌برداری</td><td>از لحظهٔ ورود نخستین مراجع واقعی دیگر قابل قبول نیست. <strong>این صفحه عمومی است؛ توصیه می‌شود پیش از انتشار عمومی، آزمونش با لینک اعلام‌نشده انجام شود.</strong></td></tr></tbody></table>
+<hr>
+<h2>۸. انطباق با اصول معماری</h2>
+<table><thead><tr><th>اصل</th><th>وضعیت</th></tr></thead><tbody><tr><td>بدون حذف فیزیکی</td><td>✅ درخواست‌های رد و اسپم بایگانی می‌شوند</td></tr><tr><td>همهٔ کلیدهای خارجی RESTRICT</td><td>✅</td></tr><tr><td>داده‌ٔ بالینی فقط برای درمانگر مسئول</td><td>✅ هیچ داده‌ٔ بالینی‌ای در این مسیر نیست</td></tr><tr><td>حسابرسی هر رویداد حساس</td><td>✅ <code>BOOKING_REQUEST_CREATED / OTP_SENT / CONVERTED / REJECTED / RATE_LIMITED</code></td></tr><tr><td>ADR-015 (تغییر موبایل دومرحله‌ای)</td><td>✅ دست‌نخورده؛ این مسیر موبایل هیچ مراجع موجودی را تغییر نمی‌دهد</td></tr><tr><td>طراحی پیش از کد</td><td>✅ همین سند</td></tr></tbody></table>
+<hr>
+<h2>۹. برنامهٔ ساخت و معیار پذیرش</h2>
+<table><thead><tr><th>گام</th><th>محتوا</th></tr></thead><tbody><tr><td>۱</td><td>مهاجرت <code>5.0.0</code> — سه جدول تازه + یک <code>ALTER</code> روی ENUM</td></tr><tr><td>۲</td><td><code>booking_request_functions.php</code> + <code>rate_limit.php</code></td></tr><tr><td>۳</td><td>صفحهٔ عمومی <code>booking.php</code> (سه گام، OTP، تلهٔ ربات)</td></tr><tr><td>۴</td><td>کارتابل منشی + صفحهٔ جزئیات</td></tr><tr><td>۵</td><td>«تبدیل» با پیش‌پر کردن فرم پذیرش موجود</td></tr><tr><td>۶</td><td>نشانگر منو، حسابرسی، سند آزمون</td></tr><tr><td>۷</td><td>لینک در دروپال، بازنشستگی وب‌فرم قدیمی</td></tr></tbody></table>
+<p><strong>معیار پذیرش:</strong> هیچ گامی «قبول» اعلام نمی‌شود مگر با اجرای واقعی روی سامانهٔ زنده و تأیید مالک — همان رویهٔ فاز ۴. مجموعهٔ آزمون جداگانه‌ای تهیه و اجرا می‌شود، از جمله آزمون‌های سوءاستفاده (فشار بر سقف، ربات، شمارهٔ تکراری، دسترسی غیرمجاز).</p>
+<hr>
+<h2>۱۰. اگر مجوز صادر نشود</h2>
+<p>وضع موجود ادامه می‌یابد: ورود دوبارهٔ دستی، شماره‌های تأییدنشده، و نبود ردّ حسابرسی برای داده‌ٔ شخصی جمع‌آوری‌شده از سایت. گزینهٔ میانی — اتصال وب‌فرم دروپال به جوما با Remote Post — <strong>توصیه نمی‌شود</strong>، چون تأیید پیامکی را ناممکن می‌کند و در را به روی ثبت انبوه خودکار باز می‌گذارد.</p>
+<hr>
+<h2>۱۱. تصمیم‌های درخواستی</h2>
+<table><thead><tr><th>#</th><th>مورد</th><th>تأیید</th><th>رد</th></tr></thead><tbody><tr><td>۱</td><td>ساخت فاز ۵-الف طبق این سند</td><td>☐</td><td>☐</td></tr><tr><td>۲</td><td>ا-۱ — صفحهٔ عمومی بدون احراز هویت</td><td>☐</td><td>☐</td></tr><tr><td>۳</td><td>ا-۲ — ذخیرهٔ داده‌ٔ شخصی در قرنطینه، انقضا پس از ۱۸۰ روز</td><td>☐</td><td>☐</td></tr><tr><td>۴</td><td>ا-۳ — ذخیرهٔ هش IP و مرورگر</td><td>☐</td><td>☐</td></tr><tr><td>۵</td><td>ا-۴ — افزودن <code>&#x27;BOOKING_REQUEST&#x27;</code> به <code>otp_codes.purpose</code></td><td>☐</td><td>☐</td></tr><tr><td>۶</td><td>R11 — سقف IP و سقف روزانه، به‌عنوان پیش‌نیاز انتشار</td><td>☐</td><td>☐</td></tr><tr><td>۷</td><td>بازنشستگی وب‌فرم دروپال پس از راه‌اندازی</td><td>☐</td><td>☐</td></tr></tbody></table>
+<p><strong>مقدار N (مدت نگهداری درخواست‌های تبدیل‌نشده):</strong> ………… روز (پیشنهاد: ۱۸۰)</p>
+<p>&lt;br&gt;</p>
+<p>نام و امضای مدیر ارشد: ………………………………  تاریخ: …………………</p>
+<p>توضیحات یا قیود:</p>
+<p>&lt;br&gt;&lt;br&gt;</p>
+<hr>
+<p><strong>پیوست:</strong> سند فنی کامل — <code>phase5/ONLINE_BOOKING_DESIGN_FA.md</code></p>
+</div>
+</body>
+</html>
