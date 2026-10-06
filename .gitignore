@@ -1,1 +1,5 @@
 phase1/build/
+
+# ابزار بررسی نحوی — وابستگی‌های نصب‌شونده، نباید در مخزن باشند
+phase1/tools/lint/node_modules/
+phase1/tools/lint/package-lock.json

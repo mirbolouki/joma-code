@@ -147,6 +147,12 @@ require __DIR__ . '/../templates/header.php';
                    href="form_builder.php?t=<?php echo e($t['public_id']); ?>">
                   <?php echo form_template_is_locked($t) ? 'مشاهده' : 'ویرایش پرسش‌ها'; ?>
                 </a>
+                <?php if ((int)$t['field_count'] > 0) { ?>
+                  <a class="btn btn-sm btn-secondary"
+                     href="form_builder.php?t=<?php echo e($t['public_id']); ?>#preview">
+                    👁 پیش‌نمایش
+                  </a>
+                <?php } ?>
                 <?php if ($t['status'] === 'DRAFT') { ?>
                   <form method="post" action="forms.php" class="inline-form">
                     <?php echo csrf_field(); ?>

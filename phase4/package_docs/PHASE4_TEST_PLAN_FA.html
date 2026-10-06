@@ -111,7 +111,22 @@ a{color:var(--p)}
 <p><strong>آزمون ۱۱.</strong> با مدیر بازش کنید. انتظار: پرسش‌ها قفل باشند و راهنمای «نسخهٔ جدید بسازید» دیده شود.</p>
 <p><strong>آزمون ۱۲.</strong> «نسخهٔ جدید» را بزنید. انتظار: کپی کامل با نسخهٔ ۲ و وضعیت پیش‌نویس؛ و پاسخ‌های قبلی <strong>دست‌نخورده</strong> بمانند (پرس‌وجوی ⑦ دوباره).</p>
 <hr>
-<h2>۳) پس از پایان</h2>
+<h2>۴) ضمیمه — اجرای پرس‌وجوها در phpMyAdmin، قدم به قدم</h2>
+<p>اگر تا حالا با phpMyAdmin کار نکرده‌اید، این هفت قدم کافی است. هیچ‌کدام از این پرس‌وجوها چیزی را تغییر نمی‌دهد؛ فقط نگاه می‌کنند.</p>
+<ol><li>وارد <strong>cPanel</strong> شوید.</li><li>در جست‌وجوی بالای cPanel بنویسید <code>phpMyAdmin</code> و رویش کلیک کنید.</li><li>در ستون <strong>چپ</strong>، فهرست پایگاه‌های داده را می‌بینید. روی <strong><code>mirbolouki_clinic</code></strong> کلیک کنید. (اگر روی آن کلیک نکنید، پرس‌وجو خطای «No database selected» می‌دهد.)</li><li>در نوار بالا، روی زبانهٔ <strong>SQL</strong> کلیک کنید.</li><li>کادر بزرگ سفید را <strong>کاملاً خالی</strong> کنید (اگر چیزی از قبل داخلش بود).</li><li>فقط <strong>یک</strong> پرس‌وجو از <code>CHECK_QUERIES_FA.sql</code> را کپی کنید — از خط <code>SELECT</code> تا همان <code>;</code> — و در کادر بچسبانید. خط‌های <code>--</code> توضیح‌اند و کپی‌کردنشان اشکالی ندارد.</li><li>دکمهٔ <strong>Go</strong> (یا «اجرا») را پایین راست بزنید. نتیجه در جدولی زیرش می‌آید.</li></ol>
+<h3>مثال کامل برای آزمون ۸</h3>
+<p>این متن را عیناً کپی و اجرا کنید:</p>
+<pre><code>SELECT id, created_at, action_code, entity_id, metadata_json
+  FROM audit_log
+ WHERE action_code = &#x27;FORM_FIELD_FREE_TEXT_ADDED&#x27;
+ ORDER BY id DESC
+ LIMIT 20;</code></pre>
+<p><strong>نتیجهٔ مورد انتظار:</strong> دست‌کم یک سطر، با تاریخ امروز. اگر «MySQL returned an empty result set» دیدید یعنی ثبت حسابرسی کار نکرده و آزمون ۸ <strong>مردود</strong> است.</p>
+<h3>اگر خطا گرفتید</h3>
+<table><thead><tr><th>پیام</th><th>معنی</th></tr></thead><tbody><tr><td><code>No database selected</code></td><td>قدم ۳ را انجام ندادید.</td></tr><tr><td><code>Table &#x27;audit_log&#x27; doesn&#x27;t exist</code></td><td>پایگاه دادهٔ اشتباهی را انتخاب کرده‌اید.</td></tr><tr><td><code>You have an error in your SQL syntax</code></td><td>نیمی از پرس‌وجو کپی شده، یا <code>;</code> جا مانده.</td></tr></tbody></table>
+<blockquote><strong>هشدار:</strong> در phpMyAdmin هرگز <code>DROP</code>، <code>DELETE</code> یا <code>TRUNCATE</code> را سرخود اجرا نکنید. هر چیزی که با <code>SELECT</code> شروع نشود، می‌تواند داده را برای همیشه از بین ببرد.</blockquote>
+<hr>
+<h2>۵) پس از پایان</h2>
 <ol><li>ستون «نتیجه» را در <code>PHASE4_TEST_REPORT_FA.md</code> پر کنید.</li><li>برای هر <strong>مردود</strong> این سه سطر را بنویسید — «کار نکرد» قابل پیگیری نیست: ``<code> آزمون شمارهٔ __ چه کردم: چه انتظار داشتم: چه دیدم (متن دقیق پیام): </code>``</li><li><strong>پیش از پاک‌سازی نهایی دادهٔ آزمایشی</strong>، این سه کار نیمه‌تمام از فازهای قبل را تمام کنید — با حذف کامل پایگاه داده برای همیشه از بین می‌روند:</li></ol>
 <ul><li>آزمون ۷ فاز ۳</li><li>اجرای <code>CHECK_QUERIES_FA.sql</code> فاز ۳</li><li>آزمون T5 فاز ۲</li></ul>
 <ol><li>قالب‌های آزمایشی (<code>test_all_types</code>، <code>test_empty</code>) را بایگانی کنید، نه حذف.</li></ol>

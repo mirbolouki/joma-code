@@ -5,7 +5,7 @@ if (!isset($layout)) { $layout = 'app'; }
 $joma_version_label = 'نسخهٔ ۱.۰.۱ (فاز ۱)';
 if (isset($GLOBALS['db'])) {
     if (function_exists('phase4_ready') && phase4_ready($GLOBALS['db'])) {
-        $joma_version_label = 'نسخهٔ ۴.۰.۰ (فاز ۴ — فرم‌ها و پورتال مراجع)';
+        $joma_version_label = 'نسخهٔ ۴.۰.۱ (فاز ۴ — فرم‌ها و پورتال مراجع)';
     } elseif (function_exists('phase3_ready') && phase3_ready($GLOBALS['db'])) {
         $joma_version_label = 'نسخهٔ ۳.۰.۴ (فاز ۳ — پروندهٔ بالینی)';
     } elseif (function_exists('phase2_ready') && phase2_ready($GLOBALS['db'])) {

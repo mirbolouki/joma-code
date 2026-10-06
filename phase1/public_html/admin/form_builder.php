@@ -162,6 +162,9 @@ require __DIR__ . '/../templates/header.php';
       <div class="alert alert-warning">این قالب بایگانی شده و ویرایش نمی‌شود.</div>
     <?php } ?>
     <a class="btn btn-secondary" href="forms.php">بازگشت به فهرست قالب‌ها</a>
+    <?php if (count($fields) > 0) { ?>
+      <a class="btn btn-secondary" href="#preview">👁 دیدن پیش‌نمایش فرم</a>
+    <?php } ?>
   </div>
 </div>
 
@@ -407,13 +410,16 @@ require __DIR__ . '/../templates/header.php';
 </div>
 
 <?php if (count($fields) > 0) { ?>
-<div class="card">
-  <div class="card-header">پیش‌نمایش فرم</div>
+<div class="card" id="preview">
+  <div class="card-header">👁 پیش‌نمایش فرم</div>
   <div class="card-body">
     <div class="form-grid form-preview">
       <?php form_render_fields($fields, array(), array()); ?>
     </div>
-    <p class="form-hint">این پیش‌نمایش ذخیره نمی‌شود.</p>
+    <p class="form-hint">
+      این دقیقاً همان چیزی است که پرکنندهٔ فرم می‌بیند. پیش‌نمایش ذخیره نمی‌شود
+      و هر وقت بخواهید از فهرست قالب‌ها با دکمهٔ «پیش‌نمایش» دوباره در دسترس است.
+    </p>
   </div>
 </div>
 <?php } ?>
