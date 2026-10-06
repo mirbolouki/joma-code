@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>برنامهٔ اجرای آزمون‌های فاز ۴</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>برنامهٔ اجرای آزمون‌های فاز ۴ — راهنمای گام‌به‌گام</h1>
+<p><strong>نسخه:</strong> ۴.۰.۰ · <strong>محیط:</strong> <code>my.mirbolouki.com</code> · <strong>تهیه:</strong> ۱۴۰۵/۰۷/۱۴ (2026-10-06)</p>
+<p>این سند «چه چیزی باید کار کند» نیست — آن را در <code>PHASE4_TEST_REPORT_FA.md</code> نوشته‌ایم. این سند <strong>«چطور آن را بیازمایید»</strong> است: با چه حسابی وارد شوید، کجا کلیک کنید، و به چه ترتیبی، تا ۳۵ آزمون با کمترین رفت‌وبرگشت انجام شود.</p>
+<blockquote><strong>زمان تخمینی:</strong> حدود ۹۰ تا ۱۲۰ دقیقه برای همهٔ ۳۵ آزمون. می‌توانید در چند نشست انجام دهید؛ ترتیب بخش‌ها اهمیت دارد، ترتیب داخل هر بخش کمتر.</blockquote>
+<hr>
+<h2>۰) پیش‌نیازها — پیش از شروع این‌ها را آماده کنید</h2>
+<h3>۰-۱ حساب‌های لازم</h3>
+<table><thead><tr><th>نقش</th><th>چند تا</th><th>برای چه آزمونی</th></tr></thead><tbody><tr><td>مدیر</td><td>۱ (همین حساب خودتان)</td><td>۱–۱۲، دسترسی مدیر</td></tr><tr><td>درمانگر <strong>الف</strong></td><td>۱</td><td>۱۳–۱۸، ۲۳–۲۹، ۳۵</td></tr><tr><td>درمانگر <strong>ب</strong></td><td>۱ (حتماً جدا)</td><td>۱۸ و ۳۵ — بدون نفر دوم این دو آزمون بی‌معنی‌اند</td></tr><tr><td>منشی</td><td>۱</td><td>۳، ۱۹–۲۱</td></tr><tr><td>مراجع</td><td>۲</td><td>۱۴، ۱۹–۲۲، ۳۰–۳۴</td></tr></tbody></table>
+<h3>۰-۲ دادهٔ آزمایشی لازم</h3>
+<ol><li><strong>مراجع آزمایشی ۱</strong> — شخصی با <strong>شمارهٔ موبایل واقعی که به آن دسترسی دارید</strong> (برای دریافت کد پیامکی). یک پذیرش برایش ثبت شود با ارجاع به <strong>درمانگر الف</strong>.</li><li><strong>مراجع آزمایشی ۲</strong> — کاملاً تازه، <strong>هنوز هیچ نوبتی نداشته باشد</strong>. این یکی را دست‌نخورده نگه دارید؛ آزمون ۱۹ فقط یک بار قابل اجراست.</li><li>یک <strong>اتاق</strong> و یک <strong>خدمت/تعرفهٔ</strong> فعال، تا بتوان نوبت ثبت کرد.</li></ol>
+<blockquote>⚠️ آزمون ۱۹ (تخصیص خودکار فرم پذیرش روی <strong>نخستین</strong> نوبت) را نمی‌شود دوبار روی یک مراجع اجرا کرد. برای همین مراجع ۲ را تا آن لحظه دست نزنید.</blockquote>
+<h3>۰-۳ یک پنجرهٔ دوم مرورگر</h3>
+<p>برای آزمون‌های ۱۸ و ۳۵ باید هم‌زمان دو حساب باز باشد. ساده‌ترین راه: یک مرورگر عادی + یک پنجرهٔ <strong>ناشناس/Incognito</strong>. در یک مرورگر عادی با دو تب نمی‌شود با دو حساب وارد شد؛ نشست یکی دیگری را بیرون می‌اندازد.</p>
+<h3>۰-۴ دسترسی به phpMyAdmin</h3>
+<p>چند آزمون (۸، ۱۸، ۱۹، ۲۱، ۲۲، ۲۹، ۳۲ و هر سه آزمون امنیتی) فقط با نگاه کردن به پایگاه داده قابل تأیید‌اند. پرس‌وجوهای آماده در فایل <strong><code>CHECK_QUERIES_FA.sql</code></strong> کنار همین سند است — هر کدام فقط <code>SELECT</code> است و هیچ داده‌ای را تغییر نمی‌دهد.</p>
+<hr>
+<h2>۱) نقشهٔ نشانی‌ها</h2>
+<p>همه با پیشوند <code>https://my.mirbolouki.com/</code>:</p>
+<table><thead><tr><th>صفحه</th><th>نشانی</th></tr></thead><tbody><tr><td>ورود پرسنل</td><td><code>login.php</code></td></tr><tr><td>ورود مراجع (پیامکی)</td><td><code>patient_login.php</code></td></tr><tr><td>فهرست قالب‌های فرم (مدیر)</td><td><code>admin/forms.php</code></td></tr><tr><td>فرم‌ساز (مدیر)</td><td><code>admin/form_builder.php</code></td></tr><tr><td>پاسخ‌های ثبت‌شده (مدیر)</td><td><code>admin/form_responses.php</code></td></tr><tr><td>فرم‌های من (درمانگر)</td><td><code>therapist/forms.php</code></td></tr><tr><td>پروندهٔ بالینی (درمانگر)</td><td><code>therapist/case_detail.php</code></td></tr><tr><td>پورتال مراجع</td><td><code>patient/index.php</code></td></tr><tr><td>فرم‌های مراجع</td><td><code>patient/forms.php</code></td></tr></tbody></table>
+<hr>
+<h2>۲) ترتیب اجرا</h2>
+<h3>نشست ۱ — مدیر: نصب و فرم‌ساز (آزمون ۱ تا ۱۲)</h3>
+<p><strong>آزمون ۱ و ۴ — قبلاً انجام شده ✅</strong> ارتقا اجرا شد، پاورقی «۴.۰.۰» را نشان می‌دهد و منوی «قالب‌های فرم» دیده می‌شود.</p>
+<p><strong>آزمون ۲ و ۳ — نیازمند بازگرداندن فایل.</strong> فایل <code>upgrade_phase4.php</code> پس از ارتقا حذف شده است (که درست بود). اگر می‌خواهید این دو را هم بیازمایید:</p>
+<ol><li><code>upgrade_phase4_only.zip</code> را دانلود و <code>upgrade_phase4.php</code> را در ریشهٔ <code>my</code> آپلود کنید.</li><li><strong>آزمون ۲:</strong> با حساب مدیر بازش کنید و دکمهٔ اجرا را بزنید → همهٔ سطرها باید «بدون تغییر» باشند و هیچ خطایی ندهد.</li><li><strong>آزمون ۳:</strong> از پنجرهٔ ناشناس با <strong>منشی</strong> وارد شوید و همان نشانی را باز کنید → باید <strong>۴۰۳ با قالب سامانه</strong> ببینید. اگر صفحهٔ سادهٔ سفید ۴۰۴ دیدید یعنی فایل را آپلود نکرده‌اید؛ اگر صفحهٔ ارتقا <strong>اجرا شد</strong>، این یک نقص امنیتی جدی است و باید فوراً گزارش شود.</li><li>دوباره فایل را حذف کنید.</li></ol>
+<p>اگر نمی‌خواهید فایل را برگردانید، در گزارش بنویسید «۲ و ۳ — اجرا نشد، فایل حذف شده بود». این انتخاب قابل‌قبولی است.</p>
+<p><strong>آزمون ۵ — شناسهٔ تکراری.</strong> <code>admin/forms.php</code> → «قالب تازه» → در «شناسهٔ فنی» بنویسید <code>patient_intake</code> → ذخیره. انتظار: پیام خطای فارسی روشن؛ قالبی ساخته نشود.</p>
+<p><strong>آزمون ۶ — هر هفت نوع پرسش.</strong> قالبی با شناسهٔ <code>test_all_types</code> بسازید و به ترتیب این هفت پرسش را اضافه کنید: عددی، تاریخ، بله/خیر، تک‌گزینه‌ای (۳ گزینه)، چندگزینه‌ای (۳ گزینه)، مقیاس (۰ تا ۱۰)، و متن توضیحی. سپس پیش‌نمایش را باز کنید. انتظار: هر هفت پرسش درست نمایش داده شوند؛ مقیاس ۱۱ خانه داشته باشد (۰ تا ۱۰).</p>
+<p><strong>آزمون ۷ — متن توضیحی بدون تیک.</strong> در همان قالب، پرسش «متن توضیحی» دیگری اضافه کنید ولی <strong>تیک تأیید را نزنید</strong> → ذخیره. انتظار: رد شود با اشارهٔ صریح به ADR-007.</p>
+<p><strong>آزمون ۸ — متن توضیحی با تیک.</strong> همان را با تیک زده ذخیره کنید → ساخته شود. سپس در phpMyAdmin پرس‌وجوی ① از <code>CHECK_QUERIES_FA.sql</code> را اجرا کنید: باید سطری با کد <code>FORM_FIELD_FREE_TEXT_ADDED</code> ببینید.</p>
+<p><strong>آزمون ۹ — فعال‌سازی قالب خالی.</strong> قالب تازه‌ای با شناسهٔ <code>test_empty</code> بسازید، <strong>هیچ پرسشی اضافه نکنید</strong>، «فعال‌سازی» بزنید. انتظار: رد شود.</p>
+<p><strong>آزمون ۱۰ — دو نسخهٔ فعال هم‌زمان.</strong> <code>test_all_types</code> را فعال کنید. سپس «نسخهٔ جدید» بسازید و سعی کنید آن را هم فعال کنید بدون بایگانی کردن نسخهٔ ۱. انتظار: رد شود با پیام «نخست نسخهٔ قبلی را بایگانی کنید».</p>
+<p><strong>آزمون ۱۱ و ۱۲ را بعد از نشست ۳ انجام دهید</strong> — چون به یک پاسخ ثبت‌شدهٔ واقعی نیاز دارند.</p>
+<hr>
+<h3>نشست ۲ — منشی: تخصیص خودکار (آزمون ۱۹ تا ۲۱)</h3>
+<p><strong>آزمون ۲۱ را اول اجرا کنید، چون قالب را موقتاً بایگانی می‌کند:</strong></p>
+<p><strong>آزمون ۲۱ — نبودِ قالب پذیرش.</strong></p>
+<ol><li>با مدیر: <code>admin/forms.php</code> → قالب <code>patient_intake</code> را <strong>بایگانی</strong> کنید.</li><li>با منشی: برای <strong>مراجع آزمایشی ۲</strong> نخستین نوبت را ثبت و تثبیت کنید.</li><li>انتظار: <strong>نوبت سالم ثبت شود</strong> (این مهم‌ترین بخش است — نبودِ فرم نباید نوبت را خراب کند)، ولی هیچ فرمی تخصیص نیابد.</li><li>با مدیر: در داشبورد باید هشدار «تخصیص خودکار ناموفق» دیده شود، و پرس‌وجوی ② کد <code>FORM_AUTO_ASSIGN_FAILED</code> را نشان دهد.</li><li>قالب <code>patient_intake</code> را دوباره <strong>فعال</strong> کنید.</li></ol>
+<p><strong>آزمون ۱۹ — تخصیص خودکار.</strong> یک مراجع <strong>سوم</strong> بسازید (چون مراجع ۲ دیگر «نخستین نوبت» ندارد)، پذیرشش را ثبت کنید، و نخستین نوبتش را تثبیت کنید. انتظار: فرم «پذیرش اولیه» خودکار به او تخصیص یابد؛ پرس‌وجوی ③ آن را با <code>assignment_source = &#x27;AUTO_FIRST_APPOINTMENT&#x27;</code> نشان دهد؛ <code>FORM_AUTO_ASSIGNED</code> در حسابرسی باشد.</p>
+<p><strong>آزمون ۲۰ — نوبت دوم.</strong> برای همان مراجع سوم نوبت دومی ثبت و تثبیت کنید. انتظار: <strong>هیچ فرم تازه‌ای</strong> ساخته نشود. پرس‌وجوی ③ باید همچنان فقط یک سطر نشان دهد.</p>
+<p><strong>آزمون ۲۲ — باز شدن پرونده.</strong> با درمانگرِ ارجاع‌شده، پذیرش مراجع سوم را بررسی و <strong>پرونده را باز</strong> کنید. سپس پرس‌وجوی ④: ستون <code>clinical_case_id</code> آن تخصیص باید <strong>پر شده باشد</strong> (نه NULL).</p>
+<hr>
+<h3>نشست ۳ — درمانگر الف: تخصیص و پر کردن (آزمون ۱۳ تا ۱۸، ۲۳ تا ۲۹)</h3>
+<p><strong>آزمون ۱۳ — تخصیص به خود.</strong> در صفحهٔ پروندهٔ مراجع ۱ → «تخصیص فرم» → قالب <code>test_all_types</code> → گیرنده: خودم. انتظار: در <code>therapist/forms.php</code> و در پرونده دیده شود.</p>
+<p><strong>آزمون ۱۴ — تخصیص به مراجع.</strong> همان کار، گیرنده: مراجع. (در نشست ۴ بررسی می‌شود.)</p>
+<p><strong>آزمون ۱۵ — تخصیص تکراری.</strong> همان قالب را دوباره به همان مراجع تخصیص دهید. انتظار: هشدار «یک نسخهٔ در انتظار وجود دارد» و بدون تیک تأیید انجام نشود.</p>
+<p><strong>آزمون ۱۶ — لغو تخصیص پرنشده.</strong> یکی از تخصیص‌های در انتظار را لغو کنید. انتظار: وضعیت «لغوشده».</p>
+<p><strong>آزمون ۱۸ — دسترسی درمانگر دیگر.</strong> نشانی کامل یکی از فرم‌های درمانگر الف را کپی کنید. در پنجرهٔ ناشناس با <strong>درمانگر ب</strong> وارد شوید و همان نشانی را باز کنید. انتظار: پیام یکسان «یافت نشد یا دسترسی ندارید» — <strong>نه</strong> پیام متفاوتی که لو بدهد فرم وجود دارد. پرس‌وجوی ⑤ باید <code>FORM_ACCESS_DENIED</code> را نشان دهد.</p>
+<p><strong>آزمون ۲۳ — پرسش الزامی خالی.</strong> فرم تخصیص‌یافته به خودتان را باز کنید، چند پرسش را پر کنید ولی یکی از الزامی‌ها را خالی بگذارید → ثبت. انتظار: ثبت نشود؛ خطا <strong>کنار همان پرسش</strong>؛ و آنچه قبلاً نوشته بودید <strong>پاک نشود</strong>.</p>
+<p><strong>آزمون ۲۴ — نوع نادرست.</strong> در پرسش عددی حروف بنویسید و در پرسش تاریخ <code>1405/13/45</code>. انتظار: هر دو با پیام فارسی رد شوند.</p>
+<p><strong>آزمون ۲۵ — دستکاری مقیاس.</strong> روی پرسش مقیاس راست‌کلیک → Inspect → مقدار یکی از دکمه‌ها را به <code>15</code> تغییر دهید → ثبت. انتظار: سرور رد کند. (اگر پذیرفت، یک نقص جدی است.)</p>
+<p><strong>آزمون ۲۶ — ثبت موفق.</strong> فرم را درست پر و ثبت کنید. انتظار: وضعیت «ثبت‌شده» و نمایش مهلت ویرایش ۲۴ ساعته.</p>
+<p><strong>آزمون ۲۷ — ویرایش داخل مهلت.</strong> یک پاسخ را تغییر دهید و ذخیره کنید. انتظار: در تاریخچه دو بازنگری دیده شود. پرس‌وجوی ⑥ باید برای یک پرسش دو سطر نشان دهد: یکی با <code>is_current = 0</code> و یکی با <code>1</code>.</p>
+<p><strong>آزمون ۲۸ — ویرایش پس از مهلت.</strong> این یکی واقعاً ۲۴ ساعت صبر می‌خواهد. راه عملی: در phpMyAdmin ستون <code>submitted_at</code> آن پاسخ را دستی به ۲ روز قبل ببرید (<code>UPDATE form_submissions SET submitted_at = DATE_SUB(submitted_at, INTERVAL 2 DAY) WHERE id = ...</code>)، بعد صفحه را تازه کنید. انتظار: دکمهٔ ویرایش نباشد؛ تلاش مستقیم هم رد شود؛ فقط ابطال بماند.</p>
+<p><strong>آزمون ۲۹ — ابطال.</strong> پاسخ را با انتخاب دلیل باطل کنید. انتظار: وضعیت «باطل‌شده»؛ <strong>متن پاسخ‌ها پاک نشود</strong> (پرس‌وجوی ⑦ باید همچنان مقادیر را نشان دهد).</p>
+<p><strong>آزمون ۱۷ — لغو تخصیصی که پاسخ دارد.</strong> حالا که پاسخ دارید، سعی کنید <strong>تخصیص</strong> را لغو کنید. انتظار: رد شود با پیام «پاسخ باید باطل شود، نه لغو».</p>
+<hr>
+<h3>نشست ۴ — مراجع: پورتال و پیش‌نویس (آزمون ۳۰ تا ۳۴)</h3>
+<p>با گوشی‌ای که شمارهٔ مراجع ۱ روی آن است:</p>
+<p><code>patient_login.php</code> → شماره → دریافت کد → ورود. انتظار: پورتال باز شود و فرم تخصیص‌یافته در آزمون ۱۴ دیده شود.</p>
+<p><strong>آزمون ۳۰ — پیش‌نویس.</strong> نیمی از فرم را پر کنید → «ذخیرهٔ پیش‌نویس» → مرورگر را ببندید → دوباره وارد شوید → فرم را باز کنید. انتظار: همان مقادیر برگردند.</p>
+<p><strong>آزمون ۳۱ — دور انداختن پیش‌نویس.</strong> دکمهٔ دور انداختن را بزنید. انتظار: فرم خالی شود؛ پرس‌وجوی ⑧ هیچ سطری برنگرداند.</p>
+<p><strong>آزمون ۳۲ — ثبت نهایی.</strong> فرم را کامل و ثبت کنید. انتظار: پیش‌نویس حذف شود و پرس‌وجوی ⑦ پاسخ را نشان دهد.</p>
+<p><strong>آزمون ۳۳ — پیش‌نویس برای درمانگر وجود ندارد.</strong> با درمانگر الف، یک فرم تخصیص‌یافته به خودش را باز کنید. انتظار: <strong>هیچ دکمهٔ پیش‌نویسی نباشد</strong> (P8 — فرم درمانگر یا کامل است یا رها).</p>
+<p><strong>آزمون ۳۴ — بدون جاوااسکریپت.</strong> در مرورگر JavaScript را خاموش کنید (کروم: Settings → Privacy → Site settings → JavaScript → Don&#x27;t allow) و دوباره پیش‌نویس ذخیره کنید. انتظار: باز هم کار کند.</p>
+<hr>
+<h3>نشست ۵ — امنیت و محرمانگی (آزمون ۳۵ و سه آزمون امنیتی)</h3>
+<p><strong>آزمون ۳۵ — تغییر درمانگر مسئول (P7).</strong> پذیرش مراجع ۱ را به <strong>درمانگر ب</strong> ارجاع دهید (یا پرونده را به او منتقل کنید). انتظار: درمانگر ب <strong>همهٔ فرم‌های آن پرونده</strong> را ببیند — حتی آنهایی که درمانگر الف پر کرده — ولی <strong>هیچ یادداشت محرمانهٔ</strong> درمانگر الف را نبیند.</p>
+<p><strong>امنیتی ۱ — قفل نشست پورتال (D4-3).</strong> اگر یکی از پرسنل شما هم‌زمان مراجع است، با <strong>کد پیامکی</strong> وارد شود، سپس دستی <code>admin/index.php</code> و <code>therapist/index.php</code> را باز کند. انتظار: <strong>۴۰۳ با قالب سامانه</strong>. اگر داشبورد پرسنلی باز شد، فوراً گزارش دهید — این یعنی کد پیامکی تبدیل به دَرِ بی‌رمز پنل کارکنان شده است.</p>
+<p><strong>امنیتی ۲ — دسترسی مدیر (P4).</strong> با مدیر یک پاسخ را باز کنید → پرس‌وجوی ⑨ باید <code>FORM_SUBMISSION_VIEWED_BY_ADMIN</code> با نام شما نشان دهد. سپس در آن قالب گزینهٔ «مدیر ببیند» را خاموش کنید → همان نشانی دیگر نباید پاسخ را نشان دهد.</p>
+<p><strong>امنیتی ۳ — متن پاسخ در حسابرسی.</strong> یک عبارت یکتا و عجیب در یکی از پاسخ‌ها بنویسید (مثلاً «زرافهٔ بنفش ۷۷»)، ثبتش کنید، سپس پرس‌وجوی ⑩ را با همان عبارت اجرا کنید. انتظار: <strong>صفر سطر.</strong> هر سطری که برگردد یعنی نشت محتوای بالینی به گزارش حسابرسی.</p>
+<hr>
+<h3>نشست ۶ — بازگشت به آزمون ۱۱ و ۱۲</h3>
+<p>حالا که قالب <code>test_all_types</code> پاسخ ثبت‌شده دارد:</p>
+<p><strong>آزمون ۱۱.</strong> با مدیر بازش کنید. انتظار: پرسش‌ها قفل باشند و راهنمای «نسخهٔ جدید بسازید» دیده شود.</p>
+<p><strong>آزمون ۱۲.</strong> «نسخهٔ جدید» را بزنید. انتظار: کپی کامل با نسخهٔ ۲ و وضعیت پیش‌نویس؛ و پاسخ‌های قبلی <strong>دست‌نخورده</strong> بمانند (پرس‌وجوی ⑦ دوباره).</p>
+<hr>
+<h2>۳) پس از پایان</h2>
+<ol><li>ستون «نتیجه» را در <code>PHASE4_TEST_REPORT_FA.md</code> پر کنید.</li><li>برای هر <strong>مردود</strong> این سه سطر را بنویسید — «کار نکرد» قابل پیگیری نیست: ``<code> آزمون شمارهٔ __ چه کردم: چه انتظار داشتم: چه دیدم (متن دقیق پیام): </code>``</li><li><strong>پیش از پاک‌سازی نهایی دادهٔ آزمایشی</strong>، این سه کار نیمه‌تمام از فازهای قبل را تمام کنید — با حذف کامل پایگاه داده برای همیشه از بین می‌روند:</li></ol>
+<ul><li>آزمون ۷ فاز ۳</li><li>اجرای <code>CHECK_QUERIES_FA.sql</code> فاز ۳</li><li>آزمون T5 فاز ۲</li></ul>
+<ol><li>قالب‌های آزمایشی (<code>test_all_types</code>، <code>test_empty</code>) را بایگانی کنید، نه حذف.</li></ol>
+</div>
+</body>
+</html>

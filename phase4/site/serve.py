@@ -36,11 +36,20 @@ mimetypes.add_type('text/plain; charset=utf-8', '.txt')
 mimetypes.add_type('text/plain; charset=utf-8', '.sql')
 
 
+# نام‌های یکسان در دو فاز: نام صریح برای نسخهٔ فاز ۳ تا سایه‌انداختن رخ ندهد
+ALIASES = {
+    'CHECK_QUERIES_PHASE3_FA.sql':
+        os.path.join(REPO, 'phase3', 'package_docs', 'CHECK_QUERIES_FA.sql'),
+}
+
+
 def resolve(name):
     """نام فایل را در ریشه‌های مجاز پیدا می‌کند؛ خارج از آن‌ها چیزی سرو نمی‌شود."""
     name = posixpath.basename(name)          # جلوگیری از ../ و مسیرهای تودرتو
     if not name:
         return None
+    if name in ALIASES and os.path.isfile(ALIASES[name]):
+        return ALIASES[name]
     for root in FILE_ROOTS:
         candidate = os.path.join(root, name)
         if os.path.isfile(candidate):
