@@ -52,18 +52,22 @@ a{color:var(--p)}
 <p><strong>نتیجه: وصلهٔ ۴.۲.۰ بدون هیچ پیش‌نیازی قابل ساخت است. برآورد: ۲ روز.</strong></p>
 <hr>
 <h2>۳. چهار تصمیم تکمیلی مالک</h2>
-<table><thead><tr><th>#</th><th>موضوع</th><th>تصمیم</th></tr></thead><tbody><tr><td>ت-۵</td><td>ترجیح زمانی</td><td>کشویی <strong>روز هفته</strong> + <strong>بازه</strong> + یک یادداشت کوتاه اختیاری</td></tr><tr><td>ت-۶</td><td>سقف کل روزانهٔ پیامک رزرو</td><td><strong>۱۰۰</strong> در شبانه‌روز</td></tr><tr><td>ت-۷</td><td>سقف هر دستگاه</td><td><strong>۵</strong> در ساعت، بر پایهٔ <strong>هش</strong> IP</td></tr><tr><td>ت-۸</td><td>۱۲ خدمت سایت</td><td>جدول نگاشت قابل ویرایش + امکان تغییر دستی توسط منشی</td></tr></tbody></table>
+<table><thead><tr><th>#</th><th>موضوع</th><th>تصمیم</th></tr></thead><tbody><tr><td>ت-۵</td><td>ترجیح زمانی</td><td>کشویی <strong>روز هفته</strong> + <strong>بازه</strong> + یک یادداشت کوتاه اختیاری</td></tr><tr><td>ت-۶</td><td>سقف کل روزانهٔ پیامک رزرو</td><td><strong>۱۰۰</strong> در شبانه‌روز</td></tr><tr><td>ت-۷</td><td>سقف هر دستگاه</td><td><strong>۱۰</strong> در ساعت، بر پایهٔ <strong>HMAC</strong> از IP (عدد به دلیل CGNAT اپراتورهای همراه از ۵ به ۱۰ رسید)</td></tr><tr><td>ت-۸</td><td>۱۲ خدمت سایت</td><td><strong>فهرستی در <code>lookup_items</code> طبق ADR-010</strong>، نه جدول اختصاصی؛ نگاشت خودکار حذف شد</td></tr></tbody></table>
 <p><strong>دو اصلاح فنی بر ت-۵ و ت-۸، پیش از ساخت:</strong></p>
 <ul><li><strong>گزینهٔ «شب» حذف می‌شود.</strong> ساعت کاری سامانه از فاز ۲ برابر ۹ تا ۲۰ است</li></ul>
 <p>و هیچ نوبتی بعد از ۲۰ وجود ندارد. پیشنهاد «شب» همان انتظار نادرستی را می‌سازد که ت-۱ برای حذفش گرفته شد. بازه‌ها با ساعت صریح: <strong>صبح (۹–۱۳) · عصر (۱۳–۲۰) · فرقی ندارد</strong>.</p>
-<ul><li><strong>کلید جدول نگاشت، متن فارسی نباشد.</strong> اصلاح یک نیم‌فاصله نگاشت را بی‌صدا</li></ul>
-<p>می‌شکند. کلید عددی با یک کد کوتاه پایدار.</p>
+<ul><li><strong>فهرست خدمات طبق ADR-010 ساخته می‌شود.</strong> بررسی نشان داد جدول اختصاصی</li></ul>
+<p>پیشنهادی، ADR-010 را نقض می‌کرد: «تمام فهرست‌های قابل‌ویرایش از <code>lookup_lists</code> + <code>lookup_items</code> و <strong>یک صفحهٔ مدیریتی واحد</strong>». فهرست در همان الگو ساخته می‌شود و <strong>نگاشت خودکار حذف می‌شود</strong> — منشی هنگام تبدیل، نوع خدمت را در فرم پذیرش انتخاب می‌کند. نتیجه: دو جدول و یک صفحهٔ مدیریتی کمتر.</p>
 <hr>
 <h2>۴. مورد تازه‌ای که تأیید می‌خواهد</h2>
-<h3>ا-۵ — یک <code>ALTER</code> دوم روی <code>otp_codes</code></h3>
+<h3>ا-۵ — دو تغییر افزایشی روی <code>otp_codes</code></h3>
 <p>سند اصلی فقط یک تغییر در جدول‌های موجود را برای تأیید برده بود (افزودن مقدار <code>&#x27;BOOKING_REQUEST&#x27;</code> به <code>purpose</code>). یک مورد دوم لازم شد:</p>
-<pre><code>ALTER TABLE otp_codes ADD COLUMN ip_hash CHAR(64) NULL AFTER purpose;
+<pre><code>ALTER TABLE otp_codes MODIFY purpose
+  ENUM(&#x27;REGISTER&#x27;,&#x27;RESET_PASSWORD&#x27;,&#x27;CONFIRM_MOBILE_CHANGE&#x27;,
+       &#x27;PATIENT_LOGIN&#x27;,&#x27;BOOKING_REQUEST&#x27;) NOT NULL;      -- ا-۴، افزایشی
+ALTER TABLE otp_codes ADD COLUMN ip_hash CHAR(64) NULL AFTER purpose;
 ALTER TABLE otp_codes ADD KEY idx_otp_ip (ip_hash, created_at);</code></pre>
+<p><code>ip_hash</code> با <strong>HMAC-SHA256</strong> و کلید محرمانه ساخته می‌شود، نه هش ساده: فضای IPv4 تنها ۲³² است و یک هش بدون کلید در چند ثانیه معکوس می‌شود. کلید <code>IP_HASH_KEY</code> در <code>includes/config.php</code> کنار سایر اسرار می‌نشیند. برای IPv6 پیش از هش، نشانی به پیشوند <code>/64</code> کوتاه می‌شود.</p>
 <p><strong>چرا لازم است:</strong> ریسک R11 (سوزاندن اعتبار پیامک) جز با سقف بر پایهٔ IP بسته نمی‌شود، و جدول <code>otp_codes</code> امروز هیچ ستونی برای شناسایی منبع درخواست ندارد. بدون این، سقف روی ستونی خوانده می‌شود که وجود ندارد.</p>
 <p><strong>چرا بی‌خطر است:</strong> افزودن ستون <strong>nullable</strong> است. هیچ ردیف موجودی تغییر نمی‌کند، هیچ کد موجودی نمی‌شکند، و برگشت‌پذیر است. این با آن <code>MODIFY</code> روی <code>ENUM</code> — که در بررسی رد شد — تفاوت ماهوی دارد.</p>
 <p><strong>سود جانبی:</strong> سقف IP آنگاه برای همهٔ جریان‌های کد یک‌بارمصرف فعال می‌شود، از جمله <strong>ورود مراجع به پورتال که امروز هیچ سقف IP ندارد</strong>.</p>
@@ -73,12 +77,16 @@ ALTER TABLE otp_codes ADD KEY idx_otp_ip (ip_hash, created_at);</code></pre>
 <table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>وضعیت در سند اصلی</strong></td><td>باز، با کنترل پیشنهادی</td></tr><tr><td><strong>سه راه‌حل پیشنهادی بعدی</strong></td><td>هر سه ناکارآمد بودند (جزئیات در <code>MANAGER_PLAN_REVIEW_03_FA.md</code> بند ۱)</td></tr><tr><td><strong>راه‌حل مصوب</strong></td><td>ستون <code>ip_hash</code> + دو سقف: ۵/ساعت به ازای دستگاه، ۱۰۰/روز در کل</td></tr><tr><td><strong>الزام تازه</strong></td><td>رسیدن به سقف باید رویداد حسابرسی بسازد، در داشبورد منشی دیده شود، و پیام خطا شمارهٔ تماس کلینیک را بدهد تا مراجع واقعی بن‌بست نخورد</td></tr></tbody></table>
 <hr>
 <h2>۶. جدول تصمیم‌های درخواستی (جایگزین بند ۱۱ سند اصلی)</h2>
-<table><thead><tr><th>#</th><th>مورد</th><th>تأیید</th><th>رد</th></tr></thead><tbody><tr><td>۱</td><td>ساخت وصلهٔ <strong>۴.۲.۰</strong> طبق سند اصلی و این اصلاحیه</td><td>☐</td><td>☐</td></tr><tr><td>۲</td><td>ا-۱ — صفحهٔ عمومی بدون احراز هویت</td><td>☐</td><td>☐</td></tr><tr><td>۳</td><td>ا-۲ — دادهٔ شخصی در قرنطینه، انقضا ۱۸۰ روز</td><td>☐</td><td>☐</td></tr><tr><td>۴</td><td>ا-۳ — ذخیرهٔ <strong>هش</strong> IP و مرورگر</td><td>☐</td><td>☐</td></tr><tr><td>۵</td><td>ا-۴ — افزودن <code>&#x27;BOOKING_REQUEST&#x27;</code> به <code>otp_codes.purpose</code> (افزایشی)</td><td>☐</td><td>☐</td></tr><tr><td>۶</td><td><strong>ا-۵ — افزودن ستون nullable <code>ip_hash</code> به <code>otp_codes</code></strong></td><td>☐</td><td>☐</td></tr><tr><td>۷</td><td>ت-۵ تا ت-۸ با دو اصلاح بند ۳</td><td>☐</td><td>☐</td></tr><tr><td>۸</td><td>R11 به‌عنوان پیش‌نیاز انتشار</td><td>☐</td><td>☐</td></tr><tr><td>۹</td><td>بازنشستگی وب‌فرم دروپال پس از راه‌اندازی</td><td>☐</td><td>☐</td></tr></tbody></table>
+<table><thead><tr><th>#</th><th>مورد</th><th>تأیید</th><th>رد</th></tr></thead><tbody><tr><td>۱</td><td>ساخت وصلهٔ <strong>۴.۲.۰</strong> طبق سند اصلی و این اصلاحیه</td><td>☐</td><td>☐</td></tr><tr><td>۲</td><td>ا-۱ — صفحهٔ عمومی بدون احراز هویت</td><td>☐</td><td>☐</td></tr><tr><td>۳</td><td>ا-۲ — دادهٔ شخصی در قرنطینه، انقضا ۱۸۰ روز</td><td>☐</td><td>☐</td></tr><tr><td>۴</td><td>ا-۳ — ذخیرهٔ <strong>هش</strong> IP و مرورگر</td><td>☐</td><td>☐</td></tr><tr><td>۵</td><td>ا-۴ — افزودن <code>&#x27;BOOKING_REQUEST&#x27;</code> به <code>otp_codes.purpose</code> (افزایشی)</td><td>☐</td><td>☐</td></tr><tr><td>۶</td><td><strong>ا-۵ — افزودن ستون nullable <code>ip_hash</code> به <code>otp_codes</code></strong></td><td>☐</td><td>☐</td></tr><tr><td>۶الف</td><td><strong>ا-۶ — رفع نقص موجود: اتمیک‌کردن چک سقف و درج کد</strong> (تراکنش + <code>FOR UPDATE</code>)</td><td>☐</td><td>☐</td></tr><tr><td>۷</td><td>ت-۵ تا ت-۸ با دو اصلاح بند ۳</td><td>☐</td><td>☐</td></tr><tr><td>۸</td><td>R11 به‌عنوان پیش‌نیاز انتشار</td><td>☐</td><td>☐</td></tr><tr><td>۹</td><td>بازنشستگی وب‌فرم دروپال پس از راه‌اندازی</td><td>☐</td><td>☐</td></tr></tbody></table>
 <p>&lt;br&gt;</p>
 <p>نام و امضای مدیر ارشد: ………………………………  تاریخ: …………………</p>
 <p>&lt;br&gt;&lt;br&gt;</p>
 <hr>
-<p><strong>پیوست‌ها:</strong> <code>BUILD_APPROVAL_REQUEST_FA.md</code> (سند اصلی) · <code>ONLINE_BOOKING_DESIGN_FA.md</code> (طراحی فنی) · <code>MANAGER_PLAN_REVIEW_03_FA.md</code> (بررسی فنی آخرین سند)</p>
+<h2>۷. نقص موجودی که حین بررسی پیدا شد — ا-۶</h2>
+<p><code>otp_rate_limit_check()</code> ابتدا <code>SELECT COUNT(*)</code> می‌زند و سپس درج انجام می‌شود. <strong>این دو اتمیک نیستند:</strong> دو درخواست هم‌زمان هر دو همان شمارش را می‌خوانند و هر دو از سقف رد می‌شوند.</p>
+<p>این نقص <strong>از امروز در سامانه هست</strong> و ساختهٔ این پروژه نیست؛ ولی تا کنون فقط صفحه‌های پشت ورود از آن استفاده می‌کردند. روی یک صفحهٔ عمومی قابل بهره‌برداری می‌شود. رفعش با همان الگوی موجود پروژه (تراکنش + <code>SELECT ... FOR UPDATE</code>) انجام می‌شود و جدول تازه‌ای نمی‌خواهد.</p>
+<hr>
+<p><strong>پیوست‌ها:</strong> <code>BUILD_APPROVAL_REQUEST_FA.md</code> (سند اصلی) · <code>TECHNICAL_FINDINGS_01_FA.md</code> (یافته‌های فنی) · <code>ONLINE_BOOKING_DESIGN_FA.md</code> (طراحی فنی) · <code>MANAGER_PLAN_REVIEW_03_FA.md</code> (بررسی فنی آخرین سند)</p>
 </div>
 </body>
 </html>

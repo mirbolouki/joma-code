@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>یافته‌های فنی ۱</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>یافته‌های فنی — پاسخ به چهار پرسش مالک + انطباق با ADR-010</h1>
+<p><strong>تاریخ:</strong> ۱۴۰۵/۰۷/۱۴ · <strong>روش:</strong> بررسی کد و اسکیمای واقعی، نه حافظه. <strong>پیش‌نیاز مهاجرت <code>4.2.0</code>.</strong></p>
+<hr>
+<h2>خلاصهٔ نتایج</h2>
+<table><thead><tr><th>#</th><th>پرسش</th><th>نتیجه</th></tr></thead><tbody><tr><td>۱</td><td>HMAC و کلید در <code>secrets.php</code></td><td>✅ درست، با یک اصلاح: <code>secrets.php</code> وجود ندارد؛ الگوی موجود <code>config.php</code> است</td></tr><tr><td>۲</td><td>سقف ۱۰ در ساعت به دلیل CGNAT</td><td>✅ تأیید، با یک هشدار تازه دربارهٔ IPv6</td></tr><tr><td>۳</td><td>IP واقعی پشت پروکسی</td><td>⚠️ <strong>از اینجا قابل تشخیص نیست.</strong> ابزار تشخیص ساخته شد</td></tr><tr><td>۴</td><td>پاک‌سازی <code>otp_codes</code> و اتمیک بودن</td><td>✅ پاک‌سازی امن است · ❌ <strong>چک سقف اتمیک نیست — مسابقه وجود دارد</strong></td></tr><tr><td>۵</td><td>انطباق فهرست خدمات با ADR-010</td><td>❌ <strong>پیشنهاد قبلی ADR-010 را نقض می‌کرد. اصلاح شد و یک جدول کم شد</strong></td></tr></tbody></table>
+<hr>
+<h2>۱. هش IP با HMAC</h2>
+<h3><code>secrets.php</code> وجود ندارد</h3>
+<p>الگوی موجود پروژه: تمام اسرار در <code>includes/config.php</code> تعریف می‌شوند (کلید SMS.ir، رمز پایگاه داده). در مخزن فقط <code>config.php.example</code> هست و خودِ <code>config.php</code> فقط روی سرور ساخته می‌شود.</p>
+<p><strong>توصیه: فایل دوم نسازیم.</strong> یک ثابت تازه در همان <code>config.php</code>:</p>
+<pre><code>/* کلید هش IP — ۳۲ بایت تصادفی. یک بار ساخته می‌شود و تغییر نمی‌کند. */
+define(&#x27;IP_HASH_KEY&#x27;, &#x27;...64 نویسهٔ هگز...&#x27;);</code></pre>
+<p>دو فایل اسرار یعنی دو چیز برای محافظت، دو چیز برای پشتیبان‌گیری، و یک چیز برای فراموش‌کردن هنگام نصب.</p>
+<h3>چرا HMAC و نه SHA-256 ساده — تصمیم شما درست است</h3>
+<p>فضای IPv4 فقط ۲³² است. یک SHA-256 خام از یک نشانی IPv4 در چند ثانیه روی لپ‌تاپ معکوس می‌شود؛ یعنی «هش» عملاً همان ذخیرهٔ خام است. <code>hash_hmac(&#x27;sha256&#x27;, $ip, IP_HASH_KEY)</code> بدون کلید قابل معکوس‌کردن نیست.</p>
+<p>خروجی ۶۴ نویسهٔ هگز است و دقیقاً در <code>CHAR(64)</code> جا می‌شود.</p>
+<h3>دو الزام</h3>
+<ul><li><strong>کلید ثابت بماند.</strong> تغییرش همهٔ <code>ip_hash</code>های قبلی را بی‌اثر می‌کند و</li></ul>
+<p>سقف‌های جاری صفر می‌شوند. (آسیب جدی نیست، ولی باید دانسته باشد.)</p>
+<ul><li><strong><code>includes/config.php</code> به <code>.gitignore</code> اضافه شود.</strong> امروز در آن نیست؛</li></ul>
+<p>فقط چون هرگز ساخته نشده، به مخزن نرفته. یک <code>git add -A</code> در آینده می‌تواند کلید SMS و رمز پایگاه داده را وارد مخزن عمومی کند.</p>
+<hr>
+<h2>۲. سقف ۱۰ در ساعت — تأیید، به‌علاوهٔ یک شکاف IPv6</h2>
+<p>استدلال CGNAT درست است: اپراتورهای همراه ایران صدها مشترک را پشت یک IPv4 عمومی قرار می‌دهند. سقف ۵ کاربر واقعی را قربانی می‌کرد.</p>
+<p>ولی سقف IP به‌تنهایی دفاع ضعیفی است. سه لایه داریم و هر سه لازم‌اند:</p>
+<table><thead><tr><th>لایه</th><th>عدد</th><th>وضعیت</th></tr></thead><tbody><tr><td>هر شماره</td><td>۳ در ۱۰ دقیقه</td><td>از قبل در <code>otp_rate_limit_check()</code> هست</td></tr><tr><td>هر دستگاه/IP</td><td><strong>۱۰ در ساعت</strong></td><td>تازه</td></tr><tr><td>کل روزانه</td><td><strong>۱۰۰ در شبانه‌روز</strong></td><td>تازه — پشتوانهٔ اصلی</td></tr></tbody></table>
+<h3>شکاف تازه: IPv6</h3>
+<p>اگر بازدیدکننده با IPv6 بیاید و <strong>کل نشانی</strong> را هش کنیم، سقف بی‌معنا می‌شود: به هر مشترک معمولاً یک بلوک <code>/64</code> می‌دهند، یعنی میلیاردها نشانی که همه مال یک نفر است. کافی است در هر درخواست یک نشانی تازه از بلوک خودش بردارد.</p>
+<p><strong>درست:</strong> برای IPv6، پیش از هش، نشانی به پیشوند <code>/64</code> کوتاه شود. برای IPv4 کل نشانی هش شود.</p>
+<hr>
+<h2>۳. IP واقعی پشت پروکسی — نیازمند اندازه‌گیری روی سرور</h2>
+<p><strong>صادقانه: از این محیط قابل تشخیص نیست.</strong> دسترسی خروجی من به <code>my.mirbolouki.com</code> بسته است و حدس زدن در این مورد خطرناک است.</p>
+<h3>چرا این مهم‌ترین بند این سند است</h3>
+<p>اگر <code>HTTP_X_FORWARDED_FOR</code> را بی‌قیدوشرط بخوانیم، <strong>سقف IP کاملاً بی‌اثر می‌شود</strong>: مهاجم در هر درخواست یک مقدار تصادفی در آن هدر می‌گذارد و هر درخواست یک «دستگاه تازه» به نظر می‌رسد. این هدر را هر کسی می‌تواند جعل کند.</p>
+<p><strong>قاعده:</strong> <code>X-Forwarded-For</code> فقط وقتی معتبر است که <code>REMOTE_ADDR</code> خودش یک پروکسی شناخته‌شده و مورد اعتماد باشد.</p>
+<blockquote>سابقهٔ موجود: <code>includes/helpers.php:183</code> همین حالا <code>HTTP_X_FORWARDED_PROTO</code> را بی‌قیدوشرط باور می‌کند (برای تشخیص HTTPS). پیامدش محدود است، ولی <strong>این الگو نباید برای سقف IP تکرار شود.</strong></blockquote>
+<h3>ابزار تشخیص ساخته شد</h3>
+<p><code>phase5/tools/ip_probe.php</code></p>
+<ol><li>در ریشهٔ <code>my.mirbolouki.com</code> قرار بگیرد؛</li><li>یک بار با <strong>دیتای موبایل</strong> (نه وای‌فای) باز شود؛</li><li>خروجی برای من فرستاده شود؛</li><li><strong>فایل بلافاصله حذف شود.</strong></li></ol>
+<p>سه حالت ممکن و واکنش هرکدام:</p>
+<table><thead><tr><th>خروجی</th><th>یعنی</th><th><code>client_ip()</code> چه بخواند</th></tr></thead><tbody><tr><td>هیچ هدر پروکسی‌ای نیست</td><td>سرور مستقیم است</td><td><code>REMOTE_ADDR</code></td></tr><tr><td><code>HTTP_CF_CONNECTING_IP</code> هست</td><td>پشت Cloudflare</td><td>همان هدر، فقط اگر <code>REMOTE_ADDR</code> در بازهٔ Cloudflare باشد</td></tr><tr><td><code>HTTP_AR_REAL_IP</code> هست</td><td>پشت ابرآروان</td><td>همان هدر، با همان شرط</td></tr></tbody></table>
+<p>تا رسیدن خروجی، پیش‌فرض امن <code>REMOTE_ADDR</code> است.</p>
+<hr>
+<h2>۴. پاک‌سازی <code>otp_codes</code> و اتمیک بودن</h2>
+<h3>۴-الف — پاک‌سازی: ✅ تأیید شد، امن است</h3>
+<p>کل پروژه برای <code>DELETE</code> جست‌وجو شد. <strong>هیچ <code>DELETE FROM otp_codes</code> در هیچ‌کجا وجود ندارد.</strong> تنها حذف‌های فیزیکی پروژه مربوط به <code>form_draft_saves</code> (پاک‌سازی تنبل فاز ۴) و اسکریپت نصب اولیه است.</p>
+<p>ردیف‌های <code>otp_codes</code> فقط <code>UPDATE</code> می‌شوند:</p>
+<pre><code>/* کدهای استفاده‌نشدهٔ قبلی باطل می‌شوند */
+UPDATE otp_codes SET consumed_at = ? WHERE mobile_number = ? AND purpose = ? AND consumed_at IS NULL</code></pre>
+<p><strong>باطل‌کردن با <code>UPDATE</code> است، نه حذف</strong> — پس ردیف‌ها در شمارش سقف باقی می‌مانند. پنجرهٔ یک‌ساعته و شمارش روزانه قابل اتکا هستند.</p>
+<blockquote><strong>قید دائمی برای آینده:</strong> اگر روزی پاک‌سازی <code>otp_codes</code> اضافه شد، نباید ردیف جوان‌تر از <strong>۴۸ ساعت</strong> را حذف کند. در غیر این صورت سقف‌ها بی‌صدا می‌شکنند. این قید باید در خود سند مهاجرت ثبت شود.  حجم نگران‌کننده نیست: ۱۰۰ ردیف در روز ≈ ۳۶ هزار ردیف در سال.</blockquote>
+<h3>۴-ب — اتمیک بودن: ❌ شکاف واقعی پیدا شد</h3>
+<p>جریان امروز:</p>
+<pre><code>otp_rate_limit_check($db, $mobile);     // SELECT COUNT(*)
+...
+INSERT INTO otp_codes (...)             // درج
+sms_send_otp_code($mobile, $code);      // ارسال</code></pre>
+<p><strong>چک و درج اتمیک نیستند.</strong> دو درخواست هم‌زمان هر دو همان COUNT را می‌خوانند و هر دو رد می‌شوند. با چند درخواست موازی، سقف قابل عبور است — دقیقاً همان چیزی که یک ربات انجام می‌دهد.</p>
+<p>این نقص <strong>از قبل در سامانه وجود دارد</strong> و مخصوص رزرو نیست؛ ولی تا امروز فقط صفحه‌های پشت ورود از آن استفاده می‌کردند. روی یک صفحهٔ عمومی تبدیل به مسئله می‌شود.</p>
+<p><strong>راه‌حل، با همان الگوهای موجود پروژه</strong> (<code>mysqli_begin_transaction</code> و <code>FOR UPDATE</code> که در <code>admission_lock_for_update()</code> استفاده شده‌اند):</p>
+<pre><code>mysqli_begin_transaction($db)
+    SELECT COUNT(*) ... WHERE ip_hash = ? AND created_at &gt; ? FOR UPDATE
+    SELECT COUNT(*) ... WHERE purpose = &#x27;BOOKING_REQUEST&#x27; AND created_at &gt; ? FOR UPDATE
+    اگر از سقف گذشت  → rollback، پیامک ارسال نمی‌شود
+    INSERT INTO otp_codes (... ip_hash ...)
+mysqli_commit($db)
+    ← ارسال پیامک *بعد از* commit</code></pre>
+<p>با ایندکس <code>(ip_hash, created_at)</code> قفل محدوده، درخواست‌های هم‌زمانِ یک IP را پشت سر هم می‌چیند. جدول تازه‌ای لازم نیست.</p>
+<p><strong>ارسال پیامک حتماً بعد از <code>commit</code> باشد</strong> — همان الگوی <code>form_auto_assign_intake()</code> در فاز ۴. اگر پیامک شکست خورد، ردیف می‌ماند و در سقف شمرده می‌شود؛ این محافظه‌کارانه و درست است، چون تلاش دوباره نباید رایگان باشد.</p>
+<hr>
+<h2>۵. انطباق با ADR-010 — پیشنهاد قبلی نقض می‌کرد</h2>
+<p>متن ADR-010 (ضمیمهٔ طراحی روز اول، وضعیت «قطعی»):</p>
+<blockquote>یک جفت جدول عمومی (<code>lookup_lists</code> + <code>lookup_items</code>) برای <strong>تمام</strong> فهرست‌های قابل‌ویرایش؛ <strong>یک صفحهٔ مدیریتی واحد، نه صفحه به ازای هر فهرست</strong>؛ آیتم‌ها هرگز حذف فیزیکی نمی‌شوند، فقط <code>is_active=0</code>.</blockquote>
+<p>فهرست ۱۲ خدمت سایت دقیقاً یک «فهرست قابل‌ویرایش» است. پس جدول اختصاصی <code>booking_service_options</code> که پیشنهاد کرده بودم <strong>خلاف ADR-010 است</strong> — و یک صفحهٔ مدیریتی دوم هم لازم می‌داشت.</p>
+<h3>اصلاح</h3>
+<p><strong>یک فهرست در <code>lookup_lists</code></strong> با کد <code>booking_service_option</code> و ۱۲ آیتم در <code>lookup_items</code>. از همان صفحهٔ مدیریت فهرست‌های موجود ویرایش می‌شود، بدون یک خط رابط کاربری تازه، و غیرفعال‌سازی به‌جای حذف از خود الگو می‌آید.</p>
+<h3>و نگاشت خودکار حذف می‌شود</h3>
+<p><code>lookup_items</code> ستونی برای <code>service_type_id</code> ندارد. دو راه بود: یک جدول نگاشت کوچک، یا <strong>حذف کامل نگاشت</strong>.</p>
+<p><strong>حذف نگاشت را توصیه می‌کنم.</strong> منشی هنگام تبدیل درخواست به پذیرش، از قبل باید در فرم پذیرش یک «نوع خدمت» انتخاب کند. نگاشت خودکار یعنی یک جدول بیشتر، یک رابط override بیشتر، و همان باگ <code>(int) ?? </code> که در بررسی سوم پیدا شد — برای صرفه‌جویی در یک کلیک.</p>
+<p>در <code>booking_requests</code> فقط <code>requested_service_label</code> می‌ماند (عین متنی که بازدیدکننده دید). اگر پس از یک ماه داده معلوم شد نگاشت‌ها تکراری‌اند، آن وقت با داده تصمیم می‌گیریم.</p>
+<h3>نتیجه: مهاجرت کوچک‌تر شد</h3>
+<table><thead><tr><th></th><th>قبل</th><th>بعد</th></tr></thead><tbody><tr><td>جدول تازه</td><td>۳ (<code>booking_requests</code>، <code>public_rate_limits</code>، <code>booking_service_options</code>)</td><td><strong>۱</strong> (<code>booking_requests</code>)</td></tr><tr><td>ALTER روی جدول موجود</td><td>۱</td><td>۲ (هر دو افزایشی و بی‌خطر)</td></tr><tr><td>رابط مدیریتی تازه</td><td>۱ صفحه برای نگاشت</td><td><strong>۰</strong></td></tr></tbody></table>
+<hr>
+<h2>۶. تصحیح یک اشتباه خودم</h2>
+<p>در بررسی دوم، بند ج-۹، اشارهٔ سند به «وب‌هوک <code>test.mirbolouki.com</code>» را ایراد گرفتم با این استدلال که محیط آزمایشی جداگانه لغو شده است.</p>
+<p><strong>اشتباه کردم.</strong> <code>test.mirbolouki.com</code> محیط staging نیست؛ <strong>سامانهٔ آزمون‌های روان‌شناختی</strong> است و در طراحی روز اول تثبیت شده:</p>
+<ul><li><strong>ADR-005 (لغوشده):</strong> اجرای آزمون منحصراً در <code>test.mirbolouki.com</code>؛</li></ul>
+<p>جوما هیچ ورودی دستی نمره ندارد.</p>
+<ul><li><strong>ADR-014 (قطعی):</strong> تشخیص هویت مراجع بین جوما و <code>test.mirbolouki.com</code></li></ul>
+<p>منحصراً با شمارهٔ موبایل.</p>
+<p>پس آن اشاره کاملاً بجا بود. ج-۹ پس گرفته می‌شود.</p>
+<hr>
+<h2>۷. آنچه باید در اصلاحیه به مدیر ارشد اضافه شود</h2>
+<ol><li>ا-۵ دو بخش دارد: افزودن مقدار به ENUM <strong>و</strong> افزودن ستون <code>ip_hash</code>.</li><li>ثابت تازهٔ <code>IP_HASH_KEY</code> در <code>config.php</code> و افزودن <code>config.php</code> به <code>.gitignore</code>.</li><li>سقف IP = ۱۰ در ساعت (CGNAT)، با هش <code>/64</code> برای IPv6.</li><li>فهرست خدمات طبق ADR-010، و حذف جدول نگاشت.</li><li>رفع نقص اتمیک‌نبودن سقف — که <strong>یک نقص موجود در سامانه است</strong>، نه چیزی که این پروژه وارد کرده باشد.</li></ol>
+</div>
+</body>
+</html>

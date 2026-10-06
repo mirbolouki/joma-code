@@ -3,3 +3,8 @@ phase1/build/
 # ابزار بررسی نحوی — وابستگی‌های نصب‌شونده، نباید در مخزن باشند
 phase1/tools/lint/node_modules/
 phase1/tools/lint/package-lock.json
+
+# اسرار — رمز پایگاه داده، کلید SMS.ir، کلید هش IP.
+# فقط روی سرور ساخته می‌شود و هرگز نباید وارد مخزن شود.
+phase1/public_html/includes/config.php
+phase1/public_html/includes/secrets.php
