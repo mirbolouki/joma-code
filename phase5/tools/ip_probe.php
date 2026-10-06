@@ -42,7 +42,36 @@ foreach ($_SERVER as $k => $v) {
     if (strpos($k, 'HTTP_') === 0) { echo "  " . $k . " = " . $v . "\n"; }
 }
 echo str_repeat('-', 60) . "\n";
-echo "IPv6؟ " . (isset($_SERVER['REMOTE_ADDR']) && strpos($_SERVER['REMOTE_ADDR'], ':') !== false
-      ? 'بله — پیشوند /64 باید هش شود، نه کل نشانی' : 'خیر (IPv4)') . "\n";
+
+/* ── محاسبهٔ درست پیشوند /64 ────────────────────────────────────────
+ * هشدار: explode(':') و برداشتن چهار بخش اول، روی نشانی فشردهٔ IPv6
+ * نتیجهٔ غلط می‌دهد؛ «2001:db8::1» چهار بخش ندارد.
+ * تنها راه درست، تبدیل به صورت دودویی و ماسک‌کردن ۶۴ بیت اول است. */
+function ipv6_prefix64($ip)
+{
+    $bin = @inet_pton($ip);
+    if ($bin === false || strlen($bin) !== 16) {
+        return null;                      /* IPv4 یا نشانی نامعتبر */
+    }
+    return inet_ntop(substr($bin, 0, 8) . str_repeat("\0", 8));
+}
+
+$peer = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+$p64  = ipv6_prefix64($peer);
+if ($p64 !== null) {
+    echo "IPv6 است. آنچه باید هش شود، پیشوند /64 است:\n";
+    echo "  نشانی کامل : " . $peer . "\n";
+    echo "  پیشوند /64 : " . $p64 . "\n";
+} else {
+    echo "IPv4 است (یا نشانی نامعتبر). کل نشانی هش می‌شود.\n";
+}
+
+/* آیا نشانیِ متصل‌شونده خصوصی است؟ اگر بله، تقریباً قطعاً یک پروکسی
+   جلوی سرور نشسته و IP واقعی در یکی از هدرهای بالا است. */
+$is_public = filter_var($peer, FILTER_VALIDATE_IP,
+                        FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+echo "REMOTE_ADDR عمومی است؟ " . ($is_public !== false
+     ? 'بله — احتمالاً سرور مستقیم است'
+     : 'خیر — یعنی یک پروکسی یا متعادل‌کنندهٔ بار جلوی سرور هست') . "\n";
 echo "PHP " . PHP_VERSION . "\n";
 echo "\n★ پس از ارسال خروجی، این فایل را حذف کنید. ★\n";

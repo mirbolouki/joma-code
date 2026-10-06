@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>درخواست تأیید وصلهٔ ۴.۲.۰ — درخواست نوبت اینترنتی</title>
+<style>
+ body{font-family:Tahoma,Arial,sans-serif;line-height:1.9;max-width:900px;margin:0 auto;padding:24px;background:#f5f6f8;color:#222}
+ .header{background:#2c3e50;color:#fff;padding:22px;border-radius:6px}
+ .header h1{margin:0 0 6px}
+ .header p{margin:4px 0;font-size:.95em}
+ .section{background:#fff;margin:20px 0;padding:20px;border-right:4px solid #3498db;border-radius:4px}
+ .section h2{margin-top:0;color:#2c3e50}
+ .decision{background:#eef2f5;padding:14px;margin:12px 0;border-radius:3px}
+ table{width:100%;border-collapse:collapse;margin:12px 0}
+ th,td{padding:9px;text-align:right;border:1px solid #d7dde3;vertical-align:top}
+ th{background:#3498db;color:#fff}
+ .risk{background:#fdecea;padding:12px;margin:10px 0;border-right:3px solid #e74c3c;border-radius:3px}
+ .ok{background:#e8f6ee;padding:12px;margin:10px 0;border-right:3px solid #27ae60;border-radius:3px}
+ .sig{border:1px solid #333;padding:20px;margin-top:28px;background:#fff;border-radius:4px}
+ .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:20px}
+ code{background:#eceff1;padding:2px 5px;border-radius:3px;font-family:Consolas,monospace;direction:ltr;display:inline-block}
+ .note{color:#6b7a86;font-size:.9em}
+ .box{border:1px solid #333;display:inline-block;width:15px;height:15px;vertical-align:middle;margin-left:4px}
+ @media print{body{background:#fff}.section{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>درخواست تأیید وصلهٔ ۴.۲.۰</h1>
+  <p><strong>سامانهٔ کلینیک جوما — درخواست نوبت اینترنتی از وب‌سایت</strong></p>
+  <p>تاریخ: ۱۴۰۵/۰۷/۱۴ · کد سند: BUILD_420_FA · نسخه: ۲ (نهایی، آمادهٔ امضا)</p>
+  <p>این نسخه جایگزین همهٔ پیش‌نویس‌های قبلی است.</p>
+</div>
+
+<div class="section">
+  <h2>۰. خلاصهٔ مدیریتی</h2>
+  <p>وب‌سایت کلینیک از قبل فرم رزروی دارد (<code>mirbolouki.com/form/reservation</code>) که روی
+  دروپال است و <strong>هیچ اتصالی به جوما ندارد</strong>. درخواست‌ها در یک انبار جدا می‌نشینند و
+  یک نیروی انسانی آن‌ها را دستی دوباره وارد می‌کند.</p>
+  <p><strong>درخواست:</strong> مجوز ساخت یک صفحهٔ عمومی «درخواست نوبت» روی
+  <code>my.mirbolouki.com</code> با تأیید پیامکی شماره، که خروجی‌اش در یک جدول قرنطینهٔ جداگانه
+  می‌نشیند و با تصمیم انسانی به پذیرش رسمی تبدیل می‌شود.</p>
+  <p><strong>آنچه این پروژه نیست:</strong> رزرو خودکار نوبت. هیچ غریبه‌ای نوبت قطعی نمی‌گیرد،
+  هیچ غریبه‌ای در جدول‌های بالینی چیزی نمی‌نویسد، و دروازهٔ «پذیرش درمانگر» دست‌نخورده می‌ماند.</p>
+  <div class="ok"><strong>بدون پیش‌نیاز.</strong> بررسی نشان داد صفحهٔ انتخاب زمان‌های آزاد برای
+  منشی از فاز ۲ وجود دارد (<code>reception/appointment_new.php</code>)، و چون تقویم هرگز عمومی
+  نمی‌شود، این وصله هیچ وابستگی‌ای به موتور نوبت‌دهی ندارد. <strong>برآورد: ۲ روز.</strong></div>
+</div>
+
+<div class="section">
+  <h2>۱. چرا نمی‌توان فرم سایت را مستقیم به پذیرش وصل کرد</h2>
+  <p>چهار ستون <code>NOT NULL</code> اجازه نمی‌دهند — و هر چهار محافظ عمدی‌اند:</p>
+  <table>
+    <tr><th>ستون</th><th>معنای تجاری</th></tr>
+    <tr><td><code>admissions.created_by_person_id</code></td><td>هر پذیرش مسئول انسانی دارد</td></tr>
+    <tr><td><code>admissions.referred_therapist_person_id</code></td><td>ارجاع یک تصمیم بالینی است، نه انتخاب مشتری</td></tr>
+    <tr><td><code>admissions.referral_reason_id</code></td><td>دلیل مراجعه از فهرست استاندارد</td></tr>
+    <tr><td><code>appointments.admission_id</code></td><td>نوبت بدون پذیرش وجود ندارد</td></tr>
+  </table>
+  <p>و محافظ پنجم: <code>persons.mobile_number</code> یکتاست، همهٔ کلیدهای خارجی RESTRICT‌اند و
+  حذف فیزیکی ممنوع است. <strong>اگر عموم مردم در <code>persons</code> بنویسند، راه نوشتن مستقیم
+  به جدول هویت پروندهٔ بالینی به دست غریبه داده‌ایم و اولین شمارهٔ اشتباه برای همیشه می‌ماند.</strong></p>
+  <p><strong>اصل طراحی: «درخواست نوبت» ≠ «نوبت».</strong> جدول قرنطینه هیچ کلید خارجی‌ای به
+  <code>persons</code> ندارد؛ تنها پل، <code>converted_admission_id</code> است که فقط پس از
+  تصمیم کارمند پر می‌شود.</p>
+</div>
+
+<div class="section">
+  <h2>۲. الزامات نیازمند تأیید (ا)</h2>
+
+  <div class="decision"><strong>ا-۱ — نخستین صفحهٔ بدون احراز هویت در تاریخ سامانه</strong>
+  <p>تا امروز هر صفحهٔ جوما پشت ورود بوده است.</p>
+  <p><strong>روش کنترل:</strong> هیچ تابع تازه‌ای مثل <code>auth_bypass()</code> ساخته نمی‌شود.
+  در این معماری نگهبان سراسری وجود ندارد؛ هر صفحه خودش
+  <code>auth_require_active_session()</code> را صدا می‌زند. بنابراین صفحهٔ عمومی صرفاً آن را
+  صدا نمی‌زند، و در عوض <strong>یک آزمون خودکار</strong> تضمین می‌کند که فهرست صفحه‌های بدون
+  نگهبان دقیقاً همان فهرست مجاز است و تصادفاً بلند نمی‌شود.</p>
+  <p class="note">افزودن تابعی که کارش خاموش‌کردن احراز هویت است، خودش یک سطح حمله تازه می‌سازد.</p></div>
+
+  <div class="decision"><strong>ا-۲ — ذخیرهٔ داده‌ٔ شخصی از فرد احرازهویت‌نشده</strong>
+  <p>نام و شمارهٔ موبایل کسانی که هنوز مراجع نیستند ذخیره می‌شود. کد ملی، تاریخ تولد و شرح
+  مشکل پرسیده <strong>نمی‌شود</strong>.</p>
+  <p>مدت نگهداری درخواست‌های تبدیل‌نشده: <strong>۱۸۰ روز</strong>، سپس وضعیت
+  <code>EXPIRED</code> (نه حذف فیزیکی).</p>
+  <p><strong>تصمیم مدیر:</strong> <span class="box"></span> ۱۸۰ روز پذیرفته است &nbsp;&nbsp;
+  <span class="box"></span> تغییر به ………… روز</p></div>
+
+  <div class="decision"><strong>ا-۳ — ذخیرهٔ هش IP و مرورگر</strong>
+  <p>IP خام ذخیره نمی‌شود. فقط <code>hash_hmac('sha256', $ip, IP_HASH_KEY)</code>.</p>
+  <p><strong>چرا HMAC و نه هش ساده:</strong> فضای IPv4 تنها ۲<sup>۳۲</sup> است؛ یک SHA-256 بدون
+  کلید در چند ثانیه معکوس می‌شود و «هش» عملاً همان ذخیرهٔ خام خواهد بود.</p>
+  <p><code>IP_HASH_KEY</code> = <strong>۳۲ بایت</strong> تصادفی (۶۴ نویسهٔ هگز) در
+  <code>includes/config.php</code>، کنار سایر اسرار.</p>
+  <p>برای IPv6، پیش از هش، نشانی به پیشوند <code>/64</code> کوتاه می‌شود — وگرنه کاربر با
+  چرخاندن نشانی داخل بلوک خودش سقف را دور می‌زند.</p></div>
+
+  <div class="decision"><strong>ا-۴ — دو تغییر افزایشی روی <code>otp_codes</code></strong>
+<pre style="direction:ltr;text-align:left;background:#eceff1;padding:10px;border-radius:3px;overflow:auto"><code>ALTER TABLE otp_codes MODIFY purpose
+  ENUM('REGISTER','RESET_PASSWORD','CONFIRM_MOBILE_CHANGE',
+       'PATIENT_LOGIN','BOOKING_REQUEST') NOT NULL;
+
+ALTER TABLE otp_codes ADD COLUMN ip_hash CHAR(64) NULL AFTER purpose;
+ALTER TABLE otp_codes ADD KEY idx_otp_ip (ip_hash, created_at);</code></pre>
+  <p>هر چهار مقدار موجود <strong>حفظ می‌شوند</strong> — به‌ویژه <code>PATIENT_LOGIN</code> که
+  ورود مراجع به پورتال به آن وابسته است. ستون تازه nullable است: هیچ ردیفی تغییر نمی‌کند و
+  هیچ کدی نمی‌شکند.</p>
+  <p class="note">سود جانبی: سقف IP آنگاه برای همهٔ جریان‌های کد یک‌بارمصرف فعال می‌شود، از
+  جمله ورود مراجع که امروز هیچ سقف IP ندارد.</p></div>
+
+  <div class="decision"><strong>ا-۵ — حفاظت فایل اسرار</strong>
+  <p><code>includes/config.php</code> (رمز پایگاه داده، کلید SMS.ir، <code>IP_HASH_KEY</code>)
+  به <code>.gitignore</code> اضافه شد. تا پیش از این در آن نبود و فقط چون هرگز ساخته نشده بود
+  به مخزن عمومی نرفته بود.</p></div>
+
+  <div class="decision"><strong>ا-۶ — رفع یک نقص موجود: سقف غیراتمیک</strong>
+  <p><code>otp_rate_limit_check()</code> اول <code>SELECT COUNT(*)</code> می‌زند و سپس درج
+  انجام می‌شود. دو درخواست هم‌زمان هر دو از سقف رد می‌شوند.</p>
+  <p><strong>این نقص امروز در سامانه هست و ساختهٔ این پروژه نیست</strong>، ولی تا کنون فقط
+  صفحه‌های پشت ورود از آن استفاده می‌کردند؛ روی صفحهٔ عمومی قابل بهره‌برداری می‌شود.</p>
+  <p><strong>رفع:</strong> تراکنش + <code>SELECT ... FOR UPDATE</code>، طبق الگوی موجود
+  <code>admission_lock_for_update()</code> در <code>includes/admission_functions.php</code>.
+  جدول تازه‌ای لازم نیست. ارسال پیامک <strong>پس از</strong> <code>commit</code> انجام می‌شود.</p></div>
+</div>
+
+<div class="section">
+  <h2>۳. تصمیم‌های فنی (ت)</h2>
+  <table>
+    <tr><th>#</th><th>موضوع</th><th>تصمیم</th></tr>
+    <tr><td>ت-۱</td><td>ترجیح زمانی</td><td>روز هفته (<strong>شنبه تا جمعه</strong> + «هر روزی») ·
+      بازه: <strong>صبح ۹–۱۳ / عصر ۱۳–۲۰ / فرقی ندارد</strong> · یادداشت کوتاه اختیاری.<br>
+      «شب» حذف شد: ساعت کاری سامانه تا ۲۰ است و پیشنهاد زمانی که قابل ارائه نیست، همان انتظار
+      نادرستی را می‌سازد که می‌خواستیم حذف کنیم.</td></tr>
+    <tr><td>ت-۲</td><td>نقطهٔ ثبت</td><td><strong>پس از تأیید پیامکی.</strong> پیش از آن، دادهٔ فرم
+      فقط در نشست کاربر است. هیچ ردیف تأییدنشده‌ای ساخته نمی‌شود.</td></tr>
+    <tr><td>ت-۳</td><td>سقف ارسال کد</td><td>سه لایه:<br>
+      • هر شماره: ۳ در ۱۰ دقیقه (موجود)<br>
+      • هر دستگاه: <strong>۱۰ در ساعت</strong> — عدد به دلیل CGNAT اپراتورهای همراه از ۵ به ۱۰ رسید<br>
+      • کل روزانه: <strong>۱۰۰ در شبانه‌روز</strong></td></tr>
+    <tr><td>ت-۴</td><td>فهرست ۱۲ خدمت سایت</td><td>یک فهرست در <code>lookup_items</code> طبق
+      <strong>ADR-010</strong> («تمام فهرست‌های قابل‌ویرایش… یک صفحهٔ مدیریتی واحد»). جدول
+      اختصاصی ساخته نمی‌شود و <strong>نگاشت خودکار حذف شد</strong>؛ منشی هنگام تبدیل، نوع خدمت
+      را در فرم پذیرش انتخاب می‌کند.</td></tr>
+    <tr><td>ت-۵</td><td>وابستگی به فاز ۲</td><td>صفر.</td></tr>
+    <tr><td>ت-۶</td><td>رزرو مستقیم مراجع قدیمی</td><td>معوق. این وصله فقط مسیر غریبه را باز می‌کند.</td></tr>
+    <tr><td>ت-۷</td><td>وضعیت درخواست</td><td><code>NEW</code> · <code>CONTACTED</code> ·
+      <code>CONVERTED</code> · <code>REJECTED</code> · <code>SPAM</code> · <code>EXPIRED</code><br>
+      <span class="note">«EXPIRED» برای اجرای ا-۲ لازم است و «SPAM» برای جداکردن آن از رد
+      بالینی.</span></td></tr>
+    <tr><td>ت-۸</td><td>تبدیل به پذیرش</td><td>دستی. فرم: درمانگر + دلیل مراجعه. پذیرش با وضعیت
+      <code>AWAITING_THERAPIST</code> ساخته می‌شود و <strong>درمانگر باید بپذیرد یا رد کند</strong>.
+      نوبت در همان لحظه ساخته نمی‌شود.</td></tr>
+    <tr><td>ت-۹</td><td>رد درخواست</td><td>دلیل اجباری از <code>lookup_items</code> + توضیح اختیاری.</td></tr>
+    <tr><td>ت-۱۰</td><td>ابهام شمارهٔ تکراری</td><td>اگر شماره متعلق به پرسنل باشد: تبدیل مسدود.
+      اگر متعلق به مراجع موجود با نام متفاوت باشد: منشی باید آگاهانه انتخاب کند. اگر تازه باشد:
+      ساخت شخص تازه.</td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>۴. ریسک‌ها</h2>
+  <div class="risk"><strong>R11 — تخلیهٔ اعتبار پیامک.</strong> هزینهٔ مالی مستقیم. سقف فعلی فقط
+  به‌ازای شماره است. <em>اقدام:</em> ستون <code>ip_hash</code> + سه لایهٔ سقف + اتمیک‌سازی (ا-۶).
+  <strong>پیش‌نیاز انتشار؛ صفحه بدون آن منتشر نمی‌شود.</strong></div>
+  <div class="risk"><strong>R12 — IP واقعی پشت پروکسی.</strong> اگر <code>X-Forwarded-For</code>
+  بی‌قیدوشرط باور شود، سقف IP <strong>کاملاً بی‌اثر</strong> می‌شود: مهاجم در هر درخواست یک
+  مقدار تصادفی می‌گذارد. <em>اقدام:</em> هدر فقط وقتی معتبر است که <code>REMOTE_ADDR</code> خودش
+  پروکسی شناخته‌شده باشد. وضعیت واقعی با <code>phase5/tools/ip_probe.php</code> اندازه‌گیری
+  می‌شود؛ تا آن زمان پیش‌فرض امن <code>REMOTE_ADDR</code> است.</div>
+  <div class="risk"><strong>R13 — IPv6.</strong> هر مشترک یک بلوک <code>/64</code> دارد.
+  <em>اقدام:</em> هش پیشوند <code>/64</code>، با محاسبهٔ دودویی (<code>inet_pton</code>) نه
+  تقسیم متنی — که روی نشانی فشرده نتیجهٔ غلط می‌دهد.</div>
+  <div class="risk"><strong>R14 — سقف روزانه یک کلید قطع سرویس هم هست.</strong> با پر شدن ۱۰۰،
+  مراجع واقعی هم تا پایان روز نمی‌تواند درخواست دهد. <em>اقدام:</em> رویداد حسابرسی + هشدار در
+  داشبورد منشی + پیامی که بن‌بست نباشد و شمارهٔ تماس کلینیک را بدهد.</div>
+  <div class="risk"><strong>R15 — درخواست‌های بی‌پاسخ.</strong> <em>اقدام:</em> نشانگر تعداد در
+  منو + نمایش سن هر درخواست + هشدار «قدیمی‌تر از ۴۸ ساعت».</div>
+</div>
+
+<div class="section">
+  <h2>۵. دامنهٔ مهاجرت <code>4.2.0</code></h2>
+  <table>
+    <tr><th>مورد</th><th>تعداد</th><th>توضیح</th></tr>
+    <tr><td>جدول تازه</td><td><strong>۱</strong></td><td><code>booking_requests</code></td></tr>
+    <tr><td>تغییر روی جدول موجود</td><td>۲</td><td>هر دو افزایشی روی <code>otp_codes</code>؛ بدون بازنویسی داده</td></tr>
+    <tr><td>فهرست تازه</td><td>۱</td><td>داده در <code>lookup_items</code>، نه ساختار</td></tr>
+    <tr><td>صفحهٔ مدیریتی تازه</td><td><strong>۰</strong></td><td>طبق ADR-010</td></tr>
+    <tr><td>جدول حذف‌شده از پیش‌نویس‌ها</td><td>۲</td><td><code>public_rate_limits</code> و جدول نگاشت خدمات</td></tr>
+  </table>
+  <p class="note">معیار پذیرش: هیچ گامی «قبول» اعلام نمی‌شود مگر با اجرای واقعی روی سامانهٔ زنده و
+  تأیید مالک — همان رویهٔ فاز ۴. مجموعهٔ آزمون شامل آزمون‌های سوءاستفاده (فشار بر هر سه سقف،
+  جعل هدر، ربات، شمارهٔ تکراری، دسترسی غیرمجاز) خواهد بود.</p>
+</div>
+
+<div class="section">
+  <h2>۶. اگر مجوز صادر نشود</h2>
+  <p>وضع موجود ادامه می‌یابد: ورود دوبارهٔ دستی، شماره‌های تأییدنشده، و نبود ردّ حسابرسی برای
+  داده‌ٔ شخصی جمع‌آوری‌شده از سایت. گزینهٔ میانی — اتصال وب‌فرم دروپال با Remote Post —
+  <strong>توصیه نمی‌شود</strong>، چون تأیید پیامکی را ناممکن می‌کند و در را به روی ثبت انبوه
+  خودکار باز می‌گذارد.</p>
+</div>
+
+<div class="section">
+  <h2>۷. جدول تصمیم‌های درخواستی</h2>
+  <table>
+    <tr><th>#</th><th>موضوع</th><th>تأیید</th><th>رد</th><th>شرط / ملاحظه</th></tr>
+    <tr><td>د-۱</td><td>ساخت وصلهٔ ۴.۲.۰ با مهاجرت <code>4.2.0</code></td><td><span class="box"></span></td><td><span class="box"></span></td><td></td></tr>
+    <tr><td>د-۲</td><td>ا-۱ — صفحهٔ عمومی بدون احراز هویت، با آزمون خودکار فهرست مجاز</td><td><span class="box"></span></td><td><span class="box"></span></td><td></td></tr>
+    <tr><td>د-۳</td><td>ا-۲ — دادهٔ شخصی در قرنطینه، انقضای ۱۸۰ روزه</td><td><span class="box"></span></td><td><span class="box"></span></td><td>یا ………… روز</td></tr>
+    <tr><td>د-۴</td><td>ا-۳ — هش HMAC از IP و مرورگر، با پیشوند /64 برای IPv6</td><td><span class="box"></span></td><td><span class="box"></span></td><td></td></tr>
+    <tr><td>د-۵</td><td>ا-۴ — دو تغییر افزایشی روی <code>otp_codes</code></td><td><span class="box"></span></td><td><span class="box"></span></td><td></td></tr>
+    <tr><td>د-۶</td><td>ا-۵ — افزودن <code>config.php</code> به <code>.gitignore</code></td><td><span class="box"></span></td><td><span class="box"></span></td><td>انجام شد</td></tr>
+    <tr><td>د-۷</td><td>ا-۶ — رفع نقص موجود سقف غیراتمیک</td><td><span class="box"></span></td><td><span class="box"></span></td><td></td></tr>
+    <tr><td>د-۸</td><td>ت-۱ تا ت-۱۰</td><td><span class="box"></span></td><td><span class="box"></span></td><td></td></tr>
+    <tr><td>د-۹</td><td>سقف سه‌لایه: ۳ / <strong>۱۰</strong> / ۱۰۰</td><td><span class="box"></span></td><td><span class="box"></span></td><td></td></tr>
+    <tr><td>د-۱۰</td><td>R11 به‌عنوان پیش‌نیاز انتشار</td><td><span class="box"></span></td><td><span class="box"></span></td><td></td></tr>
+    <tr><td>د-۱۱</td><td>بازنشستگی (نه حذف) وب‌فرم دروپال پس از راه‌اندازی</td><td><span class="box"></span></td><td><span class="box"></span></td><td></td></tr>
+  </table>
+</div>
+
+<div class="sig">
+  <h2>امضا</h2>
+  <div class="grid">
+    <div>
+      <p><strong>مدیر ارشد</strong></p>
+      <p>نام: ………………………………</p>
+      <p>تاریخ: ………………………………</p>
+      <p>امضا: ………………………………</p>
+    </div>
+    <div>
+      <p><strong>مالک محصول</strong></p>
+      <p>نام: ………………………………</p>
+      <p>تاریخ: ………………………………</p>
+      <p>امضا: ………………………………</p>
+    </div>
+  </div>
+  <p style="margin-top:18px"><strong>قیود یا ملاحظات:</strong></p>
+  <p>………………………………………………………………………………………………………</p>
+  <p>………………………………………………………………………………………………………</p>
+  <p class="note" style="margin-top:16px">این سند پس از امضا مرجع است. هر تغییری باید به‌صورت
+  اصلاحیهٔ رسمی ثبت شود. پیوست‌ها: <code>ONLINE_BOOKING_DESIGN_FA.md</code> (طراحی فنی) ·
+  <code>TECHNICAL_FINDINGS_01_FA.md</code> (یافته‌های فنی) ·
+  <code>phase5/tools/ip_probe.php</code> (ابزار تشخیص).</p>
+</div>
+
+</body>
+</html>
