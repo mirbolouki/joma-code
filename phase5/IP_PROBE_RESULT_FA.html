@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>نتیجهٔ پروب IP — جوما ۴.۲.۰</title>
+<style>
+:root{--p:#2E5090;--s:#5B9BD5;--ok:#27AE60;--wr:#F39C12;--dg:#E74C3C;--bg:#F5F7FA;--tx:#2C3E50;--bd:#ECF0F1}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Vazirmatn';src:url('public_html/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box}
+body{font-family:'Vazirmatn',Tahoma,sans-serif;font-size:16px;line-height:1.8;color:var(--tx);background:var(--bg);margin:0;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto;background:#fff;border:1px solid var(--bd);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px 36px}
+h1{color:var(--p);font-size:28px;border-bottom:3px solid var(--p);padding-bottom:12px;margin-top:0}
+h2{color:var(--p);font-size:22px;margin-top:36px;border-right:4px solid var(--s);padding-right:10px}
+h3{color:var(--s);font-size:18px;margin-top:24px}
+hr{border:0;border-top:1px solid var(--bd);margin:28px 0}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}
+th,td{border:1px solid var(--bd);padding:10px 12px;text-align:right;vertical-align:top}
+th{background:var(--p);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#FAFBFC}
+code{background:#F0F3F7;color:#C0392B;padding:2px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:14px;direction:ltr;display:inline-block}
+pre{background:#2C3E50;color:#ECF0F1;padding:16px;border-radius:6px;overflow-x:auto;direction:ltr;text-align:left}
+pre code{background:none;color:inherit;padding:0}
+blockquote{background:#FFF8E7;border-right:4px solid var(--wr);margin:16px 0;padding:12px 16px;border-radius:0 6px 6px 0}
+blockquote p{margin:0}
+ul,ol{padding-right:24px}
+li{margin:6px 0}
+a{color:var(--p)}
+.toc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:16px 24px;margin-bottom:28px}
+@media print{body{background:#fff;padding:0}.wrap{box-shadow:none;border:0}}
+@media (max-width:768px){.wrap{padding:20px 16px}table{font-size:14px}th,td{padding:8px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>نتیجهٔ پروب IP — پاسخ قطعی به الزام ۲۳</h1>
+<p><strong>تاریخ:</strong> ۱۴۰۵/۰۷/۱۴ · <strong>اجرا:</strong> مالک، روی دیتای موبایل · <strong>ابزار:</strong> <code>phase5/tools/ip_probe.php</code></p>
+<hr>
+<h2>۱. خروجی خام</h2>
+<pre><code>REMOTE_ADDR     = 2.147.253.154
+SERVER_ADDR     = 91.207.205.36
+SERVER_SOFTWARE = LiteSpeed
+PHP 8.1.34
+
+هیچ هدر پروکسی‌ای وجود ندارد.
+REMOTE_ADDR عمومی است؟ بله — احتمالاً سرور مستقیم است
+IPv4 است. کل نشانی هش می‌شود.</code></pre>
+<p>هدرهای موجود فقط هدرهای عادی مرورگرند: <code>ACCEPT</code>، <code>ACCEPT_ENCODING</code>، <code>ACCEPT_LANGUAGE</code>، <code>COOKIE</code>، <code>HOST</code>، <code>USER_AGENT</code>، <code>UPGRADE_INSECURE_REQUESTS</code>، <code>SEC_CH_UA<em></code>، <code>SEC_FETCH_</em></code>، <code>PRIORITY</code>.</p>
+<p><strong>هیچ‌کدام از اینها نیست:</strong> <code>X-Forwarded-For</code>، <code>X-Real-IP</code>، <code>CF-Connecting-IP</code>، <code>AR-Real-IP</code>، <code>True-Client-IP</code>، <code>Via</code>.</p>
+<hr>
+<h2>۲. چه چیزی ثابت شد</h2>
+<table><thead><tr><th>یافته</th><th>شاهد</th><th>پیامد</th></tr></thead><tbody><tr><td><strong>پروکسی معکوس یا CDN در کار نیست</strong></td><td>صفر هدر پروکسی؛ <code>REMOTE_ADDR</code> عمومی</td><td><code>REMOTE_ADDR</code> قابل اتکاست</td></tr><tr><td><strong>IP واقعاً به اپراتور موبایل می‌رسد</strong></td><td><code>2.147.253.154</code> در بلوک <code>2.144.0.0/13</code> همراه اول</td><td>سقف IP روی کاربر واقعی اثر می‌کند، نه روی یک دروازهٔ مشترک</td></tr><tr><td><strong>CGNAT در این نمونه نبود</strong></td><td>نشانی عمومی است، نه <code>100.64.0.0/10</code></td><td>نگرانی الزام ۲۲ در این نمونه رخ نداد — ولی سقف ۱۰ باقی می‌ماند (یک نمونه دلیل نیست)</td></tr><tr><td><strong>IPv6 نداریم</strong></td><td>پاسخ IPv4 روی دیتای موبایل</td><td>منطق پیشوند <code>/64</code> نوشته می‌شود ولی امروز بی‌استفاده است</td></tr><tr><td><strong>وب‌سرور LiteSpeed است، نه Apache</strong></td><td><code>SERVER_SOFTWARE</code></td><td>مسیرهای تخت (<code>booking.php</code>) درست‌اند؛ به rewrite تکیه نمی‌کنیم</td></tr><tr><td><strong>PHP 8.1.34</strong></td><td>—</td><td>با بقیهٔ پروژه یکسان؛ تغییری لازم نیست</td></tr></tbody></table>
+<hr>
+<h2>۳. تصمیم — تابع نهایی</h2>
+<p>هیچ هدری باور نمی‌شود. اصلاً فهرست «پروکسی مورد اعتماد» لازم نیست، چون پروکسی‌ای وجود ندارد.</p>
+<pre><code>/**
+ * نشانی IP بازدیدکننده، برای سقف نرخ.
+ *
+ * عمداً هیچ هدر HTTP را نمی‌خواند. پروب ۱۴۰۵/۰۷/۱۴ ثابت کرد که
+ * my.mirbolouki.com هیچ پروکسی معکوسی جلوی خود ندارد؛ پس هر
+ * X-Forwarded-For که برسد، ساختهٔ خودِ فرستنده است و باور کردنش
+ * سقف را به‌کلی بی‌اثر می‌کند.
+ *
+ * ★ اگر روزی آروان‌کلاد یا کلادفلر جلوی دامنه گذاشته شد، این تابع
+ *   باید پیش از آن تغییر کند — به بند «هشدار بازگشت» نگاه کنید.
+ */
+function booking_client_ip()
+{
+    return isset($_SERVER[&#x27;REMOTE_ADDR&#x27;]) ? $_SERVER[&#x27;REMOTE_ADDR&#x27;] : &#x27;&#x27;;
+}
+
+function booking_ip_hash($ip)
+{
+    $bin = @inet_pton($ip);
+    if ($bin !== false &amp;&amp; strlen($bin) === 16) {   /* IPv6 → پیشوند /64 */
+        $ip = inet_ntop(substr($bin, 0, 8) . str_repeat(&quot;\0&quot;, 8));
+    }
+    return hash_hmac(&#x27;sha256&#x27;, $ip, IP_HASH_KEY);  /* ۶۴ نویسهٔ هگز */
+}</code></pre>
+<hr>
+<h2>۴. هشدار بازگشت — خطری که امروز وجود ندارد ولی فردا ممکن است</h2>
+<p>اگر بعداً CDN جلوی دامنه برود و این تابع عوض نشود، <code>REMOTE_ADDR</code> برای <strong>همهٔ</strong> بازدیدکننده‌ها نشانی CDN می‌شود. آن‌وقت همه یک <code>ip_hash</code> مشترک می‌گیرند و سقف ۱۰ در ساعت <strong>کل مراجعان کلینیک را با هم قفل می‌کند</strong> — نه یک مهاجم را.</p>
+<p>برای همین سقف IP باید در این حالت <strong>باز بماند، نه بسته</strong>:</p>
+<pre><code>/* اگر REMOTE_ADDR خصوصی شد، یعنی پروکسی‌ای ظاهر شده که در طراحی
+   دیده نشده بود. در این حالت سقف IP را نادیده می‌گیریم و خطا را
+   ثبت می‌کنیم. سقف موبایل و سقف روزانه همچنان کار می‌کنند. */
+$is_public = filter_var($ip, FILTER_VALIDATE_IP,
+                        FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+if ($is_public === false) {
+    log_system_error(&#x27;BOOKING_IP_PROXY_DETECTED&#x27;, &#x27;REMOTE_ADDR خصوصی است: &#x27; . $ip);
+    return true;   /* از سقف IP رد شو؛ قفل‌شدن همه بدتر از نبودِ این لایه است */
+}</code></pre>
+<p>دلیل این انتخاب: سه لایهٔ سقف داریم. اگر یکی از کار بیفتد، دو لایهٔ دیگر (۳ در ۱۰ دقیقه برای هر موبایل، ۱۰۰ در روز سراسری) هنوز سر جایشان‌اند. اما اگر لایهٔ IP اشتباهی همه را قفل کند، هیچ‌کس نمی‌تواند نوبت بگیرد و کسی هم متوجه علتش نمی‌شود.</p>
+<hr>
+<h2>۵. کار باقی‌مانده برای مالک</h2>
+<p>★ <strong><code>ip_probe.php</code> را از ریشهٔ سایت حذف کنید.</strong> کارش تمام شد.</p>
+</div>
+</body>
+</html>

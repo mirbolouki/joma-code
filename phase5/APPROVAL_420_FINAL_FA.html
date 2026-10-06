@@ -163,11 +163,18 @@ ALTER TABLE otp_codes ADD KEY idx_otp_ip (ip_hash, created_at);</code></pre>
   <div class="risk"><strong>R11 — تخلیهٔ اعتبار پیامک.</strong> هزینهٔ مالی مستقیم. سقف فعلی فقط
   به‌ازای شماره است. <em>اقدام:</em> ستون <code>ip_hash</code> + سه لایهٔ سقف + اتمیک‌سازی (ا-۶).
   <strong>پیش‌نیاز انتشار؛ صفحه بدون آن منتشر نمی‌شود.</strong></div>
-  <div class="risk"><strong>R12 — IP واقعی پشت پروکسی.</strong> اگر <code>X-Forwarded-For</code>
-  بی‌قیدوشرط باور شود، سقف IP <strong>کاملاً بی‌اثر</strong> می‌شود: مهاجم در هر درخواست یک
-  مقدار تصادفی می‌گذارد. <em>اقدام:</em> هدر فقط وقتی معتبر است که <code>REMOTE_ADDR</code> خودش
-  پروکسی شناخته‌شده باشد. وضعیت واقعی با <code>phase5/tools/ip_probe.php</code> اندازه‌گیری
-  می‌شود؛ تا آن زمان پیش‌فرض امن <code>REMOTE_ADDR</code> است.</div>
+  <div class="risk"><strong>R12 — IP واقعی پشت پروکسی. <span style="color:#0a7">اندازه‌گیری شد — بسته.</span></strong>
+  اگر <code>X-Forwarded-For</code> بی‌قیدوشرط باور شود، سقف IP <strong>کاملاً بی‌اثر</strong>
+  می‌شود: مهاجم در هر درخواست یک مقدار تصادفی می‌گذارد.
+  <em>نتیجهٔ پروب ۱۴۰۵/۰۷/۱۴ روی دیتای موبایل:</em> <code>REMOTE_ADDR = 2.147.253.154</code>
+  (بلوک همراه اول)، <code>SERVER_SOFTWARE = LiteSpeed</code>، <strong>صفر هدر پروکسی</strong> —
+  نه <code>X-Forwarded-For</code>، نه <code>AR-Real-IP</code>، نه <code>CF-Connecting-IP</code>.
+  <em>اقدام قطعی:</em> <code>booking_client_ip()</code> <strong>هیچ هدری را نمی‌خواند</strong> و
+  فقط <code>REMOTE_ADDR</code> را برمی‌گرداند. فهرست پروکسی مورد اعتماد لازم نیست.
+  <em>محافظ بازگشت:</em> اگر روزی <code>REMOTE_ADDR</code> خصوصی دیده شد (یعنی CDN اضافه شده)،
+  سقف IP <strong>باز می‌شود نه بسته</strong> و خطا ثبت می‌گردد — وگرنه همهٔ مراجعان یک
+  <code>ip_hash</code> مشترک می‌گیرند و با هم قفل می‌شوند. جزئیات در
+  <code>phase5/IP_PROBE_RESULT_FA.md</code>.</div>
   <div class="risk"><strong>R13 — IPv6.</strong> هر مشترک یک بلوک <code>/64</code> دارد.
   <em>اقدام:</em> هش پیشوند <code>/64</code>، با محاسبهٔ دودویی (<code>inet_pton</code>) نه
   تقسیم متنی — که روی نشانی فشرده نتیجهٔ غلط می‌دهد.</div>
