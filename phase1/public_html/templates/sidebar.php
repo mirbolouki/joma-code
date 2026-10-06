@@ -18,6 +18,7 @@ if ($role === ROLE_ADMIN) {
         array('label' => '➕ ایجاد کاربر',     'url' => $base . '/admin/user_create.php',  'key' => 'user_create'),
         array('label' => '👥 فهرست کاربران',   'url' => $base . '/admin/users_list.php',   'key' => 'users_list'),
         array('label' => '📋 پذیرش‌ها',        'url' => $base . '/reception/index.php',    'key' => 'reception_home'),
+        array('label' => '👥 مراجعان',         'url' => $base . '/reception/patients.php', 'key' => 'patients'),
         array('label' => '📨 تنظیمات پیامک',   'url' => $base . '/admin/sms_settings.php', 'key' => 'sms_settings'),
     );
     if ($p2) {
@@ -39,6 +40,7 @@ if ($role === ROLE_ADMIN) {
     $menu = array(
         array('label' => '📋 داشبورد',          'url' => $base . '/reception/index.php',        'key' => 'reception_home'),
         array('label' => '➕ ثبت پذیرش جدید',    'url' => $base . '/reception/admission_new.php', 'key' => 'admission_new'),
+        array('label' => '👥 مراجعان',           'url' => $base . '/reception/patients.php',      'key' => 'patients'),
     );
     if ($p2) {
         $menu[] = array('label' => '📅 تقویم نوبت‌ها', 'url' => $base . '/reception/appointments.php',    'key' => 'appointments');
@@ -50,6 +52,7 @@ if ($role === ROLE_ADMIN) {
     $menu = array(
         array('label' => '🩺 کارتابل',         'url' => $base . '/therapist/index.php', 'key' => 'therapist_home'),
         array('label' => '📂 پرونده‌های من',    'url' => $base . '/therapist/index.php#cases', 'key' => ''),
+        array('label' => '👥 مراجعان من',      'url' => $base . '/therapist/patients.php', 'key' => 'therapist_patients'),
     );
     if ($p3) {
         $menu[] = array('label' => '🗒️ آخرین یادداشت‌های من',

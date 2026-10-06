@@ -181,7 +181,8 @@ function admissions_fetch_recent($db, $limit = 20)
     return db_select_all(
         $db,
         "SELECT a.id, a.public_id, a.status, a.created_at,
-                p.first_name, p.last_name,
+                p.first_name, p.last_name, p.public_id AS patient_public_id,
+                p.mobile_number,
                 st.title AS service_title,
                 tp.first_name AS therapist_first_name, tp.last_name AS therapist_last_name
            FROM admissions a

@@ -112,16 +112,17 @@ require __DIR__ . '/../templates/header.php';
   <div class="table-wrap table-scroll">
     <table class="table table-card">
       <thead>
-        <tr><th>مراجع</th><th>خدمت</th><th>درمانگر</th><th>تاریخ ثبت</th><th>وضعیت</th>
-          <?php if (phase4_ready($db)) { ?><th>فرم پذیرش</th><?php } ?></tr>
+        <tr><th>مراجع</th><th>موبایل</th><th>خدمت</th><th>درمانگر</th><th>تاریخ ثبت</th><th>وضعیت</th>
+          <?php if (phase4_ready($db)) { ?><th>فرم پذیرش</th><?php } ?><th></th></tr>
       </thead>
       <tbody>
       <?php if (count($recent) === 0) { ?>
-        <tr><td colspan="<?php echo phase4_ready($db) ? 6 : 5; ?>" class="table-empty">هنوز پذیرشی ثبت نشده است.</td></tr>
+        <tr><td colspan="<?php echo phase4_ready($db) ? 8 : 7; ?>" class="table-empty">هنوز پذیرشی ثبت نشده است.</td></tr>
       <?php } ?>
       <?php foreach ($recent as $row) { ?>
         <tr>
           <td data-label="مراجع"><?php echo e($row['first_name'] . ' ' . $row['last_name']); ?></td>
+          <td data-label="موبایل" class="mono"><?php echo e(to_persian_digits($row['mobile_number'])); ?></td>
           <td data-label="خدمت"><?php echo e($row['service_title']); ?></td>
           <td data-label="درمانگر">
             <?php echo e($row['therapist_first_name'] . ' ' . $row['therapist_last_name']); ?>
@@ -145,6 +146,10 @@ require __DIR__ . '/../templates/header.php';
               <?php } ?>
             </td>
           <?php } ?>
+          <td data-label="اقدام">
+            <a class="btn btn-sm btn-secondary"
+               href="patient_view.php?p=<?php echo e($row['patient_public_id']); ?>">پروندهٔ مراجع</a>
+          </td>
         </tr>
       <?php } ?>
       </tbody>
