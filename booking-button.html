@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>دکمهٔ رزرو نوبت — پیش‌نمایش و کد آماده</title>
+<style>
+  body { font-family: Tahoma, sans-serif; background: #F5F7FA; padding: 40px; direction: rtl; color: #2C3E50; }
+  .box { background: #fff; border-radius: 12px; padding: 30px; max-width: 720px; margin: 0 auto; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+  h1 { font-size: 22px; color: #2E5090; }
+  h2 { font-size: 17px; margin-top: 28px; }
+  .preview { background: #F5F7FA; border: 1px dashed #bbb; border-radius: 8px; padding: 35px; text-align: center; }
+  textarea { width: 100%; height: 110px; font-family: monospace; font-size: 13px; direction: ltr; text-align: left; border: 1px solid #ccc; border-radius: 6px; padding: 10px; box-sizing: border-box; background: #fafafa; }
+  .note { background: #FFF8E1; border-right: 4px solid #F39C12; padding: 12px 15px; border-radius: 6px; font-size: 14px; margin-top: 20px; }
+  code { background: #eee; padding: 2px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>📅 دکمهٔ «درخواست نوبت مشاوره»</h1>
+  <p>این چیزی است که بعد از چسباندن کد در سایت شما دیده می‌شود:</p>
+
+  <h2>👁️ پیش‌نمایش (ONTO live):</h2>
+  <div class="preview">
+    <a href="https://my.mirbolouki.com/booking.php" style="display:inline-block;padding:15px 40px;background:#2E5090;color:#fff;text-decoration:none;border-radius:8px;font-size:18px;font-weight:bold;">📅 درخواست نوبت مشاوره</a>
+  </div>
+  <p style="text-align:center;color:#7F8C8D;font-size:13px;">👆 روی دکمه کلیک کن تا مطمئن شوی لینک درست کار می‌کند</p>
+
+  <h2>📋 کدی که باید کپی کنی:</h2>
+  <p>کادر زیر را با یک کلیک انتخاب می‌کند (یا Ctrl+A) و با Ctrl+C کپی کن:</p>
+  <textarea readonly onclick="this.select()">&lt;a href="https://my.mirbolouki.com/booking.php" style="display:inline-block;padding:15px 40px;background:#2E5090;color:#fff;text-decoration:none;border-radius:8px;font-size:18px;font-weight:bold;"&gt;📅 درخواست نوبت مشاوره&lt;/a&gt;</textarea>
+
+  <div class="note">
+    💡 <strong>کجا بچسبانم؟</strong> در سی‌پنل، فایل صفحهٔ رزرو را با ویرایشگر باز کن، نشانگر را <strong>قبل از تگ <code>&lt;form&gt;</code></strong> ببر، کد را بچسبان (Ctrl+V) و ذخیره کن.
+  </div>
+
+  <div class="note" style="background:#E8F5E9;border-color:#27AE60;">
+    🔗 <strong>اگر فقط لینک متنی می‌خواهی</strong> (بدون دکمه)، فقط این آدرس را بده:
+    <code style="direction:ltr;display:inline-block;">https://my.mirbolouki.com/booking.php</code>
+  </div>
+</div>
+</body>
+</html>
