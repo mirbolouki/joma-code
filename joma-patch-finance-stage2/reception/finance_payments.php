@@ -3,10 +3,10 @@
  *  جوما فاز ۵ — پرداختِ جلسات (مدیر و منشی)
  *
  *  هر جلسه یک رکوردِ پرداخت دارد با دو بخش:
- *    - بیعانه: مبلغِ پیش‌پرداختِ مراجع (معمولاً هنگام نوبت‌گیری)
- *    - الباقی: الباقیِ وجه (هنگام/پس از جلسه)
+ *    - بیعانه (پیش‌پرداخت): الزامی است — ثبتِ رزرو منوط به واریزِ بیعانه است
+ *    - الباقی: وجهِ باقی‌مانده، هنگام/پس از جلسه
+ *  همهٔ انتخاب‌ها (نوبت، حسابِ بانکی، وضعیت) از فهرست‌های کشویی هستند.
  *  مبالغ به تومان وارد می‌شوند و به ریال ذخیره می‌شوند.
- *  «پرداخت‌شده» یعنی وجه واقعاً واریز شده و حسابِ بانکی مشخص است.
  * ═══════════════════════════════════════════════════════════════════ */
 require_once __DIR__ . '/../includes/bootstrap.php';
 
@@ -24,13 +24,14 @@ $actor_role_code = $_SESSION['active_role_code'];
 $errors = array();
 $general_error = '';
 
-/* ── حالتِ فرم: ویرایشِ پرداختِ موجود یا ثبتِ پرداختِ جدید ── */
-$edit_payment = null;      /* رکوردِ پرداختِ در حالِ ویرایش */
-$form_appt = null;         /* نوبتِ در حالِ ثبت/ویرایش */
+/* ── حالتِ فرم ── */
+$edit_payment = null;       /* رکوردِ پرداختِ در حالِ ویرایش */
+$form_appt = null;          /* نوبتِ انتخاب‌شده */
+$selected_appt_public = ''; /* نوبتِ انتخاب‌شده در دراپ‌داون */
 $form = array(
     'deposit_amount' => '',
     'deposit_bank_account_id' => '',
-    'deposit_status' => 'PENDING',
+    'deposit_status' => 'PAID',
     'balance_amount' => '',
     'balance_bank_account_id' => '',
     'balance_status' => 'PENDING',
@@ -70,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['appt']) && !$edit_payme
         if ($existing) {
             redirect(APP_BASE_URL . '/reception/finance_payments.php?edit=' . $existing['public_id']);
         }
+        $selected_appt_public = $form_appt['public_id'];
         /* پیش‌فرض: الباقی = کلِ مبلغِ جلسه */
         $form['balance_amount'] = tariff_rial_to_toman_value($form_appt['price_rial']);
     }
@@ -84,29 +86,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action === 'create' || $action === 'update') {
             $form['deposit_amount'] = isset($_POST['deposit_amount']) ? $_POST['deposit_amount'] : '';
             $form['deposit_bank_account_id'] = isset($_POST['deposit_bank_account_id']) ? $_POST['deposit_bank_account_id'] : '';
-            $form['deposit_status'] = isset($_POST['deposit_status']) ? $_POST['deposit_status'] : 'PENDING';
+            $form['deposit_status'] = isset($_POST['deposit_status']) ? $_POST['deposit_status'] : 'PAID';
             $form['balance_amount'] = isset($_POST['balance_amount']) ? $_POST['balance_amount'] : '';
             $form['balance_bank_account_id'] = isset($_POST['balance_bank_account_id']) ? $_POST['balance_bank_account_id'] : '';
             $form['balance_status'] = isset($_POST['balance_status']) ? $_POST['balance_status'] : 'PENDING';
             $form['note'] = isset($_POST['note']) ? $_POST['note'] : '';
 
             if ($action === 'create') {
-                $appt = appointment_find_by_public_id($db, isset($_POST['appointment_public_id']) ? $_POST['appointment_public_id'] : '');
-                if (!$appt) {
+                $appt_public = isset($_POST['appointment_public_id']) ? $_POST['appointment_public_id'] : '';
+                if ($appt_public === '') {
+                    $errors['appointment_public_id'] = 'نوبت را از فهرستِ کشویی انتخاب کنید.';
+                }
+                $appt = $appt_public !== '' ? appointment_find_by_public_id($db, $appt_public) : null;
+                if ($appt_public !== '' && !$appt) {
                     throw new Exception('نوبتِ موردنظر پیدا نشد.');
                 }
-                $check = finance_payment_validate($_POST);
-                if (!$check['ok']) {
-                    $errors = $check['errors'];
-                    $form_appt = $appt;
-                } else {
-                    $result = finance_payment_create($db, (int)$appt['id'], $appt['price_rial'],
-                        $check, $actor_person_id, $actor_role_code);
-                    if (!$result['ok']) {
-                        throw new Exception($result['error']);
+                if ($appt) {
+                    $existing = finance_payment_find_by_appointment($db, (int)$appt['id']);
+                    if ($existing) {
+                        $general_error = 'برای این نوبت قبلاً پرداخت ثبت شده است؛ '
+                            . 'از فهرست نوبت‌ها (پایین صفحه) روی «✏️ ویرایش پرداخت» کلیک کنید.';
+                    } else {
+                        $check = finance_payment_validate($_POST);
+                        if (!$check['ok']) {
+                            $errors = array_merge($errors, $check['errors']);
+                        } else {
+                            $result = finance_payment_create($db, (int)$appt['id'], $appt['price_rial'],
+                                $check, $actor_person_id, $actor_role_code);
+                            if (!$result['ok']) {
+                                throw new Exception($result['error']);
+                            }
+                            flash_set('payments_ok', 'پرداختِ جلسه ثبت شد.');
+                            redirect(APP_BASE_URL . '/reception/finance_payments.php');
+                        }
                     }
-                    flash_set('payments_ok', 'پرداختِ جلسه ثبت شد.');
-                    redirect(APP_BASE_URL . '/reception/finance_payments.php');
+                    $form_appt = $appt;
+                    $selected_appt_public = $appt['public_id'];
                 }
             } else {
                 $target = finance_payment_find($db, isset($_POST['payment_public_id']) ? $_POST['payment_public_id'] : '');
@@ -155,19 +170,19 @@ require __DIR__ . '/../templates/header.php';
 <?php } ?>
 
 <div class="alert alert-info">
-  هر جلسه دو بخشِ پرداخت دارد:
-  <strong>بیعانه</strong> (پیش‌پرداختِ مراجع، مثلاً هنگام نوبت‌گیری) و
-  <strong>الباقی</strong> (مبلغِ کاملِ جلسه منهای بیعانه، هنگام یا پس از جلسه).
-  مبالغ را به <strong>تومان</strong> وارد کنید. وضعیتِ «پرداخت‌شده» یعنی وجه واقعاً
-  واریز شده و حسابِ بانکیِ واریزشده را انتخاب کرده‌اید.
+  <strong>بیعانه الزامی است:</strong> در مدلِ نوبت‌دهیِ شما ثبتِ رزرو منوط به واریزِ بیعانه است؛
+  پس بخشِ بیعانه را حتماً «پرداخت‌شده» ثبت کنید (مبلغ + حسابِ بانکیِ واریزشده).
+  <strong>الباقی</strong> (مبلغِ کاملِ جلسه منهای بیعانه) را می‌توانید «در انتظار پرداخت» بگذارید
+  و پس از جلسه «پرداخت‌شده» کنید.
+  مبالغ را به <strong>تومان</strong> وارد کنید.
+  همهٔ انتخاب‌ها — نوبت، حسابِ بانکی، وضعیت — از <strong>فهرست‌های کشویی</strong> هستند.
 </div>
 
-<?php if ($form_appt) { ?>
+<?php if ($edit_payment) { ?>
 <div class="card">
-  <div class="card-header">
-    <?php echo $edit_payment ? 'ویرایش پرداختِ جلسه' : 'ثبت پرداختِ جلسه'; ?>
-  </div>
+  <div class="card-header">ویرایش پرداختِ جلسه</div>
   <div class="card-body">
+    <?php if ($form_appt) { ?>
     <div class="alert alert-info">
       <strong>مراجع:</strong> <?php echo e($form_appt['patient_first_name'] . ' ' . $form_appt['patient_last_name']); ?>
       &nbsp;|&nbsp; <strong>درمانگر:</strong> <?php echo e($form_appt['therapist_first_name'] . ' ' . $form_appt['therapist_last_name']); ?>
@@ -178,93 +193,56 @@ require __DIR__ . '/../templates/header.php';
       &nbsp;|&nbsp; <strong>مبلغِ جلسه:</strong> <?php echo tariff_rial_to_toman_display($form_appt['price_rial']); ?>
       &nbsp;|&nbsp; <strong>وضعیتِ نوبت:</strong> <?php echo appointment_status_label($form_appt['status']); ?>
     </div>
+    <?php } ?>
 
     <form method="post" action="finance_payments.php" class="form-grid">
       <?php echo csrf_field(); ?>
-      <input type="hidden" name="action" value="<?php echo $edit_payment ? 'update' : 'create'; ?>">
-      <?php if ($edit_payment) { ?>
-        <input type="hidden" name="payment_public_id" value="<?php echo e($edit_payment['public_id']); ?>">
-      <?php } else { ?>
-        <input type="hidden" name="appointment_public_id" value="<?php echo e($form_appt['public_id']); ?>">
-      <?php } ?>
-
-      <h3 style="grid-column:1/-1;margin:8px 0 0;">💰 بخشِ بیعانه (پیش‌پرداخت)</h3>
-
-      <div class="form-row">
-        <label for="deposit_amount">مبلغِ بیعانه (تومان)</label>
-        <input type="text" id="deposit_amount" name="deposit_amount"
-               value="<?php echo e($form['deposit_amount']); ?>" placeholder="مثلاً ۵۰۰۰۰۰"
-               class="<?php echo isset($errors['deposit_amount']) ? 'is-invalid' : ''; ?>">
-        <?php if (isset($errors['deposit_amount'])) { ?><span class="field-error"><?php echo e($errors['deposit_amount']); ?></span><?php } ?>
-      </div>
-
-      <div class="form-row">
-        <label for="deposit_bank_account_id">حسابِ بانکیِ واریزِ بیعانه</label>
-        <select id="deposit_bank_account_id" name="deposit_bank_account_id"
-                class="<?php echo isset($errors['deposit_bank_account_id']) ? 'is-invalid' : ''; ?>">
-          <option value="">— انتخاب نشده —</option>
-          <?php foreach ($accounts as $account) { ?>
-            <option value="<?php echo (int)$account['id']; ?>"
-              <?php echo ($form['deposit_bank_account_id'] === (string)(int)$account['id']) ? 'selected' : ''; ?>>
-              <?php echo e(finance_account_label($account)); ?>
-            </option>
-          <?php } ?>
-        </select>
-        <?php if (isset($errors['deposit_bank_account_id'])) { ?><span class="field-error"><?php echo e($errors['deposit_bank_account_id']); ?></span><?php } ?>
-      </div>
-
-      <div class="form-row">
-        <label for="deposit_status">وضعیتِ بیعانه</label>
-        <select id="deposit_status" name="deposit_status">
-          <option value="PENDING" <?php echo $form['deposit_status'] === 'PENDING' ? 'selected' : ''; ?>>در انتظار پرداخت</option>
-          <option value="PAID" <?php echo $form['deposit_status'] === 'PAID' ? 'selected' : ''; ?>>پرداخت‌شده</option>
-        </select>
-      </div>
-
-      <h3 style="grid-column:1/-1;margin:8px 0 0;">🧾 بخشِ الباقی (بخشِ دومِ وجه)</h3>
-
-      <div class="form-row">
-        <label for="balance_amount">مبلغِ الباقی (تومان)</label>
-        <input type="text" id="balance_amount" name="balance_amount"
-               value="<?php echo e($form['balance_amount']); ?>" placeholder="مثلاً ۱۵۰۰۰۰۰"
-               class="<?php echo isset($errors['balance_amount']) ? 'is-invalid' : ''; ?>">
-        <?php if (isset($errors['balance_amount'])) { ?><span class="field-error"><?php echo e($errors['balance_amount']); ?></span><?php } ?>
-      </div>
-
-      <div class="form-row">
-        <label for="balance_bank_account_id">حسابِ بانکیِ واریزِ الباقی</label>
-        <select id="balance_bank_account_id" name="balance_bank_account_id"
-                class="<?php echo isset($errors['balance_bank_account_id']) ? 'is-invalid' : ''; ?>">
-          <option value="">— انتخاب نشده —</option>
-          <?php foreach ($accounts as $account) { ?>
-            <option value="<?php echo (int)$account['id']; ?>"
-              <?php echo ($form['balance_bank_account_id'] === (string)(int)$account['id']) ? 'selected' : ''; ?>>
-              <?php echo e(finance_account_label($account)); ?>
-            </option>
-          <?php } ?>
-        </select>
-        <?php if (isset($errors['balance_bank_account_id'])) { ?><span class="field-error"><?php echo e($errors['balance_bank_account_id']); ?></span><?php } ?>
-      </div>
-
-      <div class="form-row">
-        <label for="balance_status">وضعیتِ الباقی</label>
-        <select id="balance_status" name="balance_status">
-          <option value="PENDING" <?php echo $form['balance_status'] === 'PENDING' ? 'selected' : ''; ?>>در انتظار پرداخت</option>
-          <option value="PAID" <?php echo $form['balance_status'] === 'PAID' ? 'selected' : ''; ?>>پرداخت‌شده</option>
-        </select>
-      </div>
+      <input type="hidden" name="action" value="update">
+      <input type="hidden" name="payment_public_id" value="<?php echo e($edit_payment['public_id']); ?>">
+      <?php finance_render_payment_sections($form, $errors, $accounts, '💾 ذخیرهٔ تغییرات'); ?>
+    </form>
+  </div>
+</div>
+<?php } else { ?>
+<div class="card">
+  <div class="card-header">ثبت پرداختِ جلسهٔ جدید</div>
+  <div class="card-body">
+    <form method="post" action="finance_payments.php" class="form-grid">
+      <?php echo csrf_field(); ?>
+      <input type="hidden" name="action" value="create">
 
       <div class="form-row" style="grid-column:1/-1;">
-        <label for="note">یادداشت (اختیاری)</label>
-        <input type="text" id="note" name="note" value="<?php echo e($form['note']); ?>"
-               class="<?php echo isset($errors['note']) ? 'is-invalid' : ''; ?>">
-        <?php if (isset($errors['note'])) { ?><span class="field-error"><?php echo e($errors['note']); ?></span><?php } ?>
+        <label for="appointment_public_id">انتخاب نوبت <span class="required-star">*</span></label>
+        <select id="appointment_public_id" name="appointment_public_id"
+                class="<?php echo isset($errors['appointment_public_id']) ? 'is-invalid' : ''; ?>">
+          <option value="">— انتخاب نوبت —</option>
+          <?php foreach ($appointments as $a) {
+              if ($a['payment_public_id']) { continue; } ?>
+            <option value="<?php echo e($a['public_id']); ?>"
+              <?php echo ($selected_appt_public === $a['public_id']) ? 'selected' : ''; ?>>
+              <?php echo e($a['patient_first_name'] . ' ' . $a['patient_last_name']); ?>
+              — <?php echo jalali_display($a['appointment_start_utc'], 'date'); ?>
+              — <?php echo e($a['service_title']); ?>
+              — <?php echo tariff_rial_to_toman_display($a['price_rial']); ?>
+            </option>
+          <?php } ?>
+        </select>
+        <?php if (isset($errors['appointment_public_id'])) { ?><span class="field-error"><?php echo e($errors['appointment_public_id']); ?></span><?php } ?>
       </div>
 
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary"><?php echo $edit_payment ? '💾 ذخیرهٔ تغییرات' : '➕ ثبت پرداخت'; ?></button>
-        <a href="finance_payments.php" class="btn btn-secondary">انصراف</a>
+      <?php if ($form_appt) { ?>
+      <div class="alert alert-info" style="grid-column:1/-1;">
+        <strong>مراجع:</strong> <?php echo e($form_appt['patient_first_name'] . ' ' . $form_appt['patient_last_name']); ?>
+        &nbsp;|&nbsp; <strong>درمانگر:</strong> <?php echo e($form_appt['therapist_first_name'] . ' ' . $form_appt['therapist_last_name']); ?>
+        &nbsp;|&nbsp; <strong>خدمت:</strong> <?php echo e($form_appt['service_title']); ?>
+        &nbsp;|&nbsp; <strong>اتاق:</strong> <?php echo e($form_appt['room_name']); ?>
+        <br>
+        <strong>زمان:</strong> <?php echo jalali_display($form_appt['appointment_start_utc'], 'datetime'); ?>
+        &nbsp;|&nbsp; <strong>مبلغِ جلسه:</strong> <?php echo tariff_rial_to_toman_display($form_appt['price_rial']); ?>
       </div>
+      <?php } ?>
+
+      <?php finance_render_payment_sections($form, $errors, $accounts, '➕ ثبت پرداخت'); ?>
     </form>
   </div>
 </div>

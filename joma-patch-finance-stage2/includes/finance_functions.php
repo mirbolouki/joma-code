@@ -530,6 +530,15 @@ function finance_payment_validate($form)
         $errors['note'] = 'یادداشت بیش از حد طولانی است.';
     }
 
+    /* بیعانه الزامی است: مدلِ نوبت‌دهیِ کلینیک این است که ثبتِ رزرو
+       منوط به واریزِ بیعانه است؛ پس مبلغِ بیعانه حتماً باید وارد شود
+       و وضعیتِ آن «پرداخت‌شده» باشد. */
+    if ($deposit_amount_rial === null || $deposit_amount_rial <= 0) {
+        $errors['deposit_amount'] = 'مبلغِ بیعانه الزامی است — ثبتِ رزرو منوط به واریزِ بیعانه است.';
+    }
+    if ($deposit_status !== 'PAID') {
+        $errors['deposit_status'] = 'بیعانه باید «پرداخت‌شده» باشد — ثبتِ رزرو منوط به واریزِ بیعانه است.';
+    }
     if ($deposit_status === 'PAID') {
         if ($deposit_amount_rial === null || $deposit_amount_rial <= 0) {
             $errors['deposit_amount'] = 'برای بیعانهٔ «پرداخت‌شده»، مبلغ را وارد کنید.';
@@ -576,6 +585,11 @@ function finance_payment_create($db, $appointment_id, $session_fee_rial, $data,
         'i', array((int)$appointment_id));
     if ($existing) {
         return array('ok' => false, 'error' => 'برای این نوبت قبلاً پرداخت ثبت شده است؛ آن را ویرایش کنید.');
+    }
+    /* بیعانه الزامی است — ثبتِ رزرو منوط به واریزِ بیعانه است. */
+    if ($data['deposit_status'] !== 'PAID'
+        || $data['deposit_amount_rial'] === null || $data['deposit_amount_rial'] <= 0) {
+        return array('ok' => false, 'error' => 'بیعانه الزامی است و باید «پرداخت‌شده» باشد — ثبتِ رزرو منوط به واریزِ بیعانه است.');
     }
 
     $public_id = generate_public_id('PAY');
@@ -778,4 +792,93 @@ function finance_part_status_label($status)
 function finance_part_status_class($status)
 {
     return ($status === 'PAID') ? 'badge-success' : 'badge-muted';
+}
+
+/**
+ * رندرِ بخش‌های مشترکِ فرمِ پرداخت (بیعانه + الباقی + یادداشت + دکمه).
+ * هم در فرمِ ثبت و هم در فرمِ ویرایش استفاده می‌شود.
+ */
+function finance_render_payment_sections($form, $errors, $accounts, $submit_label)
+{
+    ?>
+      <h3 style="grid-column:1/-1;margin:8px 0 0;">💰 بخشِ بیعانه (پیش‌پرداخت) — الزامی</h3>
+
+      <div class="form-row">
+        <label for="deposit_amount">مبلغِ بیعانه (تومان) <span class="required-star">*</span></label>
+        <input type="text" id="deposit_amount" name="deposit_amount"
+               value="<?php echo e($form['deposit_amount']); ?>" placeholder="مثلاً ۵۰۰۰۰۰"
+               class="<?php echo isset($errors['deposit_amount']) ? 'is-invalid' : ''; ?>">
+        <?php if (isset($errors['deposit_amount'])) { ?><span class="field-error"><?php echo e($errors['deposit_amount']); ?></span><?php } ?>
+      </div>
+
+      <div class="form-row">
+        <label for="deposit_bank_account_id">حسابِ بانکیِ واریزِ بیعانه <span class="required-star">*</span></label>
+        <select id="deposit_bank_account_id" name="deposit_bank_account_id"
+                class="<?php echo isset($errors['deposit_bank_account_id']) ? 'is-invalid' : ''; ?>">
+          <option value="">— انتخاب حساب —</option>
+          <?php foreach ($accounts as $account) { ?>
+            <option value="<?php echo (int)$account['id']; ?>"
+              <?php echo ($form['deposit_bank_account_id'] === (string)(int)$account['id']) ? 'selected' : ''; ?>>
+              <?php echo e(finance_account_label($account)); ?>
+            </option>
+          <?php } ?>
+        </select>
+        <?php if (isset($errors['deposit_bank_account_id'])) { ?><span class="field-error"><?php echo e($errors['deposit_bank_account_id']); ?></span><?php } ?>
+      </div>
+
+      <div class="form-row">
+        <label for="deposit_status">وضعیتِ بیعانه (الزامی: «پرداخت‌شده») <span class="required-star">*</span></label>
+        <select id="deposit_status" name="deposit_status"
+                class="<?php echo isset($errors['deposit_status']) ? 'is-invalid' : ''; ?>">
+          <option value="PAID" <?php echo $form['deposit_status'] === 'PAID' ? 'selected' : ''; ?>>پرداخت‌شده</option>
+          <option value="PENDING" <?php echo $form['deposit_status'] === 'PENDING' ? 'selected' : ''; ?>>در انتظار پرداخت</option>
+        </select>
+        <?php if (isset($errors['deposit_status'])) { ?><span class="field-error"><?php echo e($errors['deposit_status']); ?></span><?php } ?>
+      </div>
+
+      <h3 style="grid-column:1/-1;margin:8px 0 0;">🧾 بخشِ الباقی (بخشِ دومِ وجه)</h3>
+
+      <div class="form-row">
+        <label for="balance_amount">مبلغِ الباقی (تومان)</label>
+        <input type="text" id="balance_amount" name="balance_amount"
+               value="<?php echo e($form['balance_amount']); ?>" placeholder="مثلاً ۱۵۰۰۰۰۰"
+               class="<?php echo isset($errors['balance_amount']) ? 'is-invalid' : ''; ?>">
+        <?php if (isset($errors['balance_amount'])) { ?><span class="field-error"><?php echo e($errors['balance_amount']); ?></span><?php } ?>
+      </div>
+
+      <div class="form-row">
+        <label for="balance_bank_account_id">حسابِ بانکیِ واریزِ الباقی</label>
+        <select id="balance_bank_account_id" name="balance_bank_account_id"
+                class="<?php echo isset($errors['balance_bank_account_id']) ? 'is-invalid' : ''; ?>">
+          <option value="">— انتخاب حساب —</option>
+          <?php foreach ($accounts as $account) { ?>
+            <option value="<?php echo (int)$account['id']; ?>"
+              <?php echo ($form['balance_bank_account_id'] === (string)(int)$account['id']) ? 'selected' : ''; ?>>
+              <?php echo e(finance_account_label($account)); ?>
+            </option>
+          <?php } ?>
+        </select>
+        <?php if (isset($errors['balance_bank_account_id'])) { ?><span class="field-error"><?php echo e($errors['balance_bank_account_id']); ?></span><?php } ?>
+      </div>
+
+      <div class="form-row">
+        <label for="balance_status">وضعیتِ الباقی</label>
+        <select id="balance_status" name="balance_status">
+          <option value="PENDING" <?php echo $form['balance_status'] === 'PENDING' ? 'selected' : ''; ?>>در انتظار پرداخت</option>
+          <option value="PAID" <?php echo $form['balance_status'] === 'PAID' ? 'selected' : ''; ?>>پرداخت‌شده</option>
+        </select>
+      </div>
+
+      <div class="form-row" style="grid-column:1/-1;">
+        <label for="note">یادداشت (اختیاری)</label>
+        <input type="text" id="note" name="note" value="<?php echo e($form['note']); ?>"
+               class="<?php echo isset($errors['note']) ? 'is-invalid' : ''; ?>">
+        <?php if (isset($errors['note'])) { ?><span class="field-error"><?php echo e($errors['note']); ?></span><?php } ?>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary"><?php echo e($submit_label); ?></button>
+        <a href="finance_payments.php" class="btn btn-secondary">انصراف</a>
+      </div>
+    <?php
 }
