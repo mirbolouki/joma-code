@@ -33,27 +33,48 @@ $required_tables = array('migrations', 'persons', 'finance_bank_accounts');
 
 /* ── ابزارها ─────────────────────────────────────────────────────── */
 
+/*
+ * نکتهٔ فنیِ بسیار مهم (PHP 8.1 و بالاتر):
+ * از PHP 8.1، حالتِ پیش‌فرضِ mysqli «پرتابِ استثنا روی خطای SQL» است.
+ * یعنی @mysqli_query روی خطا (مثلاً «جدول موجود نیست») دیگر false
+ * برنمی‌گرداند؛ mysqli_sql_exception پرتاب می‌شود و @ آن را مهار نمی‌کند.
+ * اگر این استثنا گرفته نشود، صفحه وسطِ رندر می‌ایستد و دکمهٔ مهاجرت
+ * اصلاً رندر نمی‌شود. به همین دلیل همهٔ بررسی‌های این فایل داخل
+ * try/catch (Throwable) هستند تا صفحهٔ مهاجرت هرگز ناتمام رندر نشود.
+ */
 function up54_table_exists($db, $name)
 {
-    $res = @mysqli_query($db, "SHOW TABLES LIKE '" . mysqli_real_escape_string($db, $name) . "'");
-    if (!$res) {
+    try {
+        $res = @mysqli_query($db, "SHOW TABLES LIKE '" . mysqli_real_escape_string($db, $name) . "'");
+        if (!$res) {
+            return false;
+        }
+        $exists = (mysqli_num_rows($res) > 0);
+        mysqli_free_result($res);
+        return $exists;
+    } catch (Throwable $ex) {
         return false;
     }
-    $exists = (mysqli_num_rows($res) > 0);
-    mysqli_free_result($res);
-    return $exists;
 }
 
 function up54_index_exists($db, $table, $index)
 {
-    $res = @mysqli_query($db, "SHOW INDEX FROM `" . mysqli_real_escape_string($db, $table)
-        . "` WHERE Key_name = '" . mysqli_real_escape_string($db, $index) . "'");
-    if (!$res) {
+    try {
+        /* اگر جدول هنوز ساخته نشده، نمایه هم نیست */
+        if (!up54_table_exists($db, $table)) {
+            return false;
+        }
+        $res = @mysqli_query($db, "SHOW INDEX FROM `" . mysqli_real_escape_string($db, $table)
+            . "` WHERE Key_name = '" . mysqli_real_escape_string($db, $index) . "'");
+        if (!$res) {
+            return false;
+        }
+        $exists = (mysqli_num_rows($res) > 0);
+        mysqli_free_result($res);
+        return $exists;
+    } catch (Throwable $ex) {
         return false;
     }
-    $exists = (mysqli_num_rows($res) > 0);
-    mysqli_free_result($res);
-    return $exists;
 }
 
 function up54_parse_schema($path)
@@ -151,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $done = true;
         $already_applied = true;
-    } catch (Exception $ex) {
+    } catch (Throwable $ex) {
         $failed = true;
         $log[] = array('fail', $ex->getMessage());
         log_system_error('PHASE5_4_UPGRADE', $ex);
@@ -161,6 +182,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 foreach ($new_tables as $t) {
     $status_tables[$t] = up54_table_exists($db, $t);
 }
+$idx_ok = (up54_index_exists($db, 'finance_test_sales', 'idx_fts_status')
+        && up54_index_exists($db, 'finance_package_sales', 'idx_fps_period'));
 
 $page_title = 'ارتقا به فاز ۵ — فروشِ تست‌ها و پکیج‌ها';
 $layout = 'auth';
@@ -210,8 +233,8 @@ require __DIR__ . '/templates/header.php';
     <?php } ?>
     <div class="check-row">
       <span><code>idx_fts_status / idx_fps_period</code></span>
-      <span class="badge <?php echo (up54_index_exists($db, 'finance_test_sales', 'idx_fts_status') && up54_index_exists($db, 'finance_package_sales', 'idx_fps_period')) ? 'badge-success' : 'badge-muted'; ?>">
-        <?php echo (up54_index_exists($db, 'finance_test_sales', 'idx_fts_status') && up54_index_exists($db, 'finance_package_sales', 'idx_fps_period')) ? 'موجود' : 'افزوده نشده'; ?>
+      <span class="badge <?php echo $idx_ok ? 'badge-success' : 'badge-muted'; ?>">
+        <?php echo $idx_ok ? 'موجود' : 'افزوده نشده'; ?>
       </span>
     </div>
   </div>
