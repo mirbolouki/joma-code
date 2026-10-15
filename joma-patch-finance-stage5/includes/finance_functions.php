@@ -911,71 +911,13 @@ if (!defined('JALALI_YEAR_TO'))   { define('JALALI_YEAR_TO', 1410); }
 function finance_jalali_date3_html($name_prefix, $jalali_ymd = '',
                                    $year_from = null, $year_to = null)
 {
-    $year_from = ($year_from === null) ? JALALI_YEAR_FROM : (int)$year_from;
-    $year_to   = ($year_to === null)   ? JALALI_YEAR_TO   : (int)$year_to;
-    if ($year_to < $year_from) {
-        $year_to = $year_from;
-    }
-
-    $sel = array('y' => '', 'm' => '', 'd' => '');
-    if ($jalali_ymd !== '' && $jalali_ymd !== null) {
-        $parts = explode('/', to_latin_digits((string)$jalali_ymd));
-        if (count($parts) === 3) {
-            $sel['y'] = sprintf('%04d', (int)$parts[0]);
-            $sel['m'] = sprintf('%02d', (int)$parts[1]);
-            $sel['d'] = sprintf('%02d', (int)$parts[2]);
-        }
-    }
-
-    $html = '<div class="date3" style="display:flex;gap:6px;flex-wrap:wrap;">';
-
-    /* سال */
-    $html .= '<select name="' . e($name_prefix) . '_y" aria-label="سال" title="سال">';
-    for ($y = $year_from; $y <= $year_to; $y++) {
-        $v = sprintf('%04d', $y);
-        $html .= '<option value="' . $v . '"'
-            . ($sel['y'] === $v ? ' selected' : '') . '>'
-            . to_persian_digits($v) . '</option>';
-    }
-    $html .= '</select>';
-
-    /* ماه */
-    $html .= '<select name="' . e($name_prefix) . '_m" aria-label="ماه" title="ماه">';
-    for ($m = 1; $m <= 12; $m++) {
-        $v = sprintf('%02d', $m);
-        $html .= '<option value="' . $v . '"'
-            . ($sel['m'] === $v ? ' selected' : '') . '>'
-            . jalali_month_name($m) . '</option>';
-    }
-    $html .= '</select>';
-
-    /* روز */
-    $html .= '<select name="' . e($name_prefix) . '_d" aria-label="روز" title="روز">';
-    for ($d = 1; $d <= 31; $d++) {
-        $v = sprintf('%02d', $d);
-        $html .= '<option value="' . $v . '"'
-            . ($sel['d'] === $v ? ' selected' : '') . '>'
-            . to_persian_digits($v) . '</option>';
-    }
-    $html .= '</select>';
-
-    $html .= '</div>';
-    return $html;
+    return jalali_date3_html($name_prefix, $jalali_ymd, $year_from, $year_to);
 }
 
-/**
- * ترکیبِ سه فیلدِ انتخابگرِ تاریخ به «1405/07/01» (لاتین).
- * اگر هر بخش خالی باشد، خروجی خالی است.
- */
+/** ترکیبِ سه فیلدِ انتخابگرِ تاریخ به «1405/07/01» (لاتین). */
 function finance_jalali_date3_compose($y, $m, $d)
 {
-    $y = trim(to_latin_digits((string)$y));
-    $m = trim(to_latin_digits((string)$m));
-    $d = trim(to_latin_digits((string)$d));
-    if ($y === '' || $m === '' || $d === '') {
-        return '';
-    }
-    return sprintf('%04d/%02d/%02d', (int)$y, (int)$m, (int)$d);
+    return jalali_date3_compose($y, $m, $d);
 }
 
 /** آیا مهاجرتِ مرحلهٔ ۳ (تسویه با مراکز) اجرا شده است؟ */
@@ -1023,7 +965,7 @@ function finance_default_period_jalali($settlement_period)
  * مدلِ درصدی:  درصد × مجموعِ پرداخت‌های «پرداخت‌شده»ِ جلساتِ اتاق‌های
  *   آن مرکز که تاریخِ پرداختِ بیعانه/الباقی‌شان در بازه افتاده است.
  * مدلِ ساعتی:  مجموع (ساعتِ جلسه × تعرفهٔ ساعتیِ اتاق × ۱۰) برای نوبت‌های
- *   «انجام‌شده/رزوروشده»ِ بازه — تعرفهٔ ساعتی به «تومان» ذخیره می‌شود و
+ *   «انجام‌شده/رزروشده»ِ بازه — تعرفهٔ ساعتی به «تومان» ذخیره می‌شود و
  *   خروجی به «ریال» است. نوبتِ زوج/خانواده خودکار با تعرفهٔ اتاقِ زوج
  *   محاسبه می‌شود (اتاقِ نوبت همان اتاقِ زوج است).
  *
