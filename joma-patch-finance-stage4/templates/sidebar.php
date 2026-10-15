@@ -1,0 +1,140 @@
+<?php
+/* ═════════════════════════════════════════════════════════════════════
+ *  جوما — منوی کناری (در چیدمان راست‌به‌چپ، سمت راست صفحه)
+ *  آیتم‌ها بر اساس نقش فعال ساخته می‌شوند.
+ * ═══════════════════════════════════════════════════════════════════ */
+$base = defined('APP_BASE_URL') ? APP_BASE_URL : '';
+$role = isset($_SESSION['active_role_code']) ? $_SESSION['active_role_code'] : '';
+if (!isset($active_menu)) { $active_menu = ''; }
+
+$menu = array();
+$p2 = (isset($GLOBALS['db']) && function_exists('phase2_ready')) ? phase2_ready($GLOBALS['db']) : false;
+$p3 = (isset($GLOBALS['db']) && function_exists('phase3_ready')) ? phase3_ready($GLOBALS['db']) : false;
+$p4 = (isset($GLOBALS['db']) && function_exists('phase4_ready')) ? phase4_ready($GLOBALS['db']) : false;
+$p42 = (isset($GLOBALS['db']) && function_exists('phase4_2_ready')) ? phase4_2_ready($GLOBALS['db']) : false;
+$p5 = (isset($GLOBALS['db']) && function_exists('phase5_ready')) ? phase5_ready($GLOBALS['db']) : false;
+$p52 = (isset($GLOBALS['db']) && function_exists('phase5_2_ready')) ? phase5_2_ready($GLOBALS['db']) : false;
+$p53 = (isset($GLOBALS['db']) && function_exists('phase5_3_ready')) ? phase5_3_ready($GLOBALS['db']) : false;
+$p54 = (isset($GLOBALS['db']) && function_exists('phase5_4_ready')) ? phase5_4_ready($GLOBALS['db']) : false;
+
+/* شمار درخواست‌های تازهٔ نوبت اینترنتی — روی خودِ آیتم منو دیده می‌شود،
+   تا صفی که هیچ‌کس سر نمی‌زند بی‌صدا رشد نکند. */
+$booking_new = 0;
+if ($p42 && function_exists('booking_status_counts')
+    && ($role === ROLE_SECRETARY || $role === ROLE_ADMIN)) {
+    $bc = booking_status_counts($GLOBALS['db']);
+    $booking_new = isset($bc['NEW']) ? (int)$bc['NEW'] : 0;
+}
+$booking_label = '📨 درخواست‌های نوبت'
+    . ($booking_new > 0 ? ' (' . to_persian_digits($booking_new) . ')' : '');
+
+if ($role === ROLE_ADMIN) {
+    $menu = array(
+        array('label' => '📊 داشبورد',        'url' => $base . '/admin/index.php',        'key' => 'admin_home'),
+        array('label' => '➕ ایجاد کاربر',     'url' => $base . '/admin/user_create.php',  'key' => 'user_create'),
+        array('label' => '👥 فهرست کاربران',   'url' => $base . '/admin/users_list.php',   'key' => 'users_list'),
+        array('label' => '📋 پذیرش‌ها',        'url' => $base . '/reception/index.php',    'key' => 'reception_home'),
+        array('label' => '👥 مراجعان',         'url' => $base . '/reception/patients.php', 'key' => 'patients'),
+        array('label' => '📨 تنظیمات پیامک',   'url' => $base . '/admin/sms_settings.php', 'key' => 'sms_settings'),
+    );
+    if ($p2) {
+        $menu[] = array('label' => '📅 تقویم نوبت‌ها', 'url' => $base . '/reception/appointments.php', 'key' => 'appointments');
+        $menu[] = array('label' => '🏠 اتاق‌ها',       'url' => $base . '/admin/rooms.php',            'key' => 'rooms');
+        $menu[] = array('label' => '💰 تعرفه‌ها',      'url' => $base . '/admin/tariffs.php',          'key' => 'tariffs');
+    } else {
+        $menu[] = array('label' => '🧩 ارتقا به فاز ۲', 'url' => $base . '/upgrade_phase2.php', 'key' => 'upgrade2');
+    }
+    if ($p4) {
+        $menu[] = array('label' => '🧾 قالب‌های فرم', 'url' => $base . '/admin/forms.php',          'key' => 'admin_forms');
+        $menu[] = array('label' => '📑 پاسخ‌های فرم', 'url' => $base . '/admin/form_responses.php', 'key' => 'admin_form_responses');
+    } elseif ($p3) {
+        $menu[] = array('label' => '🧩 ارتقا به فاز ۴', 'url' => $base . '/upgrade_phase4.php', 'key' => 'upgrade4');
+    }
+    if ($p42) {
+        $menu[] = array('label' => $booking_label, 'url' => $base . '/reception/booking_requests.php', 'key' => 'booking_requests');
+    }
+    if ($p5) {
+        $menu[] = array('label' => '💰 مراکز مشاوره',         'url' => $base . '/admin/finance_centers.php',       'key' => 'finance_centers');
+        $menu[] = array('label' => '🏦 حساب‌های بانکی',      'url' => $base . '/admin/finance_bank_accounts.php', 'key' => 'finance_bank_accounts');
+        $menu[] = array('label' => '🚪 تنظیمات مالی اتاق‌ها', 'url' => $base . '/admin/finance_rooms.php',         'key' => 'finance_rooms');
+    }
+    if ($p52) {
+        $menu[] = array('label' => '💳 پرداختِ جلسات', 'url' => $base . '/reception/finance_payments.php', 'key' => 'finance_payments');
+    }
+    if ($p53) {
+        $menu[] = array('label' => '🤝 تسویه با مراکز', 'url' => $base . '/admin/finance_settlements.php', 'key' => 'finance_settlements');
+    }
+    if ($p54) {
+        $menu[] = array('label' => '🧪 فروشِ تست‌ها', 'url' => $base . '/reception/finance_test_sales.php', 'key' => 'finance_test_sales');
+        $menu[] = array('label' => '📦 فروشِ پکیج‌ها', 'url' => $base . '/reception/finance_package_sales.php', 'key' => 'finance_package_sales');
+    }
+    $menu[] = array('label' => '📂 پرونده‌ها',      'url' => '', 'key' => '', 'soon' => true);
+    $menu[] = array('label' => '⚙️ تنظیمات کلینیک', 'url' => '', 'key' => '', 'soon' => true);
+} elseif ($role === ROLE_SECRETARY) {
+    $menu = array(
+        array('label' => '📋 داشبورد',          'url' => $base . '/reception/index.php',        'key' => 'reception_home'),
+        array('label' => '➕ ثبت پذیرش جدید',    'url' => $base . '/reception/admission_new.php', 'key' => 'admission_new'),
+        array('label' => '👥 مراجعان',           'url' => $base . '/reception/patients.php',      'key' => 'patients'),
+    );
+    if ($p42) {
+        $menu[] = array('label' => $booking_label, 'url' => $base . '/reception/booking_requests.php', 'key' => 'booking_requests');
+    }
+    if ($p2) {
+        $menu[] = array('label' => '📅 تقویم نوبت‌ها', 'url' => $base . '/reception/appointments.php',    'key' => 'appointments');
+        $menu[] = array('label' => '🗓️ ثبت نوبت',      'url' => $base . '/reception/appointment_new.php', 'key' => 'appointment_new');
+    } else {
+        $menu[] = array('label' => '📅 تقویم نوبت‌ها', 'url' => '', 'key' => '', 'soon' => true);
+    }
+    if ($p52) {
+        $menu[] = array('label' => '💳 پرداختِ جلسات', 'url' => $base . '/reception/finance_payments.php', 'key' => 'finance_payments');
+    }
+    if ($p54) {
+        $menu[] = array('label' => '🧪 فروشِ تست‌ها', 'url' => $base . '/reception/finance_test_sales.php', 'key' => 'finance_test_sales');
+        $menu[] = array('label' => '📦 فروشِ پکیج‌ها', 'url' => $base . '/reception/finance_package_sales.php', 'key' => 'finance_package_sales');
+    }
+} elseif ($role === ROLE_THERAPIST) {
+    $menu = array(
+        array('label' => '🩺 کارتابل',         'url' => $base . '/therapist/index.php', 'key' => 'therapist_home'),
+        array('label' => '📂 پرونده‌های من',    'url' => $base . '/therapist/index.php#cases', 'key' => ''),
+        array('label' => '👥 مراجعان من',      'url' => $base . '/therapist/patients.php', 'key' => 'therapist_patients'),
+    );
+    if ($p3) {
+        $menu[] = array('label' => '🗒️ آخرین یادداشت‌های من',
+                        'url' => $base . '/therapist/notes_recent.php', 'key' => 'notes_recent');
+    }
+    if ($p4) {
+        $menu[] = array('label' => '🧾 فرم‌های من', 'url' => $base . '/therapist/forms.php', 'key' => 'therapist_forms');
+    }
+    if ($p2) {
+        $menu[] = array('label' => '📅 تقویم من',    'url' => $base . '/therapist/calendar.php',     'key' => 'therapist_calendar');
+        $menu[] = array('label' => '🏖️ عدم حضور',    'url' => $base . '/therapist/absences.php',     'key' => 'therapist_absences');
+        $menu[] = array('label' => '💰 تعرفهٔ من',   'url' => $base . '/therapist/tariffs_view.php', 'key' => 'therapist_tariffs');
+    } else {
+        $menu[] = array('label' => '📅 تقویم من', 'url' => '', 'key' => '', 'soon' => true);
+    }
+} elseif ($role === ROLE_PATIENT) {
+    $menu = array(
+        array('label' => '🏠 صفحهٔ من',   'url' => $base . '/patient/index.php', 'key' => 'patient_home'),
+        array('label' => '🧾 فرم‌های من', 'url' => $base . '/patient/forms.php', 'key' => 'patient_forms'),
+    );
+} elseif ($role === ROLE_PSYCHOMETRIST) {
+    $menu = array(
+        array('label' => '🧪 بخش روان‌سنجی', 'url' => '', 'key' => '', 'soon' => true),
+    );
+}
+?>
+<nav class="sidebar" aria-label="منوی اصلی">
+  <div class="sidebar-title">منوی <?php echo e(role_label($role)); ?></div>
+  <ul>
+    <?php foreach ($menu as $item) { ?>
+      <?php if (!empty($item['soon'])) { ?>
+        <li><a href="#" class="disabled-link" aria-disabled="true"><?php echo $item['label']; ?>
+          <span class="badge badge-muted">فاز بعد</span></a></li>
+      <?php } else { ?>
+        <li><a href="<?php echo e($item['url']); ?>"<?php
+          echo ($item['key'] !== '' && $item['key'] === $active_menu) ? ' class="active"' : ''; ?>>
+          <?php echo $item['label']; ?></a></li>
+      <?php } ?>
+    <?php } ?>
+  </ul>
+</nav>
