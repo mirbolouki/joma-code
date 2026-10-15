@@ -887,6 +887,97 @@ function finance_render_payment_sections($form, $errors, $accounts, $submit_labe
  *  مرحلهٔ ۳ — تسویه با مراکز مشاوره (محاسبهٔ خودکار + ثبت پرداخت)
  * ═══════════════════════════════════════════════════════════════════ */
 
+/* ═══════════════════════════════════════════════════════════════════
+ *  الگوی استانداردِ ورودِ تاریخ در کلِ سایت (تصمیمِ قفل‌شده):
+ *  هیچ‌جا تاریخ تایپ نمی‌شود. تاریخِ دلخواه ( مثل بازهٔ تسویه ) با
+ *  سه فهرستِ کشوییِ «سال / ماه / روز» انتخاب می‌شود. تاریخ‌های
+ *  آینده‌گرد (رزرو، فیلترِ بازه) از فهرستِ تکیِ jalali_date_choices
+ *  استفاده می‌کنند که از قبل در سیستم موجود است.
+ *  بازهٔ سال‌ها: ۱۴۰۵ تا ۱۴۱۰ (قابلِ تنظیم با ثابت‌های زیر).
+ * ═══════════════════════════════════════════════════════════════════ */
+
+if (!defined('JALALI_YEAR_FROM')) { define('JALALI_YEAR_FROM', 1405); }
+if (!defined('JALALI_YEAR_TO'))   { define('JALALI_YEAR_TO', 1410); }
+
+/**
+ * تولیدِ HTMLِ انتخابگرِ تاریخِ شمسیِ سه‌بخشی (سال/ماه/روز) — بدون تایپ.
+ * ترتیبِ DOM: سال، ماه، روز (در RTL از راست به چپ: سال، ماه، روز —
+ * همان ترتیبِ «۱۴۰۵/۰۷/۰۱»).
+ *
+ * $name_prefix: پیشوندِ نامِ فیلدها؛ خروجیِ POST:
+ *   {$prefix}_y و {$prefix}_m و {$prefix}_d (مقادیرِ لاتین)
+ * $jalali_ymd: مقدارِ فعلی به شکل «1405/07/01» (لاتین یا فارسی) یا خالی
+ */
+function finance_jalali_date3_html($name_prefix, $jalali_ymd = '',
+                                   $year_from = null, $year_to = null)
+{
+    $year_from = ($year_from === null) ? JALALI_YEAR_FROM : (int)$year_from;
+    $year_to   = ($year_to === null)   ? JALALI_YEAR_TO   : (int)$year_to;
+    if ($year_to < $year_from) {
+        $year_to = $year_from;
+    }
+
+    $sel = array('y' => '', 'm' => '', 'd' => '');
+    if ($jalali_ymd !== '' && $jalali_ymd !== null) {
+        $parts = explode('/', to_latin_digits((string)$jalali_ymd));
+        if (count($parts) === 3) {
+            $sel['y'] = sprintf('%04d', (int)$parts[0]);
+            $sel['m'] = sprintf('%02d', (int)$parts[1]);
+            $sel['d'] = sprintf('%02d', (int)$parts[2]);
+        }
+    }
+
+    $html = '<div class="date3" style="display:flex;gap:6px;flex-wrap:wrap;">';
+
+    /* سال */
+    $html .= '<select name="' . e($name_prefix) . '_y" aria-label="سال" title="سال">';
+    for ($y = $year_from; $y <= $year_to; $y++) {
+        $v = sprintf('%04d', $y);
+        $html .= '<option value="' . $v . '"'
+            . ($sel['y'] === $v ? ' selected' : '') . '>'
+            . to_persian_digits($v) . '</option>';
+    }
+    $html .= '</select>';
+
+    /* ماه */
+    $html .= '<select name="' . e($name_prefix) . '_m" aria-label="ماه" title="ماه">';
+    for ($m = 1; $m <= 12; $m++) {
+        $v = sprintf('%02d', $m);
+        $html .= '<option value="' . $v . '"'
+            . ($sel['m'] === $v ? ' selected' : '') . '>'
+            . jalali_month_name($m) . '</option>';
+    }
+    $html .= '</select>';
+
+    /* روز */
+    $html .= '<select name="' . e($name_prefix) . '_d" aria-label="روز" title="روز">';
+    for ($d = 1; $d <= 31; $d++) {
+        $v = sprintf('%02d', $d);
+        $html .= '<option value="' . $v . '"'
+            . ($sel['d'] === $v ? ' selected' : '') . '>'
+            . to_persian_digits($v) . '</option>';
+    }
+    $html .= '</select>';
+
+    $html .= '</div>';
+    return $html;
+}
+
+/**
+ * ترکیبِ سه فیلدِ انتخابگرِ تاریخ به «1405/07/01» (لاتین).
+ * اگر هر بخش خالی باشد، خروجی خالی است.
+ */
+function finance_jalali_date3_compose($y, $m, $d)
+{
+    $y = trim(to_latin_digits((string)$y));
+    $m = trim(to_latin_digits((string)$m));
+    $d = trim(to_latin_digits((string)$d));
+    if ($y === '' || $m === '' || $d === '') {
+        return '';
+    }
+    return sprintf('%04d/%02d/%02d', (int)$y, (int)$m, (int)$d);
+}
+
 /** آیا مهاجرتِ مرحلهٔ ۳ (تسویه با مراکز) اجرا شده است؟ */
 function phase5_3_ready($db)
 {
@@ -1019,10 +1110,19 @@ function finance_settlement_create($db, $center_id, $period_start_j, $period_end
     if (!$center || $center['status'] !== 'ACTIVE') {
         return array('ok' => false, 'error' => 'مرکزِ موردنظر یافت نشد یا غیرفعال است.');
     }
+    if (trim((string)$period_start_j) === '') {
+        return array('ok' => false, 'error' => 'تاریخِ شروعِ بازه را انتخاب کنید.');
+    }
+    if (trim((string)$period_end_j) === '') {
+        return array('ok' => false, 'error' => 'تاریخِ پایانِ بازه را انتخاب کنید.');
+    }
     $start_g = jalali_input_to_gregorian($period_start_j);
     $end_g = jalali_input_to_gregorian($period_end_j);
-    if ($start_g === null || $end_g === null) {
-        return array('ok' => false, 'error' => 'تاریخ‌های بازه را به‌صورت شمسی (مثلاً ۱۴۰۵/۰۷/۰۱) وارد کنید.');
+    if ($start_g === null) {
+        return array('ok' => false, 'error' => 'تاریخِ شروعِ بازه نامعتبر است (چنین روزی در آن ماه وجود ندارد).');
+    }
+    if ($end_g === null) {
+        return array('ok' => false, 'error' => 'تاریخِ پایانِ بازه نامعتبر است (چنین روزی در آن ماه وجود ندارد).');
     }
     if ($end_g < $start_g) {
         return array('ok' => false, 'error' => 'تاریخِ پایانِ بازه نباید قبل از تاریخِ شروع باشد.');

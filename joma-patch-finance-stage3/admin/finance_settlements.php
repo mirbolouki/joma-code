@@ -79,8 +79,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         if ($action === 'create') {
             $form['center_id'] = isset($_POST['center_id']) ? $_POST['center_id'] : '';
-            $form['period_start'] = isset($_POST['period_start']) ? $_POST['period_start'] : '';
-            $form['period_end'] = isset($_POST['period_end']) ? $_POST['period_end'] : '';
+            $form['period_start'] = finance_jalali_date3_compose(
+                isset($_POST['period_start_y']) ? $_POST['period_start_y'] : '',
+                isset($_POST['period_start_m']) ? $_POST['period_start_m'] : '',
+                isset($_POST['period_start_d']) ? $_POST['period_start_d'] : '');
+            $form['period_end'] = finance_jalali_date3_compose(
+                isset($_POST['period_end_y']) ? $_POST['period_end_y'] : '',
+                isset($_POST['period_end_m']) ? $_POST['period_end_m'] : '',
+                isset($_POST['period_end_d']) ? $_POST['period_end_d'] : '');
 
             if ($form['center_id'] === '' || !isset($centers_by_id[(int)$form['center_id']])) {
                 $errors['center_id'] = 'مرکز را از فهرستِ کشویی انتخاب کنید.';
@@ -148,7 +154,7 @@ require __DIR__ . '/../templates/header.php';
   مبلغِ قابل‌پرداخت به هر مرکز <strong>خودکار</strong> محاسبه می‌شود:
   مرکزِ <strong>درصدی</strong> → درصد × مجموعِ پرداخت‌های «پرداخت‌شده»ِ جلساتِ اتاق‌های آن مرکز در بازه،
   و مرکزِ <strong>ساعتی</strong> → مجموعِ ساعت × تعرفهٔ اتاق (نوبتِ زوج/خانواده با تعرفهٔ اتاقِ زوج).
-  تاریخ‌ها را به‌صورت <strong>شمسی</strong> وارد کنید (مثلاً ۱۴۰۵/۰۷/۰۱).
+  تاریخِ «از» و «تا» را با سه فهرستِ کشوییِ <strong>سال / ماه / روز</strong> انتخاب کنید — نیازی به تایپ نیست.
 </div>
 
 <div class="card">
@@ -173,6 +179,7 @@ require __DIR__ . '/../templates/header.php';
       <div class="form-row">
         <label for="center_id">مرکز <span class="required-star">*</span></label>
         <select id="center_id" name="center_id"
+                onchange="if (this.value) { window.location.href = 'finance_settlements.php?center=' + encodeURIComponent(this.value); }"
                 class="<?php echo isset($errors['center_id']) ? 'is-invalid' : ''; ?>">
           <option value="">— انتخاب مرکز —</option>
           <?php foreach ($centers as $c) { ?>
@@ -187,19 +194,15 @@ require __DIR__ . '/../templates/header.php';
       </div>
 
       <div class="form-row">
-        <label for="period_start">از تاریخ (شمسی) <span class="required-star">*</span></label>
-        <input type="text" id="period_start" name="period_start" dir="ltr"
-               value="<?php echo e($form['period_start']); ?>" placeholder="۱۴۰۵/۰۷/۰۱"
-               class="<?php echo isset($errors['period_start']) ? 'is-invalid' : ''; ?>">
-        <?php if (isset($errors['period_start'])) { ?><span class="field-error"><?php echo e($errors['period_start']); ?></span><?php } ?>
+        <label>از تاریخ <span class="required-star">*</span></label>
+        <?php echo finance_jalali_date3_html('period_start', $form['period_start']); ?>
+        <div class="form-hint">سال / ماه / روز — انتخاب از فهرست، بدون تایپ</div>
       </div>
 
       <div class="form-row">
-        <label for="period_end">تا تاریخ (شمسی) <span class="required-star">*</span></label>
-        <input type="text" id="period_end" name="period_end" dir="ltr"
-               value="<?php echo e($form['period_end']); ?>" placeholder="۱۴۰۵/۰۷/۳۰"
-               class="<?php echo isset($errors['period_end']) ? 'is-invalid' : ''; ?>">
-        <?php if (isset($errors['period_end'])) { ?><span class="field-error"><?php echo e($errors['period_end']); ?></span><?php } ?>
+        <label>تا تاریخ <span class="required-star">*</span></label>
+        <?php echo finance_jalali_date3_html('period_end', $form['period_end']); ?>
+        <div class="form-hint">سال / ماه / روز — انتخاب از فهرست، بدون تایپ</div>
       </div>
 
       <div class="form-actions">
