@@ -179,19 +179,272 @@ if ($role === ROLE_ADMIN) {
         array('label' => '🧪 بخش روان‌سنجی', 'url' => '', 'key' => '', 'soon' => true),
     );
 }
+/* دسته‌بندی منو؛ لینک‌ها و کنترل دسترسیِ قبلی دست‌نخورده می‌مانند. */
+$sidebar_direct_keys = array();
+$sidebar_group_defs = array();
+$sidebar_key_to_group = array();
+$sidebar_direct_all = false;
+
+if ($role === ROLE_ADMIN) {
+    $sidebar_direct_keys = array('admin_home');
+    $sidebar_group_defs = array(
+        'people' => array('title' => 'مراجعان و پذیرش', 'icon' => '👥'),
+        'schedule' => array('title' => 'نوبت و منابع', 'icon' => '📅'),
+        'clinical' => array('title' => 'پرونده و فرم‌ها', 'icon' => '🩺'),
+        'finance' => array('title' => 'امور مالی', 'icon' => '💰'),
+        'system' => array('title' => 'مدیریت سامانه', 'icon' => '⚙️'),
+        'setup' => array('title' => 'راه‌اندازی امکانات', 'icon' => '🧩'),
+    );
+    $sidebar_key_to_group = array(
+        'reception_home' => 'people', 'patients' => 'people',
+        'booking_requests' => 'people', 'patient_appointment_requests' => 'people',
+        'appointments' => 'schedule', 'rooms' => 'schedule', 'tariffs' => 'schedule',
+        'admin_cases' => 'clinical', 'admin_forms' => 'clinical',
+        'admin_form_responses' => 'clinical',
+        'finance_centers' => 'finance', 'finance_bank_accounts' => 'finance',
+        'finance_rooms' => 'finance', 'finance_payments' => 'finance',
+        'finance_settlements' => 'finance', 'finance_test_sales' => 'finance',
+        'finance_package_sales' => 'finance', 'finance_report' => 'finance',
+        'user_create' => 'system', 'users_list' => 'system',
+        'clinic_settings' => 'system', 'sms_settings' => 'system',
+        'upgrade2' => 'setup', 'upgrade4' => 'setup',
+        'admin_modules_upgrade' => 'setup', 'patient_requests_upgrade' => 'setup',
+        'patient_messages_upgrade' => 'setup',
+    );
+} elseif ($role === ROLE_SECRETARY) {
+    $sidebar_direct_keys = array('reception_home');
+    $sidebar_group_defs = array(
+        'people' => array('title' => 'مراجعان و پذیرش', 'icon' => '👥'),
+        'schedule' => array('title' => 'نوبت‌ها', 'icon' => '📅'),
+        'finance' => array('title' => 'امور مالی', 'icon' => '💰'),
+    );
+    $sidebar_key_to_group = array(
+        'admission_new' => 'people', 'patients' => 'people',
+        'booking_requests' => 'people', 'patient_appointment_requests' => 'people',
+        'appointments' => 'schedule', 'appointment_new' => 'schedule',
+        'finance_payments' => 'finance', 'finance_test_sales' => 'finance',
+        'finance_package_sales' => 'finance',
+    );
+} elseif ($role === ROLE_THERAPIST) {
+    $sidebar_direct_keys = array('therapist_home');
+    $sidebar_group_defs = array(
+        'cases' => array('title' => 'پرونده و مراجعان', 'icon' => '📂'),
+        'clinical' => array('title' => 'کار درمانی و فرم‌ها', 'icon' => '🧾'),
+        'schedule' => array('title' => 'برنامهٔ کاری', 'icon' => '🗓️'),
+    );
+    $sidebar_key_to_group = array(
+        'therapist_patients' => 'cases',
+        'notes_recent' => 'clinical', 'therapist_forms' => 'clinical',
+        'therapist_calendar' => 'schedule', 'therapist_absences' => 'schedule',
+        'therapist_tariffs' => 'schedule',
+    );
+} elseif ($role === ROLE_PATIENT) {
+    $sidebar_direct_keys = array('patient_home');
+    $sidebar_group_defs = array(
+        'services' => array('title' => 'خدمات من', 'icon' => '✨'),
+    );
+    $sidebar_key_to_group = array(
+        'patient_appointments' => 'services', 'patient_requests' => 'services',
+        'patient_messages' => 'services', 'patient_finances' => 'services',
+        'patient_forms' => 'services',
+    );
+} elseif ($role === ROLE_PSYCHOMETRIST) {
+    $sidebar_direct_all = true;
+}
+
+$sidebar_direct_items = array();
+$sidebar_group_items = array();
+foreach ($sidebar_group_defs as $group_key => $group_definition) {
+    $sidebar_group_items[$group_key] = array();
+}
+foreach ($menu as $item) {
+    $item_key = isset($item['key']) ? (string)$item['key'] : '';
+    if ($sidebar_direct_all || in_array($item_key, $sidebar_direct_keys, true)) {
+        $sidebar_direct_items[] = $item;
+        continue;
+    }
+
+    if (isset($sidebar_key_to_group[$item_key])) {
+        $group_key = $sidebar_key_to_group[$item_key];
+    } elseif ($role === ROLE_THERAPIST && $item_key === '' && empty($item['soon'])) {
+        /* پیوندِ پرونده‌های من به بخش پرونده تعلق دارد. */
+        $group_key = 'cases';
+    } elseif (!empty($item['soon'])
+        && ($role === ROLE_SECRETARY || $role === ROLE_THERAPIST)) {
+        /* آیتم‌های «به‌زودی» نیز کنار دستهٔ مرتبط باقی می‌مانند. */
+        $group_key = 'schedule';
+    } else {
+        $group_key = 'other';
+    }
+
+    if (!isset($sidebar_group_defs[$group_key])) {
+        $sidebar_group_defs[$group_key] = array('title' => 'سایر امکانات', 'icon' => '•');
+        $sidebar_group_items[$group_key] = array();
+    }
+    $sidebar_group_items[$group_key][] = $item;
+}
+
+$sidebar_render_item = function ($item, $active_menu) {
+    if (!empty($item['soon'])) {
+        echo '<li><a href="#" class="disabled-link" aria-disabled="true">'
+            . e($item['label']) . ' <span class="badge badge-muted">فاز بعد</span></a></li>';
+        return;
+    }
+
+    $item_key = isset($item['key']) ? (string)$item['key'] : '';
+    $is_active = ($item_key !== '' && $item_key === $active_menu);
+    echo '<li><a href="' . e($item['url']) . '"'
+        . ($is_active ? ' class="active" aria-current="page"' : '') . '>'
+        . e($item['label']) . '</a></li>';
+};
 ?>
+<style>
+.sidebar .sidebar-nav-hint {
+  margin: -4px 24px 12px;
+  color: var(--color-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.sidebar .sidebar-direct-links,
+.sidebar .sidebar-submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sidebar .sidebar-direct-links {
+  margin-bottom: 8px;
+}
+.sidebar .sidebar-direct-links a {
+  margin: 2px 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+.sidebar .sidebar-categories {
+  padding: 0 8px 8px;
+}
+.sidebar details.sidebar-category {
+  margin: 2px 0;
+  border-radius: 10px;
+}
+.sidebar details.sidebar-category[open] {
+  background: rgba(0, 0, 0, 0.025);
+}
+.sidebar .sidebar-category > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  list-style: none;
+  user-select: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.sidebar .sidebar-category > summary::-webkit-details-marker {
+  display: none;
+}
+.sidebar .sidebar-category > summary::marker {
+  content: '';
+}
+.sidebar .sidebar-category > summary:hover,
+.sidebar .sidebar-category > summary:focus-visible {
+  background: var(--color-bg);
+  color: var(--color-primary);
+}
+.sidebar .sidebar-category > summary:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+.sidebar .sidebar-category[open] > summary {
+  color: var(--color-primary);
+}
+.sidebar .sidebar-category-icon {
+  display: inline-flex;
+  width: 22px;
+  justify-content: center;
+  flex: 0 0 22px;
+  font-size: 16px;
+}
+.sidebar .sidebar-category-title {
+  flex: 1 1 auto;
+}
+.sidebar .sidebar-category-chevron {
+  margin-right: auto;
+  color: var(--color-muted);
+  font-size: 17px;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+.sidebar .sidebar-category[open] .sidebar-category-chevron {
+  transform: rotate(180deg);
+}
+.sidebar .sidebar-submenu {
+  padding: 0 0 7px;
+}
+.sidebar .sidebar-submenu a {
+  min-height: 39px;
+  margin: 2px 7px;
+  padding: 8px 18px;
+  border-right: 3px solid transparent;
+  border-radius: 7px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.sidebar .sidebar-submenu a.active {
+  background: var(--color-white);
+  border-right-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+.sidebar .sidebar-submenu a.disabled-link {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidebar .sidebar-category > summary,
+  .sidebar .sidebar-category-chevron {
+    transition: none;
+  }
+}
+</style>
 <nav class="sidebar" aria-label="منوی اصلی">
   <div class="sidebar-title">منوی <?php echo e(role_label($role)); ?></div>
-  <ul>
-    <?php foreach ($menu as $item) { ?>
-      <?php if (!empty($item['soon'])) { ?>
-        <li><a href="#" class="disabled-link" aria-disabled="true"><?php echo $item['label']; ?>
-          <span class="badge badge-muted">فاز بعد</span></a></li>
-      <?php } else { ?>
-        <li><a href="<?php echo e($item['url']); ?>"<?php
-          echo ($item['key'] !== '' && $item['key'] === $active_menu) ? ' class="active"' : ''; ?>>
-          <?php echo $item['label']; ?></a></li>
-      <?php } ?>
+  <div class="sidebar-nav-hint">برای دیدن زیرمنو، دسته را باز کنید</div>
+
+  <?php if (count($sidebar_direct_items) > 0) { ?>
+    <ul class="sidebar-direct-links">
+      <?php foreach ($sidebar_direct_items as $item) { $sidebar_render_item($item, $active_menu); } ?>
+    </ul>
+  <?php } ?>
+
+  <div class="sidebar-categories">
+    <?php foreach ($sidebar_group_defs as $group_key => $group_definition) { ?>
+      <?php if (empty($sidebar_group_items[$group_key])) { continue; } ?>
+      <?php
+        $group_is_active = false;
+        foreach ($sidebar_group_items[$group_key] as $group_item) {
+            $group_item_key = isset($group_item['key']) ? (string)$group_item['key'] : '';
+            if ($group_item_key !== '' && $group_item_key === $active_menu) {
+                $group_is_active = true;
+                break;
+            }
+        }
+        $submenu_id = 'sidebar-submenu-' . preg_replace('/[^a-z0-9_-]/i', '-', $group_key);
+      ?>
+      <details class="sidebar-category"<?php echo $group_is_active ? ' open' : ''; ?>>
+        <summary aria-controls="<?php echo e($submenu_id); ?>">
+          <span class="sidebar-category-icon" aria-hidden="true"><?php echo e($group_definition['icon']); ?></span>
+          <span class="sidebar-category-title"><?php echo e($group_definition['title']); ?></span>
+          <span class="sidebar-category-chevron" aria-hidden="true">⌄</span>
+        </summary>
+        <ul class="sidebar-submenu" id="<?php echo e($submenu_id); ?>">
+          <?php foreach ($sidebar_group_items[$group_key] as $item) { $sidebar_render_item($item, $active_menu); } ?>
+        </ul>
+      </details>
     <?php } ?>
-  </ul>
+  </div>
 </nav>
