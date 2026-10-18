@@ -21,6 +21,9 @@ $current_template = defined('SMSIR_OTP_TEMPLATE_ID') ? (string)SMSIR_OTP_TEMPLAT
 $current_patient_notice_template = defined('SMSIR_PATIENT_NOTICE_TEMPLATE_ID')
     ? (string)SMSIR_PATIENT_NOTICE_TEMPLATE_ID : '';
 $api_key_set = (defined('SMSIR_API_KEY') && trim((string)SMSIR_API_KEY) !== '');
+$notice_template_is_set = (preg_match('/^[0-9]{1,12}$/', $current_patient_notice_template) === 1);
+$bulk_line_is_set = (defined('SMSIR_LINE')
+    && preg_replace('/\D/', '', (string)SMSIR_LINE) !== '');
 
 /** جایگزینی امن مقدار یک ثابت در متن فایل تنظیمات */
 function config_replace_define($content, $name, $php_literal)
@@ -68,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } elseif ($result['status'] === 'DISABLED') {
                 $error_message = 'ارسال پیامک در تنظیمات غیرفعال است.';
             } else {
-                $error_message = 'ارسال آزمون انجام نشد؛ کلید و شناسهٔ قالب اعلانِ مراجع را بررسی کنید.';
+                $error_message = 'ارسال آزمون انجام نشد؛ وضعیت SMS.ir و وجود شناسهٔ قالب یا خط ارسال را بررسی کنید.';
             }
         }
 
@@ -135,7 +138,26 @@ require __DIR__ . '/../templates/header.php';
 
 <div class="alert alert-info">
   این صفحه تنظیمات سامانهٔ پیامک را در فایل تنظیمات به‌روز می‌کند؛ نیازی به ویرایش دستی فایل ندارید.
-  کلید API افشا یا در این پچ ذخیره نمی‌شود؛ فیلد کلید را برای حفظ مقدار فعلی خالی بگذارید.
+  کلید API در این پچ ذخیره نمی‌شود؛ برای حفظ کلید فعلی، فیلد کلید را خالی بگذارید.
+</div>
+
+<div class="card">
+  <div class="card-header">وضعیت تنظیمات اعلان مراجع</div>
+  <div class="card-body">
+    <div class="check-row">
+      <span>قالب خدماتی اعلان</span>
+      <span class="badge <?php echo $notice_template_is_set ? 'badge-success' : 'badge-muted'; ?>">
+        <?php echo $notice_template_is_set ? 'شناسه ثبت شده' : 'شناسه ثبت نشده'; ?>
+      </span>
+    </div>
+    <div class="check-row">
+      <span>خط ارسال جایگزین</span>
+      <span class="badge <?php echo $bulk_line_is_set ? 'badge-success' : 'badge-muted'; ?>">
+        <?php echo $bulk_line_is_set ? 'در تنظیمات موجود است' : 'در تنظیمات پیدا نشد'; ?>
+      </span>
+    </div>
+    <p class="form-hint">اگر هر دو مورد آماده باشند، ابتدا قالب خدماتی استفاده می‌شود؛ در نبود شناسهٔ قالب، خط موجود به‌کار می‌رود. شمارهٔ خط نمایش داده نمی‌شود.</p>
+  </div>
 </div>
 
 <div class="card">
@@ -177,8 +199,10 @@ require __DIR__ . '/../templates/header.php';
                  name="smsir_patient_notice_template_id" dir="ltr" data-digits="en"
                  value="<?php echo e($current_patient_notice_template); ?>">
           <span class="form-hint">
-            برای SMS.ir یک قالب خدماتی بسازید که متغیر آن دقیقاً <code>link</code> باشد
-            و متنش بگوید پیام تازه دارید و با لینک وارد پورتال شوید. این شناسه با قالب کد تأیید فرق دارد.
+            اگر قالب می‌سازید، متغیر داخل متن قالب باید دقیقاً <code>#notice#</code> باشد
+            (نام پارامتر API: <code>notice</code>) و لینک ورود به‌صورت متن ثابت داخل قالب بیاید.
+            مقدار متغیر کوتاه است تا با محدودیت SMS.ir سازگار بماند. اگر شناسه را خالی بگذارید،
+            سامانه فقط در صورت وجود خط ارسال فعلی از همان خط استفاده می‌کند.
           </span>
         </div>
       </div>

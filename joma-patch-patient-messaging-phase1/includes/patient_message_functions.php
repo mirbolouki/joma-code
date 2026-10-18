@@ -116,9 +116,12 @@ function patient_message_sms_status_label($status)
 }
 
 /**
- * ارسال اعلان SMS.ir با قالب خدماتی.
- * متغیر قالب دقیقاً `link` است و مقدار آن پیوند ورود به پورتال است.
- * متن پیام مراجع هرگز به این تابع داده نمی‌شود.
+ * ارسال اعلان SMS.ir.
+ *
+ * مسیر اصلی: قالب خدماتی Verify با متغیر کوتاه `notice` و لینک ثابت داخل قالب.
+ * SMS.ir برای مقدار متغیر Verify سقف طول دارد؛ URL کامل نباید متغیر شود.
+ * مسیر جایگزین: اگر شناسهٔ قالب وارد نشده اما SMSIR_LINE موجود است، پیام
+ * عمومی از خط موجود با Bulk ارسال می‌شود.
  *
  * @return array('status' => string, 'error' => string|null)
  */
@@ -133,7 +136,7 @@ function patient_message_sms_attempt($mobile)
         return array('status' => 'DISABLED', 'error' => 'SMS_DISABLED');
     }
     if ($mode === 'dev') {
-        /* عمداً شماره، متن پیام و لینک در لاگ نوشته نمی‌شوند. */
+        /* عمداً شماره و محتوای پیام در لاگ نوشته نمی‌شوند. */
         if (function_exists('sms_debug_log')) {
             sms_debug_log('PATIENT PORTAL NOTICE (dev) | no SMS sent');
         }
@@ -142,11 +145,6 @@ function patient_message_sms_attempt($mobile)
 
     if (!defined('SMSIR_API_KEY') || trim((string)SMSIR_API_KEY) === '') {
         return array('status' => 'FAILED', 'error' => 'SMSIR_API_KEY_MISSING');
-    }
-    $template_id = defined('SMSIR_PATIENT_NOTICE_TEMPLATE_ID')
-        ? trim((string)SMSIR_PATIENT_NOTICE_TEMPLATE_ID) : '';
-    if ($template_id === '' || !preg_match('/^[0-9]{1,12}$/', $template_id)) {
-        return array('status' => 'FAILED', 'error' => 'NOTICE_TEMPLATE_MISSING');
     }
 
     $digits = preg_replace('/\D/', '', (string)$mobile);
@@ -162,22 +160,42 @@ function patient_message_sms_attempt($mobile)
     }
 
     $login_link = rtrim(APP_BASE_URL, '/') . '/patient_login.php';
-    /* SMS.ir برای مقدار متغیر قالب سقف کوتاه دارد؛ پیوند هرگز بریده نمی‌شود. */
-    if (strlen($login_link) > 50) {
-        return array('status' => 'FAILED', 'error' => 'LOGIN_LINK_TOO_LONG');
+    $template_id = defined('SMSIR_PATIENT_NOTICE_TEMPLATE_ID')
+        ? trim((string)SMSIR_PATIENT_NOTICE_TEMPLATE_ID) : '';
+
+    if ($template_id !== '') {
+        if (!preg_match('/^[0-9]{1,12}$/', $template_id)) {
+            return array('status' => 'FAILED', 'error' => 'NOTICE_TEMPLATE_INVALID');
+        }
+        /* مقدار کوتاه می‌ماند؛ URL کامل به‌صورت ثابت در متن قالب تأییدشده است. */
+        $payload = array(
+            'mobile' => $digits,
+            'templateId' => (int)$template_id,
+            'parameters' => array(
+                array('name' => 'notice', 'value' => 'پیام جدید'),
+            ),
+        );
+        $endpoint = 'https://api.sms.ir/v1/send/verify';
+        $log_prefix = 'PATIENT PORTAL NOTICE (verify)';
+    } else {
+        $line = defined('SMSIR_LINE')
+            ? preg_replace('/\D/', '', (string)SMSIR_LINE) : '';
+        if ($line === '') {
+            return array('status' => 'FAILED', 'error' => 'NOTICE_TEMPLATE_OR_LINE_MISSING');
+        }
+        $payload = array(
+            'lineNumber' => (int)$line,
+            'messageText' => 'کلینیک جوما: پیام جدید دارید؛ وارد کلینیک شوید و پیام را بررسی کنید: '
+                . $login_link,
+            'mobiles' => array($digits),
+            'sendDateTime' => null,
+        );
+        $endpoint = 'https://api.sms.ir/v1/send/bulk';
+        $log_prefix = 'PATIENT PORTAL NOTICE (bulk)';
     }
 
-    $payload = array(
-        'mobile' => $digits,
-        'templateId' => (int)$template_id,
-        'parameters' => array(
-            array('name' => 'link', 'value' => $login_link),
-        ),
-    );
-
     try {
-        $response = sms_http_post_json(
-            'https://api.sms.ir/v1/send/verify', SMSIR_API_KEY, $payload);
+        $response = sms_http_post_json($endpoint, SMSIR_API_KEY, $payload);
     } catch (Throwable $ex) {
         return array('status' => 'FAILED', 'error' => 'GATEWAY_REQUEST_FAILED');
     }
@@ -186,16 +204,14 @@ function patient_message_sms_attempt($mobile)
         ? $response['json']['status'] : null;
     if (!empty($response['ok']) && (int)$gateway_status === 1) {
         if (function_exists('sms_debug_log')) {
-            sms_debug_log('PATIENT PORTAL NOTICE SENT (smsir) | HTTP: '
-                . (int)$response['http_code']);
+            sms_debug_log($log_prefix . ' SENT | HTTP: ' . (int)$response['http_code']);
         }
         return array('status' => 'SENT', 'error' => null);
     }
 
     /* پاسخ درگاه، کلید، متن پیام و شماره در لاگ پایگاه داده ذخیره نمی‌شود. */
     if (function_exists('sms_debug_log')) {
-        sms_debug_log('PATIENT PORTAL NOTICE FAILED (smsir) | HTTP: '
-            . (int)$response['http_code']);
+        sms_debug_log($log_prefix . ' FAILED | HTTP: ' . (int)$response['http_code']);
     }
     return array('status' => 'FAILED', 'error' => 'GATEWAY_REJECTED');
 }
