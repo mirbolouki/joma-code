@@ -63,3 +63,18 @@ CREATE TABLE finance_v2_events (
     CONSTRAINT fk_fv2_event_account FOREIGN KEY (account_id) REFERENCES finance_bank_accounts(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_event_recorder FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Rate history is append-only, separate from per-appointment snapshots.
+CREATE TABLE finance_v2_rate_changes (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    rate_id BIGINT UNSIGNED NOT NULL,
+    old_rate_rial DECIMAL(18,0) NULL,
+    old_active TINYINT(1) NULL,
+    new_rate_rial DECIMAL(18,0) NOT NULL,
+    new_active TINYINT(1) NOT NULL,
+    recorded_by_person_id BIGINT UNSIGNED NOT NULL,
+    recorded_at DATETIME NOT NULL,
+    KEY idx_fv2_rate_change_rate (rate_id, id),
+    CONSTRAINT fk_fv2_rate_change_rate FOREIGN KEY (rate_id) REFERENCES finance_v2_rates(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_rate_change_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
