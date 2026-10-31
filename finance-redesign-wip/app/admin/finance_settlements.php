@@ -153,6 +153,10 @@ try {
     $settlements = finance_settlements_fetch_all($db);
     $summary = finance_settlements_summary($db);
     $accounts = finance_accounts_fetch_active($db);
+    $late_events = array();
+    if (defined('FINANCE_V2_ACTIVE') && FINANCE_V2_ACTIVE===true && defined('FINANCE_V2_PERCENTAGE_EXPERIMENTAL') && FINANCE_V2_PERCENTAGE_EXPERIMENTAL===true) {
+        $late_events=db_select_all($db,"SELECT s.public_id, c.name AS center_name, ev.id AS event_id, ev.event_type, ev.amount_rial, ev.occurred_at FROM finance_v2_percentage_late_events l JOIN finance_center_settlements s ON s.id=l.settlement_id JOIN finance_centers c ON c.id=s.center_id JOIN finance_v2_events ev ON ev.id=l.event_id ORDER BY l.id DESC LIMIT 100");
+    }
 } catch (Exception $ex) {
     $ref = log_system_error('FINANCE_SETTLEMENTS_LIST', $ex);
     render_error_page($ref);
@@ -170,7 +174,7 @@ require __DIR__ . '/../templates/header.php';
 
 <div class="alert alert-info">
   <?php if (defined('FINANCE_V2_ACTIVE') && FINANCE_V2_ACTIVE === true) { ?>
-  تسویهٔ ساعتی بر اساس مبنای واقعی یا رزروشدهٔ هر مرکز حساب می‌شود. زمان واقعی نامشخص حدس زده نمی‌شود و تسویهٔ درصدی جدید هنوز پشتیبانی نمی‌شود.
+  تسویهٔ ساعتی بر اساس مبنای واقعی یا رزروشدهٔ هر مرکز حساب می‌شود و زمان نامشخص حدس زده نمی‌شود. <?php if (defined('FINANCE_V2_PERCENTAGE_EXPERIMENTAL') && FINANCE_V2_PERCENTAGE_EXPERIMENTAL===true) { ?>تسویهٔ درصدی صرفاً به‌صورت آزمایشی فعال است؛ استرداد و انتقال بین نوبت‌ها به تصمیم دستی نیاز دارند.<?php } else { ?>تسویهٔ درصدی جدید هنوز برای استفاده فعال نشده است.<?php } ?>
   <?php } else { ?>
   مبلغِ قابل‌پرداخت به هر مرکز <strong>خودکار</strong> محاسبه می‌شود:
   مرکزِ <strong>درصدی</strong> → درصد × مجموعِ پرداخت‌های «پرداخت‌شده»ِ جلساتِ اتاق‌های آن مرکز در بازه،
@@ -179,6 +183,10 @@ require __DIR__ . '/../templates/header.php';
   <?php } ?>
 </div>
 
+<?php if (count($late_events)>0) { ?>
+<div class="alert alert-warning"><strong>گردش‌های ثبت‌شده پس از تسویه نیازمند بررسی و اصلاح‌اند؛ تسویهٔ بعدی این مراکز تا تعیین تکلیف مسدود است.</strong>
+<ul><?php foreach ($late_events as $late) { ?><li>مرکز <?php echo e($late['center_name']); ?>، تسویه <?php echo e($late['public_id']); ?>، گردش شمارهٔ <?php echo (int)$late['event_id']; ?> (<?php echo e($late['event_type']); ?>)، <?php echo e(finance_v2_settlement_display($late['amount_rial'])); ?>، <?php echo e(jalali_display($late['occurred_at'],'datetime')); ?></li><?php } ?></ul></div>
+<?php } ?>
 <div class="card">
   <div class="card-header">خلاصهٔ تسویه‌ها</div>
   <div class="card-body">

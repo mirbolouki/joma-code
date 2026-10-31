@@ -10,6 +10,8 @@ class TestSqliteStore {
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo->exec('CREATE TABLE events (id INTEGER PRIMARY KEY, operation_key TEXT UNIQUE, event_type TEXT, wallet_id INTEGER, destination_wallet_id INTEGER, center_snapshot_recorded INTEGER, source_center_id INTEGER, destination_center_id INTEGER, amount_rial INTEGER, receipt_kind TEXT, account_id INTEGER, actual_minutes INTEGER, actual_session_date TEXT, calculated_rial INTEGER, reason TEXT, recorded_by_person_id INTEGER, recorded_by_role_code TEXT)');
     }
+    function lockLedger() {} // in-memory test adapter only
+    function recordLateSettlementFlags($id,$event) {} // separate MySQL integration tests
     function begin() { $this->pdo->beginTransaction(); }
     function commit() { $this->pdo->commit(); }
     function rollback() { $this->pdo->rollBack(); }

@@ -38,6 +38,7 @@ function joma_v2_review_legacy_center($store,$input,$actor) {
     if ($reason==='' || mb_strlen($reason,'UTF-8')>255) throw new InvalidArgumentException('Reason required');
     $store->begin();
     try {
+        $store->lockLedger();
         $payment=$store->lockPaymentAndWallet($id);
         if (!$payment) throw new InvalidArgumentException('Payment not found');
         if (!hash_equals(joma_v2_legacy_payment_fingerprint($payment),$fingerprint)) throw new InvalidArgumentException('Legacy payment changed; review it again');
@@ -76,6 +77,7 @@ function joma_v2_legacy_review_percentage_record($payment,$review,$has_new_histo
     $verified=joma_v2_legacy_review_is_current($payment,$review,$has_new_history);
     if (!isset($payment['id']) || !preg_match('/^[1-9][0-9]{0,17}$/D',(string)$payment['id'])) throw new InvalidArgumentException('Invalid legacy identifier');
     $out=array('id'=>(int)$payment['id'],'center_verified'=>$verified,'has_new_history'=>$has_new_history);
+    $out['review_id']=$verified && isset($review['id']) ? (int)$review['id'] : null;
     joma_v2_positive_id($out['id'],'Legacy payment');
     foreach (array('deposit','balance') as $field) {
         $centerKey=$field.'_center_id';

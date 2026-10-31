@@ -17,6 +17,7 @@ function joma_v2_create_hourly_settlement($store,$center_id,$start,$end,$manual_
     if ($manual_rial !== null) joma_v2_rial($manual_rial,true);
     $store->begin();
     try {
+        $store->lockLedger();
         // Every settlement for a center serializes on this center row. Old
         // periods, including partially paid ones, remain overlap barriers.
         $center=$store->lockCenter($center_id);

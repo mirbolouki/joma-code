@@ -50,6 +50,7 @@ function joma_v2_record_event($store, $input, $actor)
     }
     $store->begin();
     try {
+        $store->lockLedger();
         if ($store->operationExists($input['key'])) throw new InvalidArgumentException('Duplicate operation');
         $ids = $target === null ? array($source) : array($source, $target);
         sort($ids, SORT_NUMERIC); // stable lock order, prevents transfer deadlocks
@@ -130,6 +131,7 @@ function joma_v2_record_event($store, $input, $actor)
             }
         }
         $id = $store->insertEvent($event);
+        $store->recordLateSettlementFlags($id,$event);
         $store->commit();
         return $id;
     } catch (Throwable $ex) {

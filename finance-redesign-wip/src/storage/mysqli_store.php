@@ -7,6 +7,7 @@ class JomaV2MysqliStore
     function __construct($db) { $this->db = $db; }
     function begin() { if (!mysqli_query($this->db, 'START TRANSACTION')) throw new RuntimeException('Could not begin transaction'); }
     function commit() { if (!mysqli_query($this->db, 'COMMIT')) throw new RuntimeException('Could not commit transaction'); }
+    function lockLedger() { if (!db_select_one($this->db,'SELECT id FROM finance_v2_locks WHERE id=1 FOR UPDATE')) throw new RuntimeException('Finance lock missing'); }
     function rollback() { mysqli_query($this->db, 'ROLLBACK'); }
     function operationExists($key) {
         return (bool) db_select_one($this->db, 'SELECT id FROM finance_v2_events WHERE operation_key = ? LIMIT 1', 's', array($key));
@@ -102,5 +103,22 @@ class JomaV2MysqliStore
                 $event['actual_minutes'], $event['actual_session_date'], $event['calculated_rial'] === null ? null : (string)$event['calculated_rial'],
                 $event['reason'], $now, $now, $event['recorded_by_person_id'], $event['recorded_by_role_code']));
         return (int)$result['insert_id'];
+    }
+    /** Caller holds the global finance mutex. Never discard a real payment
+     * merely because a same-day percentage or unclassified legacy settlement exists. */
+    function recordLateSettlementFlags($eventId,$event) {
+        if ($event['event_type']==='CHARGE') return;
+        $centers=array();
+        if (($event['event_type']==='RECEIPT' || $event['event_type']==='REFUND' || $event['event_type']==='TRANSFER') && $event['source_center_id']!==null) $centers[$event['source_center_id']]=$event['source_center_id'];
+        if ($event['event_type']==='TRANSFER' && $event['destination_center_id']!==null) $centers[$event['destination_center_id']]=$event['destination_center_id'];
+        if (!$centers) return;
+        $stored=db_select_one($this->db,'SELECT occurred_at FROM finance_v2_events WHERE id=?','i',array($eventId));
+        if (!$stored) throw new RuntimeException('Event missing');
+        $local=(new DateTimeImmutable($stored['occurred_at'],new DateTimeZone('UTC')))->setTimezone(new DateTimeZone('Asia/Tehran'))->format('Y-m-d');
+        sort($centers,SORT_NUMERIC);
+        foreach ($centers as $center) {
+            $settlements=db_select_all($this->db,'SELECT s.id FROM finance_center_settlements s LEFT JOIN finance_v2_percentage_details d ON d.settlement_id=s.id LEFT JOIN finance_v2_center_settlement_details h ON h.settlement_id=s.id WHERE s.center_id=? AND s.period_start<=? AND s.period_end>=? AND (d.settlement_id IS NOT NULL OR h.settlement_id IS NULL) FOR UPDATE','iss',array($center,$local,$local));
+            foreach ($settlements as $settlement) db_execute($this->db,'INSERT INTO finance_v2_percentage_late_events (settlement_id,event_id,detected_at) VALUES (?,?,?)','iis',array((int)$settlement['id'],$eventId,now_dt()));
+        }
     }
 }

@@ -2,6 +2,12 @@
 -- Requires compatibility review and migration/integration tests on MySQL.
 -- No existing data is read, changed, migrated or guessed by this draft.
 
+-- WIP serialization point. It must exist before any finance V2 writes.
+CREATE TABLE finance_v2_locks (
+    id TINYINT UNSIGNED NOT NULL PRIMARY KEY
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO finance_v2_locks (id) VALUES (1);
+
 CREATE TABLE finance_v2_rates (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     therapist_person_id BIGINT UNSIGNED NOT NULL,
@@ -204,4 +210,45 @@ CREATE TABLE finance_v2_center_settlement_items (
     CONSTRAINT fk_fv2_item_settlement FOREIGN KEY (settlement_id) REFERENCES finance_center_settlements(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_item_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_item_event FOREIGN KEY (source_charge_event_id) REFERENCES finance_v2_events(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- WIP percentage settlement audit; old settlements are left untouched.
+CREATE TABLE finance_v2_percentage_details (
+    settlement_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+    percent_basis_points SMALLINT UNSIGNED NOT NULL,
+    gross_rial DECIMAL(18,0) NOT NULL,
+    exact_whole_rial DECIMAL(18,0) NOT NULL,
+    exact_remainder SMALLINT UNSIGNED NOT NULL,
+    exact_denominator SMALLINT UNSIGNED NOT NULL,
+    manual_item_count INT UNSIGNED NOT NULL,
+    manual_reason VARCHAR(255) NULL,
+    CONSTRAINT fk_fv2_percentage_settlement FOREIGN KEY (settlement_id) REFERENCES finance_center_settlements(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE finance_v2_percentage_items (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    settlement_id BIGINT UNSIGNED NOT NULL,
+    kind ENUM('DIRECT_RECEIPT','REQUEST_TRANSFER','LEGACY_DEPOSIT','LEGACY_BALANCE','REFUND','APPOINTMENT_TRANSFER') NOT NULL,
+    event_id BIGINT UNSIGNED NULL,
+    legacy_payment_id BIGINT UNSIGNED NULL,
+    legacy_review_id BIGINT UNSIGNED NULL,
+    amount_rial DECIMAL(18,0) NOT NULL,
+    occurred_at DATETIME NOT NULL,
+    UNIQUE KEY uq_fv2_percentage_event (settlement_id,event_id),
+    UNIQUE KEY uq_fv2_percentage_legacy (settlement_id,legacy_payment_id,kind),
+    CONSTRAINT fk_fv2_percentage_item_settle FOREIGN KEY (settlement_id) REFERENCES finance_center_settlements(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_percentage_item_event FOREIGN KEY (event_id) REFERENCES finance_v2_events(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_percentage_item_payment FOREIGN KEY (legacy_payment_id) REFERENCES finance_session_payments(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_percentage_item_review FOREIGN KEY (legacy_review_id) REFERENCES finance_v2_legacy_center_reviews(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- An event may be entered after a same-day percentage settlement. Do not
+-- prevent recording real cash movements; flag them for a future adjustment.
+CREATE TABLE finance_v2_percentage_late_events (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    settlement_id BIGINT UNSIGNED NOT NULL,
+    event_id BIGINT UNSIGNED NOT NULL,
+    detected_at DATETIME NOT NULL,
+    UNIQUE KEY uq_fv2_percentage_late_event (settlement_id,event_id),
+    CONSTRAINT fk_fv2_percentage_late_settle FOREIGN KEY (settlement_id) REFERENCES finance_center_settlements(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_percentage_late_event FOREIGN KEY (event_id) REFERENCES finance_v2_events(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -5,6 +5,7 @@ class JomaV2MysqliLegacyCenterReviewStore {
     function __construct($db) { $this->db=$db; }
     function begin() { if (!mysqli_query($this->db,'START TRANSACTION')) throw new RuntimeException('Begin failed'); }
     function commit() { if (!mysqli_query($this->db,'COMMIT')) throw new RuntimeException('Commit failed'); }
+    function lockLedger() { if (!db_select_one($this->db,'SELECT id FROM finance_v2_locks WHERE id=1 FOR UPDATE')) throw new RuntimeException('Finance lock missing'); }
     function rollback() { mysqli_query($this->db,'ROLLBACK'); }
     function lockPaymentAndWallet($id) {
         // Try the existing ledger lock order (wallet before appointment).

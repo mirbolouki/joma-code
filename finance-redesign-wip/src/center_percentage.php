@@ -94,7 +94,7 @@ function joma_v2_percentage_sources($center,$start_utc,$end_utc,$events,$legacy)
             if ($time < $start_utc || $time >= $end_utc) continue;
             $amount=isset($record[$field.'_amount_rial']) ? $record[$field.'_amount_rial'] : null;
             if (!is_int($amount) || $amount<0) throw new InvalidArgumentException('Legacy paid amount unknown');
-            if ($amount>0) { joma_v2_rial($amount); $items[]=array('kind'=>$kind,'source_id'=>$record['id'],'amount_rial'=>$amount,'occurred_at'=>$time); }
+            if ($amount>0) { joma_v2_rial($amount); $items[]=array('kind'=>$kind,'source_id'=>$record['id'],'amount_rial'=>$amount,'occurred_at'=>$time,'review_id'=>isset($record['review_id'])?$record['review_id']:null); }
         }
     }
     return $items;

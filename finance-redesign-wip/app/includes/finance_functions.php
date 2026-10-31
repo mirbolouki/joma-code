@@ -1087,11 +1087,19 @@ function finance_settlement_create($db, $center_id, $period_start_j, $period_end
         require_once __DIR__ . '/finance_v2/center_settlement.php';
         require_once __DIR__ . '/finance_v2/storage/mysqli_center_settlement_store.php';
         try {
-            $result = joma_v2_create_hourly_settlement(new JomaV2MysqliCenterSettlementStore($db), (int)$center_id,
-                $start_g, $end_g, $manual_rial, $manual_reason,
-                array('person_id'=>(int)$actor_person_id, 'role'=>$actor_role_code));
+            $actor=array('person_id'=>(int)$actor_person_id, 'role'=>$actor_role_code);
+            if ($center['commission_model']==='PERCENTAGE') {
+                if (!defined('FINANCE_V2_PERCENTAGE_EXPERIMENTAL') || FINANCE_V2_PERCENTAGE_EXPERIMENTAL!==true) return array('ok'=>false,'error'=>'تسویهٔ درصدی هنوز برای استفاده فعال نشده است.');
+                require_once __DIR__ . '/finance_v2/percentage_settlement.php';
+                require_once __DIR__ . '/finance_v2/storage/mysqli_percentage_settlement_store.php';
+                $result=joma_v2_create_percentage_settlement(new JomaV2MysqliPercentageSettlementStore($db),(int)$center_id,$start_g,$end_g,$manual_rial,$manual_reason,$actor);
+                $detail='محاسبهٔ آزمایشی درصدی با سابقهٔ گردش انجام شد.';
+            } else {
+                $result=joma_v2_create_hourly_settlement(new JomaV2MysqliCenterSettlementStore($db),(int)$center_id,$start_g,$end_g,$manual_rial,$manual_reason,$actor);
+                $detail='محاسبه با مبنای زمان تنظیم‌شده؛ جزئیات ذخیره شد.';
+            }
             return array('ok'=>true, 'settlement_id'=>$result['settlement_id'],
-                'amount_due_rial'=>$result['amount_due_rial'], 'detail'=>'محاسبه با مبنای زمان تنظیم‌شده؛ جزئیات ذخیره شد.');
+                'amount_due_rial'=>$result['amount_due_rial'], 'detail'=>$detail);
         } catch (InvalidArgumentException $ex) {
             return array('ok'=>false, 'error'=>$ex->getMessage());
         } catch (OverflowException $ex) {

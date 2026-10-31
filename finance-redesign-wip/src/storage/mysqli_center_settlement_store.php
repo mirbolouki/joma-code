@@ -6,9 +6,10 @@ class JomaV2MysqliCenterSettlementStore
     function __construct($db) { $this->db=$db; }
     function begin() { if (!mysqli_query($this->db,'START TRANSACTION')) throw new RuntimeException('Begin failed'); }
     function commit() { if (!mysqli_query($this->db,'COMMIT')) throw new RuntimeException('Commit failed'); }
+    function lockLedger() { if (!db_select_one($this->db,'SELECT id FROM finance_v2_locks WHERE id=1 FOR UPDATE')) throw new RuntimeException('Finance lock missing'); }
     function rollback() { mysqli_query($this->db,'ROLLBACK'); }
     function lockCenter($id) {
-        return db_select_one($this->db,'SELECT id,status,commission_model FROM finance_centers WHERE id=? FOR UPDATE','i',array($id));
+        return db_select_one($this->db,'SELECT id,status,commission_model,commission_percent FROM finance_centers WHERE id=? FOR UPDATE','i',array($id));
     }
     function overlappingSettlement($id,$start,$end) {
         return (bool) db_select_one($this->db,'SELECT id FROM finance_center_settlements WHERE center_id=? AND period_start<=? AND period_end>=? LIMIT 1 FOR UPDATE','iss',array($id,$end,$start));

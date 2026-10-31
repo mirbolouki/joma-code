@@ -3,6 +3,7 @@ require __DIR__ . '/../src/legacy_center_review.php';
 class LegacyReviewTestStore {
     public $payment,$reviews=array(),$mixed=false,$fail=false; private $backup;
     function __construct($payment) { $this->payment=$payment; }
+    function lockLedger() {} // in-memory test adapter only
     function begin() { $this->backup=$this->reviews; }
     function commit() { $this->backup=null; }
     function rollback() { $this->reviews=$this->backup; }
