@@ -14,7 +14,8 @@ with zipfile.ZipFile(repo/'my (4).zip') as z:
 for path in ('joma-patch-finance-stage1/database/phase5_finance_schema.sql','joma-patch-finance-stage2/database/phase5_2_payments_schema.sql','joma-patch-finance-stage3/database/phase5_3_settlements_schema.sql','joma-patch-finance-stage4/database/phase5_4_sales_schema.sql'):
     sources.append((path,(repo/path).read_text(encoding='utf-8')))
 sources.append(('synthetic rooms upgrade',"ALTER TABLE rooms ADD COLUMN center_id BIGINT UNSIGNED NULL, ADD COLUMN room_type ENUM('SINGLE','COUPLE') NULL, ADD COLUMN hourly_rate DECIMAL(12,2) NULL"))
-sources.append(('design-only.sql',(repo/'finance-redesign-wip/database/design-only.sql').read_text(encoding='utf-8')))
+if os.environ.get('JOMA_TEST_SKIP_WIP') != 'YES':
+    sources.append(('design-only.sql',(repo/'finance-redesign-wip/database/design-only.sql').read_text(encoding='utf-8')))
 conn=pymysql.connect(host=host,port=int(os.environ['JOMA_TEST_PORT']),user=os.environ['JOMA_TEST_USER'],password=os.environ.get('JOMA_TEST_PASSWORD',''),charset='utf8mb4',autocommit=True)
 with conn.cursor() as c:
     c.execute('DROP DATABASE IF EXISTS `'+name+'`')
@@ -26,7 +27,7 @@ with conn.cursor() as c:
             if not statement.strip(): continue
             try: c.execute(statement)
             except Exception as exc: raise RuntimeError('Schema failed: '+name+'; '+statement.strip()[:100]) from exc
-print('Repository base schemas and WIP design installed in an empty LOCAL synthetic database.')
+print('Repository schemas loaded in an empty LOCAL synthetic database (WIP design optional).')
 # Entirely fabricated sample records. No personal/site data.
 with conn.cursor() as c:
     for i in range(1,5):

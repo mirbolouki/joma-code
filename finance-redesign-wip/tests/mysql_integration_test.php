@@ -13,6 +13,7 @@ require __DIR__ . '/../src/request_wallet.php';
 require __DIR__ . '/../src/assign_rate.php';
 require __DIR__ . '/../src/center_basis.php';
 require __DIR__ . '/../src/center_settlement.php';
+require __DIR__ . '/../src/center_percentage.php';
 require __DIR__ . '/../src/storage/mysqli_center_settlement_store.php';
 require __DIR__ . '/../src/storage/mysqli_center_basis_store.php';
 require __DIR__ . '/../src/storage/mysqli_request_wallet_store.php';
@@ -49,9 +50,30 @@ $deposit=array('key'=>'deposit_000000000001','type'=>'RECEIPT','wallet'=>$req,'a
 joma_v2_record_event($store,$deposit,$secretary);
 rejects(function() use($store,$deposit,$secretary){joma_v2_record_event($store,$deposit,$secretary);},'duplicate receipt');
 joma_v2_record_event($store,array('key'=>'transfer_00000000001','type'=>'TRANSFER','wallet'=>$req,'to'=>$appt,'amount_rial'=>1000000,'reason'=>'deposit allocation'),$secretary);
+$snapshot=db_select_one($db,"SELECT center_snapshot_recorded,source_center_id,destination_center_id FROM finance_v2_events WHERE operation_key='transfer_00000000001'");
+same((int)$snapshot['center_snapshot_recorded'],1,'transfer records center snapshot'); same($snapshot['source_center_id'],null,'request has no source center'); same((int)$snapshot['destination_center_id'],1,'destination center captured');
+db_execute($db,'UPDATE rooms SET center_id=2 WHERE id=1');
+$snapshot=db_select_one($db,"SELECT destination_center_id FROM finance_v2_events WHERE operation_key='transfer_00000000001'"); same((int)$snapshot['destination_center_id'],1,'later room changes do not rewrite snapshot');
+db_execute($db,'UPDATE rooms SET center_id=1 WHERE id=1');
 joma_v2_record_event($store,array('key'=>'charge_000000000001','type'=>'CHARGE','wallet'=>$appt,'actual_minutes'=>35,'actual_session_date'=>'2026-10-19'),$secretary);
 joma_v2_record_event($store,array('key'=>'payment_00000000001','type'=>'RECEIPT','wallet'=>$appt,'amount_rial'=>2000000,'account_id'=>1,'receipt_kind'=>'PAYMENT'),$secretary);
 joma_v2_record_event($store,array('key'=>'refund_000000000001','type'=>'REFUND','wallet'=>$appt,'amount_rial'=>500000,'account_id'=>1,'reason'=>'correction'),$secretary);
+$eventRows=db_select_all($db,"SELECT ev.id,ev.event_type,ev.amount_rial,ev.occurred_at,ev.center_snapshot_recorded,ev.source_center_id,ev.destination_center_id,
+    src.request_id AS source_request_id,dst.appointment_id AS destination_appointment_id FROM finance_v2_events ev
+    JOIN finance_v2_wallets src ON src.id=ev.wallet_id LEFT JOIN finance_v2_wallets dst ON dst.id=ev.destination_wallet_id ORDER BY ev.id");
+$inputEvents=array();
+foreach ($eventRows as $ev) $inputEvents[]=array('id'=>(int)$ev['id'],'type'=>$ev['event_type'],
+    'source_kind'=>$ev['source_request_id']===null?'APPOINTMENT':'REQUEST',
+    'destination_kind'=>$ev['destination_appointment_id']===null?null:'APPOINTMENT',
+    'amount_rial'=>(int)$ev['amount_rial'],'occurred_at'=>$ev['occurred_at'],
+    'center_snapshot_recorded'=>(int)$ev['center_snapshot_recorded']===1,
+    'source_center_id'=>$ev['source_center_id']===null?null:(int)$ev['source_center_id'],
+    'destination_center_id'=>$ev['destination_center_id']===null?null:(int)$ev['destination_center_id']);
+$percentageItems=joma_v2_percentage_sources(1,'2000-01-01 00:00:00','2100-01-01 00:00:00',$inputEvents,array());
+$percentage=joma_v2_center_percentage_exact('10.00',$percentageItems);
+same($percentage['gross_rial'],3000000,'allocation plus direct payment, no double counted deposit');
+same(count($percentage['manual_items']),1,'refund needs manual review');
+rejects(function()use($percentage){joma_v2_center_percentage_final($percentage);},'manual review required');
 mysqli_query($db,'START TRANSACTION'); $store->lockWallets(array($appt)); $balance=$store->balance($appt); mysqli_query($db,'COMMIT');
 same($balance['received'],2500000,'allocated receipts'); same($balance['charge'],4200000,'calculated fee');
 rejects(function() use($store,$secretary,$appt){joma_v2_record_event($store,array('key'=>'overrefund_00000001','type'=>'REFUND','wallet'=>$appt,'amount_rial'=>2500001,'account_id'=>1,'reason'=>'x'),$secretary);},'excess refund');

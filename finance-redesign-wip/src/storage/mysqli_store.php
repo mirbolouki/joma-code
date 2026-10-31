@@ -30,13 +30,14 @@ class JomaV2MysqliStore
         foreach ($locked_ids as $id) {
             $row = db_select_one($this->db,
                 "SELECT w.id, w.request_id, w.appointment_id, w.rate_rial_per_minute,
-                        br.converted_admission_id, ap.admission_id, ap.status AS appointment_status,
+                        br.converted_admission_id, ap.admission_id, ap.status AS appointment_status, r.center_id,
                         ad.patient_person_id,
                         (SELECT COUNT(*) FROM finance_session_payments fsp WHERE fsp.appointment_id = ap.id) AS legacy_count
                    FROM finance_v2_wallets w
               LEFT JOIN booking_requests br ON br.id = w.request_id
               LEFT JOIN appointments ap ON ap.id = w.appointment_id
               LEFT JOIN admissions ad ON ad.id = ap.admission_id
+              LEFT JOIN rooms r ON r.id = ap.room_id
                   WHERE w.id = ? FOR UPDATE", 'i', array($id));
             if (!$row || (($row['request_id'] === null) === ($row['appointment_id'] === null))) {
                 throw new UnexpectedValueException('Wallet identity is invalid');
@@ -49,6 +50,7 @@ class JomaV2MysqliStore
                 'admission_id' => $is_request ? ($row['converted_admission_id'] === null ? null : (int)$row['converted_admission_id']) : (int)$row['admission_id'],
                 'patient_id' => $row['patient_person_id'] === null ? null : (int)$row['patient_person_id'],
                 'appointment_status' => $row['appointment_status'],
+                'center_id' => $row['center_id'] === null ? null : (int)$row['center_id'],
                 'rate_rial_per_minute' => $row['rate_rial_per_minute'] === null ? null : $this->integer($row['rate_rial_per_minute']));
         }
         return $out;
@@ -93,10 +95,10 @@ class JomaV2MysqliStore
     function insertEvent($event) {
         $now = now_dt();
         $result = db_execute($this->db,
-            'INSERT INTO finance_v2_events (operation_key,event_type,receipt_kind,wallet_id,destination_wallet_id,amount_rial,account_id,actual_minutes,actual_session_date,calculated_rial,reason,occurred_at,recorded_at,recorded_by_person_id,recorded_by_role_code) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-            'sssiisiisssssis',
+            'INSERT INTO finance_v2_events (operation_key,event_type,receipt_kind,wallet_id,destination_wallet_id,center_snapshot_recorded,source_center_id,destination_center_id,amount_rial,account_id,actual_minutes,actual_session_date,calculated_rial,reason,occurred_at,recorded_at,recorded_by_person_id,recorded_by_role_code) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            'sssiiiiisiisssssis',
             array($event['operation_key'], $event['event_type'], $event['receipt_kind'], $event['wallet_id'],
-                $event['destination_wallet_id'], (string)$event['amount_rial'], $event['account_id'],
+                $event['destination_wallet_id'], $event['center_snapshot_recorded'], $event['source_center_id'], $event['destination_center_id'], (string)$event['amount_rial'], $event['account_id'],
                 $event['actual_minutes'], $event['actual_session_date'], $event['calculated_rial'] === null ? null : (string)$event['calculated_rial'],
                 $event['reason'], $now, $now, $event['recorded_by_person_id'], $event['recorded_by_role_code']));
         return (int)$result['insert_id'];

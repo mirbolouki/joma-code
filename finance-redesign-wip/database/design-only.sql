@@ -45,6 +45,11 @@ CREATE TABLE finance_v2_events (
     receipt_kind ENUM('DEPOSIT','PAYMENT') NULL,
     wallet_id BIGINT UNSIGNED NOT NULL,
     destination_wallet_id BIGINT UNSIGNED NULL,
+    -- NULL may mean an appointment had no center. The flag distinguishes
+    -- that known fact from historical rows with no center snapshot.
+    center_snapshot_recorded TINYINT(1) NOT NULL DEFAULT 0,
+    source_center_id BIGINT UNSIGNED NULL,
+    destination_center_id BIGINT UNSIGNED NULL,
     amount_rial DECIMAL(18,0) NOT NULL,
     account_id BIGINT UNSIGNED NULL,
     actual_minutes INT UNSIGNED NULL,
@@ -62,6 +67,8 @@ CREATE TABLE finance_v2_events (
     CONSTRAINT fk_fv2_event_wallet FOREIGN KEY (wallet_id) REFERENCES finance_v2_wallets(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_event_destination FOREIGN KEY (destination_wallet_id) REFERENCES finance_v2_wallets(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_event_account FOREIGN KEY (account_id) REFERENCES finance_bank_accounts(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_event_source_center FOREIGN KEY (source_center_id) REFERENCES finance_centers(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_event_destination_center FOREIGN KEY (destination_center_id) REFERENCES finance_centers(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_event_recorder FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

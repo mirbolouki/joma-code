@@ -8,7 +8,7 @@ class TestSqliteStore {
         $this->wallets = $wallets;
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->pdo->exec('CREATE TABLE events (id INTEGER PRIMARY KEY, operation_key TEXT UNIQUE, event_type TEXT, wallet_id INTEGER, destination_wallet_id INTEGER, amount_rial INTEGER, receipt_kind TEXT, account_id INTEGER, actual_minutes INTEGER, actual_session_date TEXT, calculated_rial INTEGER, reason TEXT, recorded_by_person_id INTEGER, recorded_by_role_code TEXT)');
+        $this->pdo->exec('CREATE TABLE events (id INTEGER PRIMARY KEY, operation_key TEXT UNIQUE, event_type TEXT, wallet_id INTEGER, destination_wallet_id INTEGER, center_snapshot_recorded INTEGER, source_center_id INTEGER, destination_center_id INTEGER, amount_rial INTEGER, receipt_kind TEXT, account_id INTEGER, actual_minutes INTEGER, actual_session_date TEXT, calculated_rial INTEGER, reason TEXT, recorded_by_person_id INTEGER, recorded_by_role_code TEXT)');
     }
     function begin() { $this->pdo->beginTransaction(); }
     function commit() { $this->pdo->commit(); }
@@ -30,11 +30,11 @@ class TestSqliteStore {
 function same($a,$b,$m) { if ($a !== $b) throw new Exception($m.': '.var_export($a,true)); }
 function rejects($f,$m) { try { $f(); } catch (InvalidArgumentException $e) { return; } catch (OverflowException $e) { return; } throw new Exception('Expected rejection: '.$m); }
 $wallets = array(
-  1=>array('kind'=>'REQUEST','admission_id'=>5,'patient_id'=>null,'appointment_status'=>null,'rate_rial_per_minute'=>null),
-  2=>array('kind'=>'APPOINTMENT','admission_id'=>5,'patient_id'=>11,'appointment_status'=>'COMPLETED','rate_rial_per_minute'=>10000),
-  3=>array('kind'=>'APPOINTMENT','admission_id'=>6,'patient_id'=>12,'appointment_status'=>'COMPLETED','rate_rial_per_minute'=>20000),
-  4=>array('kind'=>'APPOINTMENT','admission_id'=>7,'patient_id'=>11,'appointment_status'=>'COMPLETED','rate_rial_per_minute'=>20000),
-  5=>array('kind'=>'APPOINTMENT','admission_id'=>5,'patient_id'=>11,'appointment_status'=>'SCHEDULED','rate_rial_per_minute'=>10000)
+  1=>array('kind'=>'REQUEST','admission_id'=>5,'patient_id'=>null,'appointment_status'=>null,'center_id'=>null,'rate_rial_per_minute'=>null),
+  2=>array('kind'=>'APPOINTMENT','admission_id'=>5,'patient_id'=>11,'appointment_status'=>'COMPLETED','center_id'=>9,'rate_rial_per_minute'=>10000),
+  3=>array('kind'=>'APPOINTMENT','admission_id'=>6,'patient_id'=>12,'appointment_status'=>'COMPLETED','center_id'=>9,'rate_rial_per_minute'=>20000),
+  4=>array('kind'=>'APPOINTMENT','admission_id'=>7,'patient_id'=>11,'appointment_status'=>'COMPLETED','center_id'=>9,'rate_rial_per_minute'=>20000),
+  5=>array('kind'=>'APPOINTMENT','admission_id'=>5,'patient_id'=>11,'appointment_status'=>'SCHEDULED','center_id'=>9,'rate_rial_per_minute'=>10000)
 );
 $s = new TestSqliteStore($wallets); $a = array('person_id'=>1,'role'=>'secretary');
 $receipt=array('key'=>'receipt_0000000001','type'=>'RECEIPT','wallet'=>1,'amount_rial'=>500000,'account_id'=>7,'receipt_kind'=>'DEPOSIT');
@@ -45,6 +45,8 @@ same($s->balance(1)['received'],500000,'rejected transfer rolls back');
 joma_v2_record_event($s,array('key'=>'transfer_00000002','type'=>'TRANSFER','wallet'=>1,'to'=>2,'amount_rial'=>500000,'reason'=>'advance'),$a);
 same($s->balance(1)['received'],0,'request transferred');
 same($s->balance(2)['received'],500000,'appointment credited');
+$snap=$s->pdo->query("SELECT center_snapshot_recorded,source_center_id,destination_center_id FROM events WHERE event_type='TRANSFER'")->fetch(PDO::FETCH_ASSOC);
+same((int)$snap['center_snapshot_recorded'],1,'center snapshot recorded'); same($snap['source_center_id'],null,'request has no center'); same((int)$snap['destination_center_id'],9,'transfer destination center snapshot');
 rejects(function()use($s,$a){joma_v2_record_event($s,array('key'=>'badcharge_0000001','type'=>'CHARGE','wallet'=>5,'actual_minutes'=>35,'actual_session_date'=>'2026-10-20'),$a);},'scheduled not chargeable');
 rejects(function()use($s,$a){joma_v2_record_event($s,array('key'=>'badcharge_0000002','type'=>'CHARGE','wallet'=>2,'actual_minutes'=>35),$a);},'missing actual date');
 rejects(function()use($s,$a){joma_v2_record_event($s,array('key'=>'badcharge_0000003','type'=>'CHARGE','wallet'=>2,'actual_minutes'=>35,'actual_session_date'=>'2026-02-30'),$a);},'invalid actual date');

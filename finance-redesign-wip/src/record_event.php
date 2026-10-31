@@ -58,9 +58,14 @@ function joma_v2_record_event($store, $input, $actor)
             throw new InvalidArgumentException('Wallet not found');
         }
         $wallet = $wallets[$source];
+        // Missing adapter data is not a known null center. Fail rather than
+        // falsely recording an unknown historical mapping as known.
+        if (!array_key_exists('center_id',$wallet) || ($target !== null && !array_key_exists('center_id',$wallets[$target]))) throw new UnexpectedValueException('Center snapshot unavailable');
         $balance = $store->balance($source);
         $event = array('operation_key' => $input['key'], 'event_type' => $type,
             'wallet_id' => $source, 'destination_wallet_id' => $target,
+            'center_snapshot_recorded' => 1, 'source_center_id' => isset($wallet['center_id']) ? $wallet['center_id'] : null,
+            'destination_center_id' => $target !== null && isset($wallets[$target]['center_id']) ? $wallets[$target]['center_id'] : null,
             'receipt_kind' => null, 'account_id' => null, 'actual_minutes' => null, 'actual_session_date' => null,
             'calculated_rial' => null, 'reason' => $reason === '' ? null : $reason,
             'recorded_by_person_id' => $actor['person_id'], 'recorded_by_role_code' => $actor['role']);
