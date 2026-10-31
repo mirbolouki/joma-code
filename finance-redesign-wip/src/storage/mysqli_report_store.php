@@ -28,12 +28,12 @@ class JomaV2MysqliReportStore
                 $wallets['w'.$id] = array('kind'=>$row['request_id'] === null ? 'APPOINTMENT' : 'REQUEST',
                     'scheduled_at'=>$row['appointment_start_utc']);
             }
-            $rows = db_select_all($this->db, 'SELECT id,event_type,wallet_id,destination_wallet_id,amount_rial,occurred_at FROM finance_v2_events WHERE occurred_at < ? ORDER BY occurred_at,id', 's', array($end_utc));
+            $rows = db_select_all($this->db, 'SELECT id,event_type,wallet_id,destination_wallet_id,amount_rial,actual_session_date,occurred_at FROM finance_v2_events WHERE occurred_at < ? ORDER BY occurred_at,id', 's', array($end_utc));
             $events = array();
             foreach ($rows as $row) {
                 $events[] = array('id'=>$this->integer($row['id']), 'type'=>$row['event_type'],
                     'wallet'=>'w'.$this->integer($row['wallet_id']), 'amount'=>$this->integer($row['amount_rial']),
-                    'occurred_at'=>$row['occurred_at'],
+                    'occurred_at'=>$row['occurred_at'], 'actual_session_date'=>$row['actual_session_date'],
                     'to'=>$row['destination_wallet_id'] === null ? null : 'w'.$this->integer($row['destination_wallet_id']));
             }
             // Current corrected values, not a report as-of the period end. Voids

@@ -61,7 +61,7 @@ function joma_v2_record_event($store, $input, $actor)
         $balance = $store->balance($source);
         $event = array('operation_key' => $input['key'], 'event_type' => $type,
             'wallet_id' => $source, 'destination_wallet_id' => $target,
-            'receipt_kind' => null, 'account_id' => null, 'actual_minutes' => null,
+            'receipt_kind' => null, 'account_id' => null, 'actual_minutes' => null, 'actual_session_date' => null,
             'calculated_rial' => null, 'reason' => $reason === '' ? null : $reason,
             'recorded_by_person_id' => $actor['person_id'], 'recorded_by_role_code' => $actor['role']);
         if ($type === 'CHARGE') {
@@ -72,6 +72,12 @@ function joma_v2_record_event($store, $input, $actor)
             if (!isset($input['actual_minutes']) || !is_int($input['actual_minutes']) || $input['actual_minutes'] <= 0 || $input['actual_minutes'] > 4294967295) {
                 throw new InvalidArgumentException('Actual minutes are required');
             }
+            $date = isset($input['actual_session_date']) ? $input['actual_session_date'] : null;
+            if (!is_string($date) || !preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/D',$date,$parts) ||
+                !checkdate((int)$parts[2],(int)$parts[3],(int)$parts[1])) {
+                throw new InvalidArgumentException('Actual session date is required');
+            }
+            $event['actual_session_date'] = $date;
             $override = array_key_exists('override_rial', $input) ? $input['override_rial'] : null;
             if ($balance['charge'] !== null && $reason === '') throw new InvalidArgumentException('Charge revision requires reason');
             $calculated = joma_finance_session_charge($input['actual_minutes'], $wallet['rate_rial_per_minute'], $override, $reason);

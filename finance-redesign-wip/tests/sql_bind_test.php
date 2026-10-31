@@ -13,7 +13,7 @@ require __DIR__ . '/../src/storage/mysqli_expense_store.php';
 require __DIR__ . '/../src/storage/mysqli_center_basis_store.php';
 require __DIR__ . '/../src/storage/mysqli_request_wallet_store.php';
 $eventStore = new JomaV2MysqliStore(null);
-$e = array('operation_key'=>'1234567890123456','event_type'=>'RECEIPT','receipt_kind'=>'DEPOSIT','wallet_id'=>1,'destination_wallet_id'=>null,'amount_rial'=>123,'account_id'=>2,'actual_minutes'=>null,'calculated_rial'=>null,'reason'=>null,'recorded_by_person_id'=>3,'recorded_by_role_code'=>'admin');
+$e = array('operation_key'=>'1234567890123456','event_type'=>'RECEIPT','receipt_kind'=>'DEPOSIT','wallet_id'=>1,'destination_wallet_id'=>null,'amount_rial'=>123,'account_id'=>2,'actual_minutes'=>null,'actual_session_date'=>null,'calculated_rial'=>null,'reason'=>null,'recorded_by_person_id'=>3,'recorded_by_role_code'=>'admin');
 if ($eventStore->insertEvent($e)!==17) throw new Exception('Event result');
 $rateStore = new JomaV2MysqliRateStore(null);
 if ($rateStore->saveRate(1,2,123,true,null)!==17) throw new Exception('Insert rate');

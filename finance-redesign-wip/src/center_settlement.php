@@ -27,6 +27,7 @@ function joma_v2_create_hourly_settlement($store,$center_id,$start,$end,$manual_
         if (!in_array($basis,array('ACTUAL','RESERVED'),true)) throw new InvalidArgumentException('ابتدا مبنای زمان این مرکز را تنظیم کنید.');
         $sessions=$store->lockSessions($center_id,$start,$end,$basis);
         if (count($sessions) === 0) throw new InvalidArgumentException('در این بازه نوبت واجد شرایطی وجود ندارد.');
+        foreach ($sessions as $row) if ($store->appointmentAlreadySettled($row['appointment_id'])) throw new InvalidArgumentException('یک نوبت در تسویهٔ دیگری ثبت شده و نیاز به بررسی دارد.');
         try { $exact=joma_v2_center_hourly_toman_exact($basis,$sessions); }
         catch (InvalidArgumentException $ex) { throw new InvalidArgumentException('مدت واقعی یا تعرفهٔ ساعتی یکی از نوبت‌ها ثبت نشده یا نامعتبر است.'); }
         try { $final=joma_v2_center_final_rial($exact,$manual_rial,$reason); }

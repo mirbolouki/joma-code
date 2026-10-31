@@ -8,7 +8,7 @@ class TestSqliteStore {
         $this->wallets = $wallets;
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->pdo->exec('CREATE TABLE events (id INTEGER PRIMARY KEY, operation_key TEXT UNIQUE, event_type TEXT, wallet_id INTEGER, destination_wallet_id INTEGER, amount_rial INTEGER, receipt_kind TEXT, account_id INTEGER, actual_minutes INTEGER, calculated_rial INTEGER, reason TEXT, recorded_by_person_id INTEGER, recorded_by_role_code TEXT)');
+        $this->pdo->exec('CREATE TABLE events (id INTEGER PRIMARY KEY, operation_key TEXT UNIQUE, event_type TEXT, wallet_id INTEGER, destination_wallet_id INTEGER, amount_rial INTEGER, receipt_kind TEXT, account_id INTEGER, actual_minutes INTEGER, actual_session_date TEXT, calculated_rial INTEGER, reason TEXT, recorded_by_person_id INTEGER, recorded_by_role_code TEXT)');
     }
     function begin() { $this->pdo->beginTransaction(); }
     function commit() { $this->pdo->commit(); }
@@ -45,8 +45,10 @@ same($s->balance(1)['received'],500000,'rejected transfer rolls back');
 joma_v2_record_event($s,array('key'=>'transfer_00000002','type'=>'TRANSFER','wallet'=>1,'to'=>2,'amount_rial'=>500000,'reason'=>'advance'),$a);
 same($s->balance(1)['received'],0,'request transferred');
 same($s->balance(2)['received'],500000,'appointment credited');
-rejects(function()use($s,$a){joma_v2_record_event($s,array('key'=>'badcharge_0000001','type'=>'CHARGE','wallet'=>5,'actual_minutes'=>35),$a);},'scheduled not chargeable');
-joma_v2_record_event($s,array('key'=>'charge_0000000001','type'=>'CHARGE','wallet'=>2,'actual_minutes'=>35),$a);
+rejects(function()use($s,$a){joma_v2_record_event($s,array('key'=>'badcharge_0000001','type'=>'CHARGE','wallet'=>5,'actual_minutes'=>35,'actual_session_date'=>'2026-10-20'),$a);},'scheduled not chargeable');
+rejects(function()use($s,$a){joma_v2_record_event($s,array('key'=>'badcharge_0000002','type'=>'CHARGE','wallet'=>2,'actual_minutes'=>35),$a);},'missing actual date');
+rejects(function()use($s,$a){joma_v2_record_event($s,array('key'=>'badcharge_0000003','type'=>'CHARGE','wallet'=>2,'actual_minutes'=>35,'actual_session_date'=>'2026-02-30'),$a);},'invalid actual date');
+joma_v2_record_event($s,array('key'=>'charge_0000000001','type'=>'CHARGE','wallet'=>2,'actual_minutes'=>35,'actual_session_date'=>'2026-10-20'),$a);
 same($s->balance(2)['charge'],350000,'actual minutes at snapshot rate');
 rejects(function()use($s,$a){joma_v2_record_event($s,array('key'=>'transfer_00000003','type'=>'TRANSFER','wallet'=>2,'to'=>3,'amount_rial'=>100000,'reason'=>'x'),$a);},'different patient');
 rejects(function()use($s,$a){joma_v2_record_event($s,array('key'=>'transfer_00000004','type'=>'TRANSFER','wallet'=>2,'to'=>4,'amount_rial'=>150001,'reason'=>'x'),$a);},'exceeds credit');
@@ -55,8 +57,8 @@ same($s->balance(2)['received'],350000,'paid session unchanged');
 rejects(function()use($s,$a){joma_v2_record_event($s,array('key'=>'refund_0000000001','type'=>'REFUND','wallet'=>4,'amount_rial'=>150001,'account_id'=>7,'reason'=>'x'),$a);},'excess refund');
 joma_v2_record_event($s,array('key'=>'refund_0000000002','type'=>'REFUND','wallet'=>4,'amount_rial'=>50000,'account_id'=>7,'reason'=>'refund'),$a);
 same($s->balance(4)['received'],100000,'refund recorded');
-rejects(function()use($s,$a){joma_v2_record_event($s,array('key'=>'charge_0000000002','type'=>'CHARGE','wallet'=>2,'actual_minutes'=>35),$a);},'revision needs reason');
-joma_v2_record_event($s,array('key'=>'charge_0000000003','type'=>'CHARGE','wallet'=>2,'actual_minutes'=>35,'override_rial'=>300000,'reason'=>'discount'),$a);
+rejects(function()use($s,$a){joma_v2_record_event($s,array('key'=>'charge_0000000002','type'=>'CHARGE','wallet'=>2,'actual_minutes'=>35,'actual_session_date'=>'2026-10-20'),$a);},'revision needs reason');
+joma_v2_record_event($s,array('key'=>'charge_0000000003','type'=>'CHARGE','wallet'=>2,'actual_minutes'=>35,'actual_session_date'=>'2026-10-20','override_rial'=>300000,'reason'=>'discount'),$a);
 same($s->balance(2)['charge'],300000,'override recorded');
 rejects(function()use($s,$receipt){joma_v2_record_event($s,$receipt,array('person_id'=>1,'role'=>'therapist'));},'role');
 $rows=$s->pdo->query('SELECT event_type, amount_rial, calculated_rial FROM events ORDER BY id')->fetchAll(PDO::FETCH_ASSOC);

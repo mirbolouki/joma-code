@@ -48,6 +48,7 @@ CREATE TABLE finance_v2_events (
     amount_rial DECIMAL(18,0) NOT NULL,
     account_id BIGINT UNSIGNED NULL,
     actual_minutes INT UNSIGNED NULL,
+    actual_session_date DATE NULL, -- clinic-local date explicitly supplied, not inferred
     calculated_rial DECIMAL(18,0) NULL,
     reason VARCHAR(255) NULL,
     occurred_at DATETIME NOT NULL,
@@ -172,7 +173,7 @@ CREATE TABLE finance_v2_center_settlement_items (
     minutes INT UNSIGNED NOT NULL,
     hourly_rate_toman DECIMAL(12,2) NOT NULL,
     source_charge_event_id BIGINT UNSIGNED NULL,
-    UNIQUE KEY uq_fv2_settlement_item (settlement_id, appointment_id),
+    UNIQUE KEY uq_fv2_settlement_appointment (appointment_id),
     CONSTRAINT fk_fv2_item_settlement FOREIGN KEY (settlement_id) REFERENCES finance_center_settlements(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_item_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_item_event FOREIGN KEY (source_charge_event_id) REFERENCES finance_v2_events(id) ON DELETE RESTRICT

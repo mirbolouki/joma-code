@@ -93,11 +93,11 @@ class JomaV2MysqliStore
     function insertEvent($event) {
         $now = now_dt();
         $result = db_execute($this->db,
-            'INSERT INTO finance_v2_events (operation_key,event_type,receipt_kind,wallet_id,destination_wallet_id,amount_rial,account_id,actual_minutes,calculated_rial,reason,occurred_at,recorded_at,recorded_by_person_id,recorded_by_role_code) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-            'sssiisiissssis',
+            'INSERT INTO finance_v2_events (operation_key,event_type,receipt_kind,wallet_id,destination_wallet_id,amount_rial,account_id,actual_minutes,actual_session_date,calculated_rial,reason,occurred_at,recorded_at,recorded_by_person_id,recorded_by_role_code) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            'sssiisiisssssis',
             array($event['operation_key'], $event['event_type'], $event['receipt_kind'], $event['wallet_id'],
                 $event['destination_wallet_id'], (string)$event['amount_rial'], $event['account_id'],
-                $event['actual_minutes'], $event['calculated_rial'] === null ? null : (string)$event['calculated_rial'],
+                $event['actual_minutes'], $event['actual_session_date'], $event['calculated_rial'] === null ? null : (string)$event['calculated_rial'],
                 $event['reason'], $now, $now, $event['recorded_by_person_id'], $event['recorded_by_role_code']));
         return (int)$result['insert_id'];
     }

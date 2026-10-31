@@ -47,11 +47,13 @@ require __DIR__ . '/../templates/header.php';
 <div class="item-card">هزینه‌های عمومی بر اساس تاریخ هزینه: <strong><?php echo e(report_v2_money($report['expenses_rial'])); ?></strong></div>
 </div></div></div>
 <div class="card"><div class="card-header">جلسات و مانده‌ها تا پایان بازه</div><div class="card-body"><div class="item-list">
+<div class="item-card">صورتحساب‌های ثبت‌شده تا پایان بازه برای جلسات با <strong>تاریخ واقعی ثبت‌شده</strong> در بازه: <strong><?php echo e(report_v2_money($report['actual_session_charges_rial'])); ?></strong></div>
 <div class="item-card">مبلغ صورتحساب‌های ثبت‌شده تا پایان بازه برای جلسات با <strong>تاریخ برنامه‌ریزی‌شده</strong> در بازه: <strong><?php echo e(report_v2_money($report['scheduled_session_charges_rial'])); ?></strong></div>
 <div class="item-card">اعتبار درخواست‌ها: <strong><?php echo e(report_v2_money($report['request_credit_rial'])); ?></strong></div>
 <div class="item-card">اعتبار نوبت‌ها: <strong><?php echo e(report_v2_money($report['appointment_credit_rial'])); ?></strong></div>
 <div class="item-card">بدهی نوبت‌های صورتحساب‌شده: <strong><?php echo e(report_v2_money($report['appointment_due_rial'])); ?></strong></div>
 </div><p>تاریخ برنامه‌ریزی‌شده لزوماً تاریخ واقعی برگزاری نیست. صورتحساب‌های ثبت‌شده بعد از پایان بازه در مبلغ فوق لحاظ نمی‌شوند؛ هزینه‌های عمومی بر اساس تاریخ واردشده و آخرین اصلاح‌های موجود گزارش می‌شوند؛ حتی اگر اصلاح بعد از پایان بازه ثبت شده باشد. هزینه‌های ابطال‌شده در جمع نیستند.</p>
+<?php if ($report['undated_actual_session_count'] > 0) { ?><p class="alert alert-warning">تعداد <?php echo e(to_persian_digits($report['undated_actual_session_count'])); ?> صورتحساب تاریخ واقعی ثبت‌شده ندارند و در جمع جلسات واقعی لحاظ نشده‌اند.</p><?php } ?>
 <?php if ($report['undated_invoiced_count'] > 0) { ?><p class="alert alert-warning">تعداد <?php echo e(to_persian_digits($report['undated_invoiced_count'])); ?> صورتحساب فاقد تاریخ نوبت در جمع جلسات قرار نگرفته است.</p><?php } ?>
 </div></div>
 <?php require __DIR__ . '/../templates/footer.php'; ?>

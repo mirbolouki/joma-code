@@ -46,10 +46,10 @@ function joma_v2_report_build($wallets, $events, $expenses, $start_utc, $end_utc
         }
         $scheduled = isset($wallet['scheduled_at']) ? joma_v2_report_time($wallet['scheduled_at']) : null;
         if ($wallet['kind'] === 'REQUEST' && $scheduled !== null) throw new InvalidArgumentException('Request cannot have an appointment date');
-        $balances[$key] = array('kind'=>$wallet['kind'], 'received'=>0, 'charge'=>null, 'scheduled_at'=>$scheduled);
+        $balances[$key] = array('kind'=>$wallet['kind'], 'received'=>0, 'charge'=>null, 'actual_date'=>null, 'scheduled_at'=>$scheduled);
     }
     $result = array('cash_received_rial'=>0, 'cash_refunded_rial'=>0, 'net_cash_rial'=>0,
-        'session_charge_changes_rial'=>0, 'scheduled_session_charges_rial'=>0, 'undated_invoiced_count'=>0, 'expenses_rial'=>0,
+        'session_charge_changes_rial'=>0, 'scheduled_session_charges_rial'=>0, 'undated_invoiced_count'=>0, 'actual_session_charges_rial'=>0, 'undated_actual_session_count'=>0, 'expenses_rial'=>0,
         'request_credit_rial'=>0, 'appointment_credit_rial'=>0, 'appointment_due_rial'=>0);
     $seen = array(); $previous_time = null; $previous_id = 0;
     foreach ($events as $event) {
@@ -87,6 +87,8 @@ function joma_v2_report_build($wallets, $events, $expenses, $start_utc, $end_utc
         } else {
             if ($balances[$id]['kind'] !== 'APPOINTMENT') throw new InvalidArgumentException('Charge on request');
             $old = $balances[$id]['charge'] === null ? 0 : $balances[$id]['charge'];
+            // Old events may have no actual date. Never substitute scheduled date.
+            $balances[$id]['actual_date'] = isset($event['actual_session_date']) ? joma_v2_report_time($event['actual_session_date'],true) : null;
             $balances[$id]['charge'] = $amount;
             if ($in_period) $result['session_charge_changes_rial'] = joma_v2_report_add($result['session_charge_changes_rial'], $amount - $old);
         }
@@ -110,6 +112,11 @@ function joma_v2_report_build($wallets, $events, $expenses, $start_utc, $end_utc
             // The current schema stores scheduled start, not the actual date.
             // Never silently call that an actual treatment date.
             if ($balance['charge'] !== null) {
+                if ($balance['actual_date'] === null) {
+                    $result['undated_actual_session_count'] = joma_v2_report_add($result['undated_actual_session_count'],1);
+                } elseif ($balance['actual_date'] >= $start_local && $balance['actual_date'] < $end_local) {
+                    $result['actual_session_charges_rial'] = joma_v2_report_add($result['actual_session_charges_rial'],$balance['charge']);
+                }
                 if ($balance['scheduled_at'] === null) {
                     $result['undated_invoiced_count'] = joma_v2_report_add($result['undated_invoiced_count'], 1);
                 } elseif ($balance['scheduled_at'] >= $start_utc && $balance['scheduled_at'] < $end_utc) {

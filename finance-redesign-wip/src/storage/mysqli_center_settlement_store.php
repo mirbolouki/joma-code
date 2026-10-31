@@ -19,29 +19,38 @@ class JomaV2MysqliCenterSettlementStore
     }
     function lockSessions($center,$start,$end,$basis) {
         $from=local_day_bounds_utc($start); $until=local_day_bounds_utc(date_add_days($end,1));
-        $statuses=$basis === 'ACTUAL' ? "('COMPLETED')" : "('COMPLETED','SCHEDULED')";
-        // Current locking reads. An in-flight charge/room change may deadlock;
-        // MySQL rolls the whole transaction back rather than creating a partial settlement.
-        $rows=db_select_all($this->db,"SELECT ap.id,ap.duration_minutes,r.hourly_rate
-            FROM appointments ap JOIN rooms r ON r.id=ap.room_id
-            WHERE r.center_id=? AND ap.status IN $statuses
-              AND ap.appointment_start_utc>=? AND ap.appointment_start_utc<?
-            ORDER BY ap.id FOR UPDATE",'iss',array($center,$from['start'],$until['start']));
+        // Actual-date mode must not infer a date from the planned appointment.
+        // An unknown actual date for ANY completed appointment in this center
+        // blocks settlement: otherwise it might belong to the requested period.
+        // This conservative WIP policy needs a historical cutover/reconciliation.
+        $sql="SELECT ap.id,ap.duration_minutes,r.hourly_rate FROM appointments ap JOIN rooms r ON r.id=ap.room_id WHERE r.center_id=?";
+        if ($basis === 'ACTUAL') {
+            $sql.=" AND ap.status='COMPLETED' ORDER BY ap.id FOR UPDATE";
+            $rows=db_select_all($this->db,$sql,'i',array($center));
+        } else {
+            $sql.=" AND ap.status IN ('COMPLETED','SCHEDULED') AND ap.appointment_start_utc>=? AND ap.appointment_start_utc<? ORDER BY ap.id FOR UPDATE";
+            $rows=db_select_all($this->db,$sql,'iss',array($center,$from['start'],$until['start']));
+        }
         $out=array();
         foreach ($rows as $row) {
             $actual=null; $event_id=null;
             if ($basis === 'ACTUAL') {
                 $wallet=db_select_one($this->db,'SELECT id FROM finance_v2_wallets WHERE appointment_id=? FOR UPDATE','i',array((int)$row['id']));
-                if ($wallet) {
-                    $event=db_select_one($this->db,"SELECT id,actual_minutes FROM finance_v2_events WHERE wallet_id=? AND event_type='CHARGE' ORDER BY id DESC LIMIT 1 FOR UPDATE",'i',array((int)$wallet['id']));
-                    if ($event && $event['actual_minutes'] !== null) { $actual=(int)$event['actual_minutes']; $event_id=(int)$event['id']; }
-                }
+                $event=$wallet ? db_select_one($this->db,"SELECT id,actual_minutes,actual_session_date FROM finance_v2_events WHERE wallet_id=? AND event_type='CHARGE' ORDER BY id DESC LIMIT 1 FOR UPDATE",'i',array((int)$wallet['id'])) : null;
+                if (!$event || $event['actual_minutes'] === null || $event['actual_session_date'] === null) throw new InvalidArgumentException('تاریخ یا مدت واقعی یک نوبت انجام‌شده در مرکز مشخص نیست؛ ابتدا سوابق را بررسی کنید.');
+                $actualDate=$event['actual_session_date'];
+                joma_v2_center_date($actualDate);
+                if ($actualDate < $start || $actualDate > $end) continue;
+                $actual=(int)$event['actual_minutes']; $event_id=(int)$event['id'];
             }
             $out[]=array('appointment_id'=>(int)$row['id'], 'reserved_minutes'=>(int)$row['duration_minutes'],
                 'actual_minutes'=>$actual, 'hourly_rate_toman'=>$row['hourly_rate'] === null ? null : (string)$row['hourly_rate'],
                 'source_charge_event_id'=>$event_id);
         }
         return $out;
+    }
+    function appointmentAlreadySettled($id) {
+        return (bool) db_select_one($this->db,'SELECT id FROM finance_v2_center_settlement_items WHERE appointment_id=? LIMIT 1 FOR UPDATE','i',array($id));
     }
     function insertSettlement($center,$start,$end,$amount,$actor) {
         $public=generate_public_id('STL');

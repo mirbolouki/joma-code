@@ -49,7 +49,7 @@ $deposit=array('key'=>'deposit_000000000001','type'=>'RECEIPT','wallet'=>$req,'a
 joma_v2_record_event($store,$deposit,$secretary);
 rejects(function() use($store,$deposit,$secretary){joma_v2_record_event($store,$deposit,$secretary);},'duplicate receipt');
 joma_v2_record_event($store,array('key'=>'transfer_00000000001','type'=>'TRANSFER','wallet'=>$req,'to'=>$appt,'amount_rial'=>1000000,'reason'=>'deposit allocation'),$secretary);
-joma_v2_record_event($store,array('key'=>'charge_000000000001','type'=>'CHARGE','wallet'=>$appt,'actual_minutes'=>35),$secretary);
+joma_v2_record_event($store,array('key'=>'charge_000000000001','type'=>'CHARGE','wallet'=>$appt,'actual_minutes'=>35,'actual_session_date'=>'2026-10-19'),$secretary);
 joma_v2_record_event($store,array('key'=>'payment_00000000001','type'=>'RECEIPT','wallet'=>$appt,'amount_rial'=>2000000,'account_id'=>1,'receipt_kind'=>'PAYMENT'),$secretary);
 joma_v2_record_event($store,array('key'=>'refund_000000000001','type'=>'REFUND','wallet'=>$appt,'amount_rial'=>500000,'account_id'=>1,'reason'=>'correction'),$secretary);
 mysqli_query($db,'START TRANSACTION'); $store->lockWallets(array($appt)); $balance=$store->balance($appt); mysqli_query($db,'COMMIT');
@@ -81,15 +81,17 @@ $hist=db_select_one($db,'SELECT COUNT(*) AS n FROM finance_v2_center_basis_event
 same((int)$hist['n'],2,'center basis changes logged once');
 $settlementStore=new JomaV2MysqliCenterSettlementStore($db);
 joma_v2_set_center_basis($centers,1,'ACTUAL',$admin);
-$settled=joma_v2_create_hourly_settlement($settlementStore,1,'2026-10-20','2026-10-20',null,'',$admin);
+$settled=joma_v2_create_hourly_settlement($settlementStore,1,'2026-10-19','2026-10-19',null,'',$admin);
 same($settled['amount_due_rial'],350000,'actual-minute hourly settlement');
 $detail=db_select_one($db,'SELECT time_basis,total_minutes,exact_remainder FROM finance_v2_center_settlement_details WHERE settlement_id=?','i',array($settled['settlement_id']));
 same($detail['time_basis'],'ACTUAL','basis persisted'); same((int)$detail['total_minutes'],35,'actual minutes persisted');
 $item=db_select_one($db,'SELECT minutes,source_charge_event_id FROM finance_v2_center_settlement_items WHERE settlement_id=?','i',array($settled['settlement_id']));
 same((int)$item['minutes'],35,'item minutes persisted'); if (!$item['source_charge_event_id']) throw new Exception('Missing charge event reference');
-rejects(function()use($settlementStore,$admin){joma_v2_create_hourly_settlement($settlementStore,1,'2026-10-20','2026-10-21',null,'',$admin);},'overlapping settlement');
+rejects(function()use($settlementStore,$admin){joma_v2_create_hourly_settlement($settlementStore,1,'2026-10-19','2026-10-21',null,'',$admin);},'overlapping settlement');
+db_execute($db,"INSERT INTO appointments VALUES (4,1,1,1,'COMPLETED',NULL,'2026-10-21 09:00:00',3,35)");
 rejects(function()use($settlementStore,$admin){joma_v2_create_hourly_settlement($settlementStore,1,'2026-10-21','2026-10-21',null,'',$admin);},'missing actual duration');
 joma_v2_set_center_basis($centers,1,'RESERVED',$admin);
+rejects(function()use($settlementStore,$admin){joma_v2_create_hourly_settlement($settlementStore,1,'2026-10-20','2026-10-20',null,'',$admin);},'appointment already in different settlement period');
 rejects(function()use($settlementStore,$admin){joma_v2_create_hourly_settlement($settlementStore,1,'2026-10-21','2026-10-21',null,'',$admin);},'fraction needs decision');
 $manual=joma_v2_create_hourly_settlement($settlementStore,1,'2026-10-21','2026-10-21',583330,'agreed amount',$admin);
 same($manual['amount_due_rial'],583330,'manual settlement');
@@ -108,6 +110,9 @@ $expenseId=joma_v2_record_expense($expenseStore,array('key'=>'expense_0000000000
 $report=(new JomaV2MysqliReportStore($db))->build('2000-01-01 00:00:00','2100-01-01 00:00:00','2000-01-01','2100-01-01');
 same($report['cash_received_rial'],3000000,'cash receipts'); same($report['cash_refunded_rial'],500000,'cash refund');
 same($report['session_charge_changes_rial'],4200000,'charge report'); same($report['expenses_rial'],10000,'expense report'); same($report['appointment_due_rial'],1700000,'debt report');
+same($report['actual_session_charges_rial'],4200000,'actual session date reported'); same($report['undated_actual_session_count'],0,'actual date present');
+$actualEvent=db_select_one($db,"SELECT actual_session_date FROM finance_v2_events WHERE event_type='CHARGE' AND wallet_id=?",'i',array($appt)); same($actualEvent['actual_session_date'],'2026-10-19','stored actual date distinct from scheduled');
+$actualReport=(new JomaV2MysqliReportStore($db))->build('2000-01-01 00:00:00','2100-01-01 00:00:00','2026-10-19','2026-10-20'); same($actualReport['actual_session_charges_rial'],4200000,'actual date controls reporting period');
 $change=array('key'=>'expense_edit_0000001','expense_id'=>$expenseId,'expected_revision_id'=>0,'action'=>'CORRECT','date'=>'2026-11-01','category'=>'لوازم','amount_rial'=>15000,'account_id'=>1,'description'=>'changed','reason'=>'correct entry');
 $revision=joma_v2_revise_expense($expenseStore,$change,$admin);
 rejects(function()use($expenseStore,$change,$admin){joma_v2_revise_expense($expenseStore,$change,$admin);},'stale edit');
