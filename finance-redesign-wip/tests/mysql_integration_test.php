@@ -1,0 +1,80 @@
+<?php
+/* SYNTHETIC TEST DATABASE ONLY. Never use a production database. */
+$dbname = getenv('JOMA_TEST_DATABASE');
+if (!is_string($dbname) || !preg_match('/^joma_v2_test_[a-z0-9_]+$/D', $dbname) || getenv('JOMA_TEST_ALLOW_WRITES') !== 'YES') {
+    throw new Exception('Refusing to run without an explicitly named joma_v2_test_* database');
+}
+$helpers = getenv('JOMA_TEST_DB_HELPERS');
+if (!is_string($helpers) || !is_file($helpers)) throw new Exception('Set JOMA_TEST_DB_HELPERS to the existing app db.php');
+require $helpers;
+require __DIR__ . '/../src/rates.php';
+require __DIR__ . '/../src/expenses.php';
+require __DIR__ . '/../src/request_wallet.php';
+require __DIR__ . '/../src/assign_rate.php';
+require __DIR__ . '/../src/center_basis.php';
+require __DIR__ . '/../src/storage/mysqli_center_basis_store.php';
+require __DIR__ . '/../src/storage/mysqli_request_wallet_store.php';
+require __DIR__ . '/../src/storage/mysqli_store.php';
+require __DIR__ . '/../src/storage/mysqli_rate_store.php';
+require __DIR__ . '/../src/storage/mysqli_expense_store.php';
+require __DIR__ . '/../src/storage/mysqli_report_store.php';
+function now_dt() { return gmdate('Y-m-d H:i:s'); }
+function same($a,$b,$message) { if ($a !== $b) throw new Exception($message.': '.var_export($a,true)); }
+function rejects($f,$message) { try { $f(); } catch (InvalidArgumentException $e) { return; } throw new Exception('Expected rejection: '.$message); }
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+$db = mysqli_connect(getenv('JOMA_TEST_HOST'), getenv('JOMA_TEST_USER'), getenv('JOMA_TEST_PASSWORD'), $dbname, (int)getenv('JOMA_TEST_PORT'));
+mysqli_set_charset($db, 'utf8mb4');
+$admin = array('person_id'=>2,'role'=>'admin'); $secretary = array('person_id'=>3,'role'=>'secretary');
+$rate = new JomaV2MysqliRateStore($db);
+joma_v2_set_rate($rate,1,1,120000,true,$admin);
+mysqli_query($db,'START TRANSACTION');
+same(joma_v2_capture_booking_rate($rate,1),true,'rate captured');
+mysqli_query($db,'COMMIT');
+joma_v2_set_rate($rate,1,1,150000,true,$admin);
+$row = db_select_one($db,'SELECT id, rate_rial_per_minute FROM finance_v2_wallets WHERE appointment_id=1');
+same((int)$row['rate_rial_per_minute'],120000,'snapshot immutable'); $appt=(int)$row['id'];
+$requestStore=new JomaV2MysqliRequestWalletStore($db);
+$req=joma_v2_request_wallet($requestStore,1,$secretary);
+same(joma_v2_request_wallet($requestStore,1,$secretary),$req,'request wallet idempotent');
+rejects(function() use($requestStore,$secretary){joma_v2_request_wallet($requestStore,999,$secretary);},'unknown request');
+$store=new JomaV2MysqliStore($db);
+$deposit=array('key'=>'deposit_000000000001','type'=>'RECEIPT','wallet'=>$req,'amount_rial'=>1000000,'account_id'=>1,'receipt_kind'=>'DEPOSIT');
+joma_v2_record_event($store,$deposit,$secretary);
+rejects(function() use($store,$deposit,$secretary){joma_v2_record_event($store,$deposit,$secretary);},'duplicate receipt');
+joma_v2_record_event($store,array('key'=>'transfer_00000000001','type'=>'TRANSFER','wallet'=>$req,'to'=>$appt,'amount_rial'=>1000000,'reason'=>'deposit allocation'),$secretary);
+joma_v2_record_event($store,array('key'=>'charge_000000000001','type'=>'CHARGE','wallet'=>$appt,'actual_minutes'=>35),$secretary);
+joma_v2_record_event($store,array('key'=>'payment_00000000001','type'=>'RECEIPT','wallet'=>$appt,'amount_rial'=>2000000,'account_id'=>1,'receipt_kind'=>'PAYMENT'),$secretary);
+joma_v2_record_event($store,array('key'=>'refund_000000000001','type'=>'REFUND','wallet'=>$appt,'amount_rial'=>500000,'account_id'=>1,'reason'=>'correction'),$secretary);
+mysqli_query($db,'START TRANSACTION'); $store->lockWallets(array($appt)); $balance=$store->balance($appt); mysqli_query($db,'COMMIT');
+same($balance['received'],2500000,'allocated receipts'); same($balance['charge'],4200000,'calculated fee');
+rejects(function() use($store,$secretary,$appt){joma_v2_record_event($store,array('key'=>'overrefund_00000001','type'=>'REFUND','wallet'=>$appt,'amount_rial'=>2500001,'account_id'=>1,'reason'=>'x'),$secretary);},'excess refund');
+joma_v2_set_rate($rate,1,1,150000,false,$admin);
+mysqli_query($db,'START TRANSACTION');
+same(joma_v2_capture_booking_rate($rate,3),false,'inactive rate leaves a blank snapshot');
+mysqli_query($db,'COMMIT');
+$missing=db_select_one($db,'SELECT id,rate_rial_per_minute FROM finance_v2_wallets WHERE appointment_id=3');
+same($missing['rate_rial_per_minute'],null,'missing rate never guessed');
+$missingId=(int)$missing['id'];
+rejects(function() use($store,$missingId,$secretary){joma_v2_assign_missing_rate($store,$missingId,135000,'manual confirmation',$secretary);},'rate assignment admin only');
+joma_v2_assign_missing_rate($store,$missingId,135000,'manual confirmation',$admin);
+rejects(function() use($store,$missingId,$admin){joma_v2_assign_missing_rate($store,$missingId,150000,'change',$admin);},'snapshot cannot be overwritten');
+$changed=db_select_one($db,'SELECT rate_rial_per_minute FROM finance_v2_wallets WHERE id=?','i',array($missingId));
+same((int)$changed['rate_rial_per_minute'],135000,'manual rate saved exactly');
+$log=db_select_one($db,'SELECT reason FROM finance_v2_rate_assignments WHERE wallet_id=?','i',array($missingId));
+same($log['reason'],'manual confirmation','manual rate assignment audited');
+$centers=new JomaV2MysqliCenterBasisStore($db);
+joma_v2_set_center_basis($centers,1,'ACTUAL',$admin);
+joma_v2_set_center_basis($centers,1,'ACTUAL',$admin);
+rejects(function()use($centers,$secretary){joma_v2_set_center_basis($centers,1,'RESERVED',$secretary);},'center admin only');
+rejects(function()use($centers,$admin){joma_v2_set_center_basis($centers,2,'ACTUAL',$admin);},'inactive center');
+joma_v2_set_center_basis($centers,1,'RESERVED',$admin);
+$basis=db_select_one($db,'SELECT time_basis FROM finance_v2_center_basis WHERE center_id=1');
+same($basis['time_basis'],'RESERVED','center basis updated');
+$hist=db_select_one($db,'SELECT COUNT(*) AS n FROM finance_v2_center_basis_events WHERE center_id=1');
+same((int)$hist['n'],2,'center basis changes logged once');
+$expenseStore=new JomaV2MysqliExpenseStore($db);
+joma_v2_record_expense($expenseStore,array('key'=>'expense_00000000001','date'=>'2026-10-20','category'=>'اجاره','amount_rial'=>10000,'account_id'=>1),$admin);
+$report=(new JomaV2MysqliReportStore($db))->build('2000-01-01 00:00:00','2100-01-01 00:00:00','2000-01-01','2100-01-01');
+same($report['cash_received_rial'],3000000,'cash receipts'); same($report['cash_refunded_rial'],500000,'cash refund');
+same($report['session_charge_changes_rial'],4200000,'charge report'); same($report['expenses_rial'],10000,'expense report'); same($report['appointment_due_rial'],1700000,'debt report');
+echo "MariaDB/MySQL synthetic integration passed.\n";

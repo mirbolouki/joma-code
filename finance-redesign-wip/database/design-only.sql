@@ -96,3 +96,38 @@ CREATE TABLE finance_v2_expenses (
     CONSTRAINT fk_fv2_expense_account FOREIGN KEY (account_id) REFERENCES finance_bank_accounts(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_expense_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- One explicit, audited assignment for an appointment that was created without
+-- a configured rate. A rate that was already snapshotted is never overwritten.
+CREATE TABLE finance_v2_rate_assignments (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    wallet_id BIGINT UNSIGNED NOT NULL,
+    rate_rial_per_minute DECIMAL(18,0) NOT NULL,
+    reason VARCHAR(255) NOT NULL,
+    recorded_by_person_id BIGINT UNSIGNED NOT NULL,
+    recorded_at DATETIME NOT NULL,
+    UNIQUE KEY uq_fv2_rate_assignment_wallet (wallet_id),
+    CONSTRAINT fk_fv2_rate_assignment_wallet FOREIGN KEY (wallet_id) REFERENCES finance_v2_wallets(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_rate_assignment_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Time basis of each center; absent means not configured, never guessed.
+CREATE TABLE finance_v2_center_basis (
+    center_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+    time_basis ENUM('ACTUAL','RESERVED') NOT NULL,
+    updated_by_person_id BIGINT UNSIGNED NOT NULL,
+    updated_at DATETIME NOT NULL,
+    CONSTRAINT fk_fv2_basis_center FOREIGN KEY (center_id) REFERENCES finance_centers(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_basis_actor FOREIGN KEY (updated_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE finance_v2_center_basis_events (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    center_id BIGINT UNSIGNED NOT NULL,
+    old_basis ENUM('ACTUAL','RESERVED') NULL,
+    new_basis ENUM('ACTUAL','RESERVED') NOT NULL,
+    recorded_by_person_id BIGINT UNSIGNED NOT NULL,
+    recorded_at DATETIME NOT NULL,
+    KEY idx_fv2_center_basis_event (center_id,id),
+    CONSTRAINT fk_fv2_basis_event_center FOREIGN KEY (center_id) REFERENCES finance_centers(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_basis_event_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

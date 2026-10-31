@@ -4,9 +4,9 @@ class JomaV2MysqliExpenseStore
 {
     private $db;
     function __construct($db) { $this->db = $db; }
-    function begin() { if (!mysqli_begin_transaction($this->db)) throw new RuntimeException('Begin failed'); }
-    function commit() { if (!mysqli_commit($this->db)) throw new RuntimeException('Commit failed'); }
-    function rollback() { mysqli_rollback($this->db); }
+    function begin() { if (!mysqli_query($this->db, 'START TRANSACTION')) throw new RuntimeException('Begin failed'); }
+    function commit() { if (!mysqli_query($this->db, 'COMMIT')) throw new RuntimeException('Commit failed'); }
+    function rollback() { mysqli_query($this->db, 'ROLLBACK'); }
     function expenseOperationExists($key) {
         return (bool) db_select_one($this->db, 'SELECT id FROM finance_v2_expenses WHERE operation_key = ? LIMIT 1', 's', array($key));
     }

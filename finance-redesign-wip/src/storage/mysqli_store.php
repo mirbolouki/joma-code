@@ -5,9 +5,9 @@ class JomaV2MysqliStore
 {
     private $db;
     function __construct($db) { $this->db = $db; }
-    function begin() { if (!mysqli_begin_transaction($this->db)) throw new RuntimeException('Could not begin transaction'); }
-    function commit() { if (!mysqli_commit($this->db)) throw new RuntimeException('Could not commit transaction'); }
-    function rollback() { mysqli_rollback($this->db); }
+    function begin() { if (!mysqli_query($this->db, 'START TRANSACTION')) throw new RuntimeException('Could not begin transaction'); }
+    function commit() { if (!mysqli_query($this->db, 'COMMIT')) throw new RuntimeException('Could not commit transaction'); }
+    function rollback() { mysqli_query($this->db, 'ROLLBACK'); }
     function operationExists($key) {
         return (bool) db_select_one($this->db, 'SELECT id FROM finance_v2_events WHERE operation_key = ? LIMIT 1', 's', array($key));
     }
@@ -19,9 +19,15 @@ class JomaV2MysqliStore
     function lockWallets($ids) {
         // Lock one row at a time in the sorted order provided by the service.
         $out = array();
+        $locked_ids = array();
+        // Lock *all* wallets before locking joined admissions or appointments.
+        // Interleaving those locks with wallet locks can deadlock transfers that
+        // share a source but have different destinations in the same admission.
         foreach ($ids as $id) {
             $locked = db_select_one($this->db, 'SELECT id FROM finance_v2_wallets WHERE id = ? FOR UPDATE', 'i', array($id));
-            if (!$locked) continue;
+            if ($locked) $locked_ids[] = $id;
+        }
+        foreach ($locked_ids as $id) {
             $row = db_select_one($this->db,
                 "SELECT w.id, w.request_id, w.appointment_id, w.rate_rial_per_minute,
                         br.converted_admission_id, ap.admission_id, ap.status AS appointment_status,
@@ -73,6 +79,13 @@ class JomaV2MysqliStore
             }
         }
         return array('received' => $received, 'charge' => $charge);
+    }
+    function assignMissingRate($wallet_id, $amount, $reason, $actor_id) {
+        $r = db_execute($this->db, 'UPDATE finance_v2_wallets SET rate_rial_per_minute = ? WHERE id = ? AND rate_rial_per_minute IS NULL',
+            'si', array((string)$amount, $wallet_id));
+        if ((int)$r['affected'] !== 1) throw new InvalidArgumentException('Rate is already set');
+        db_execute($this->db, 'INSERT INTO finance_v2_rate_assignments (wallet_id,rate_rial_per_minute,reason,recorded_by_person_id,recorded_at) VALUES (?,?,?,?,?)',
+            'issis', array($wallet_id,(string)$amount,$reason,$actor_id,now_dt()));
     }
     function accountActive($id) {
         return (bool) db_select_one($this->db, "SELECT id FROM finance_bank_accounts WHERE id = ? AND status = 'ACTIVE' FOR UPDATE", 'i', array($id));

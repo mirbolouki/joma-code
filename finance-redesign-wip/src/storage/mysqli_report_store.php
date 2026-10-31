@@ -1,5 +1,5 @@
 <?php
-/* WIP. Read-only consistent snapshot intended for MySQL; not tested there. */
+/* WIP. Consistent read snapshot intended for MySQL; not tested there. */
 require_once __DIR__ . '/../reporting.php';
 class JomaV2MysqliReportStore
 {
@@ -13,7 +13,7 @@ class JomaV2MysqliReportStore
     /** The report deliberately excludes legacy, test/package sales and center
      * payments. It fails closed if legacy and new payments share an appointment. */
     function build($start_utc, $end_utc, $start_local, $end_local) {
-        if (!mysqli_begin_transaction($this->db, MYSQLI_TRANS_START_READ_ONLY | MYSQLI_TRANS_START_WITH_CONSISTENT_SNAPSHOT)) {
+        if (!mysqli_query($this->db, 'START TRANSACTION WITH CONSISTENT SNAPSHOT')) {
             throw new RuntimeException('Could not start report snapshot');
         }
         try {
@@ -40,10 +40,10 @@ class JomaV2MysqliReportStore
             $expenses = array();
             foreach ($rows as $row) $expenses[] = array('id'=>$this->integer($row['id']), 'date'=>$row['expense_date'], 'amount'=>$this->integer($row['amount_rial']));
             $out = joma_v2_report_build($wallets, $events, $expenses, $start_utc, $end_utc, $start_local, $end_local);
-            if (!mysqli_commit($this->db)) throw new RuntimeException('Could not finish report snapshot');
+            if (!mysqli_query($this->db, 'COMMIT')) throw new RuntimeException('Could not finish report snapshot');
             return $out;
         } catch (Throwable $ex) {
-            mysqli_rollback($this->db);
+            mysqli_query($this->db, 'ROLLBACK');
             throw $ex;
         }
     }

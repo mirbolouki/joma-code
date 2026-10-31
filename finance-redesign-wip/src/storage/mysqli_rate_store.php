@@ -4,9 +4,9 @@ class JomaV2MysqliRateStore
 {
     private $db;
     function __construct($db) { $this->db = $db; }
-    function begin() { if (!mysqli_begin_transaction($this->db)) throw new RuntimeException('Begin failed'); }
-    function commit() { if (!mysqli_commit($this->db)) throw new RuntimeException('Commit failed'); }
-    function rollback() { mysqli_rollback($this->db); }
+    function begin() { if (!mysqli_query($this->db, 'START TRANSACTION')) throw new RuntimeException('Begin failed'); }
+    function commit() { if (!mysqli_query($this->db, 'COMMIT')) throw new RuntimeException('Commit failed'); }
+    function rollback() { mysqli_query($this->db, 'ROLLBACK'); }
     private function money($value) {
         $s = (string)$value;
         if (!preg_match('/^(0|[1-9][0-9]{0,17})$/D', $s)) throw new UnexpectedValueException('Invalid stored amount');
