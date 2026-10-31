@@ -20,3 +20,16 @@ function joma_v2_rial_to_toman_string($rial)
     $grouped = preg_replace('/\B(?=(?:[0-9]{3})+(?![0-9]))/', ',', (string)$whole);
     return $grouped . ($rial % 10 === 0 ? '' : '.' . ($rial % 10));
 }
+
+/** Signed totals can be negative (refunds or downward charge corrections). */
+function joma_v2_rial_to_toman_signed($rial)
+{
+    if (!is_int($rial)) throw new InvalidArgumentException('Invalid rial amount');
+    $text = (string)$rial;
+    $negative = substr($text, 0, 1) === '-';
+    if ($negative) $text = substr($text, 1);
+    $fraction = substr($text, -1);
+    $whole = strlen($text) > 1 ? substr($text, 0, -1) : '0';
+    $grouped = preg_replace('/\B(?=(?:[0-9]{3})+(?![0-9]))/', ',', $whole);
+    return ($negative ? '-' : '') . $grouped . ($fraction === '0' ? '' : '.' . $fraction);
+}

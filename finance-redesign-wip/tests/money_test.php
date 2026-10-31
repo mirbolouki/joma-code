@@ -13,4 +13,6 @@ bad(function(){joma_v2_toman_to_rial(array());},'array rejected');
 eq(joma_v2_rial_to_toman_string(12345671),'1,234,567.1','exact rial remainder');
 eq(joma_v2_rial_to_toman_string(12345670),'1,234,567','no rounding');
 eq(joma_v2_rial_to_toman_string(999999999999999999),'99,999,999,999,999,999.9','large amount exact');
+eq(joma_v2_rial_to_toman_signed(-12345671),'-1,234,567.1','negative amount');
+eq(joma_v2_rial_to_toman_signed(PHP_INT_MIN),'-922,337,203,685,477,580.8','minimum integer exact');
 echo "Exact money conversion tests passed.\n";
