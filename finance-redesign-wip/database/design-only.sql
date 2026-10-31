@@ -80,7 +80,7 @@ CREATE TABLE finance_v2_rate_changes (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- General operating expense records; no automatic import of historic data.
--- WIP: editing, corrections and reversals are not yet implemented.
+-- Later corrections/voids are stored separately; originals are never changed.
 CREATE TABLE finance_v2_expenses (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     operation_key VARCHAR(100) NOT NULL,
@@ -95,6 +95,28 @@ CREATE TABLE finance_v2_expenses (
     KEY idx_fv2_expense_date (expense_date),
     CONSTRAINT fk_fv2_expense_account FOREIGN KEY (account_id) REFERENCES finance_bank_accounts(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_expense_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Every revision is append-only. A VOID corrects an erroneous expense record,
+-- not an actual refund; accounting for real repayments is a separate workflow.
+CREATE TABLE finance_v2_expense_revisions (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    expense_id BIGINT UNSIGNED NOT NULL,
+    operation_key VARCHAR(100) NOT NULL,
+    action ENUM('CORRECT','VOID') NOT NULL,
+    expense_date DATE NULL,
+    category VARCHAR(100) NULL,
+    amount_rial DECIMAL(18,0) NULL,
+    account_id BIGINT UNSIGNED NULL,
+    description VARCHAR(255) NULL,
+    reason VARCHAR(255) NOT NULL,
+    recorded_by_person_id BIGINT UNSIGNED NOT NULL,
+    recorded_at DATETIME NOT NULL,
+    UNIQUE KEY uq_fv2_expense_revision_operation (operation_key),
+    KEY idx_fv2_expense_revision (expense_id,id),
+    CONSTRAINT fk_fv2_expense_revision_expense FOREIGN KEY (expense_id) REFERENCES finance_v2_expenses(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_expense_revision_account FOREIGN KEY (account_id) REFERENCES finance_bank_accounts(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_expense_revision_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- One explicit, audited assignment for an appointment that was created without

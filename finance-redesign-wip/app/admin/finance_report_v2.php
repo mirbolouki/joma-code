@@ -51,7 +51,7 @@ require __DIR__ . '/../templates/header.php';
 <div class="item-card">اعتبار درخواست‌ها: <strong><?php echo e(report_v2_money($report['request_credit_rial'])); ?></strong></div>
 <div class="item-card">اعتبار نوبت‌ها: <strong><?php echo e(report_v2_money($report['appointment_credit_rial'])); ?></strong></div>
 <div class="item-card">بدهی نوبت‌های صورتحساب‌شده: <strong><?php echo e(report_v2_money($report['appointment_due_rial'])); ?></strong></div>
-</div><p>تاریخ برنامه‌ریزی‌شده لزوماً تاریخ واقعی برگزاری نیست. صورتحساب‌های ثبت‌شده بعد از پایان بازه در مبلغ فوق لحاظ نمی‌شوند؛ هزینه‌های عمومی بر اساس تاریخ واردشده و اطلاعات موجود فعلی گزارش می‌شوند.</p>
+</div><p>تاریخ برنامه‌ریزی‌شده لزوماً تاریخ واقعی برگزاری نیست. صورتحساب‌های ثبت‌شده بعد از پایان بازه در مبلغ فوق لحاظ نمی‌شوند؛ هزینه‌های عمومی بر اساس تاریخ واردشده و آخرین اصلاح‌های موجود گزارش می‌شوند؛ حتی اگر اصلاح بعد از پایان بازه ثبت شده باشد. هزینه‌های ابطال‌شده در جمع نیستند.</p>
 <?php if ($report['undated_invoiced_count'] > 0) { ?><p class="alert alert-warning">تعداد <?php echo e(to_persian_digits($report['undated_invoiced_count'])); ?> صورتحساب فاقد تاریخ نوبت در جمع جلسات قرار نگرفته است.</p><?php } ?>
 </div></div>
 <?php require __DIR__ . '/../templates/footer.php'; ?>

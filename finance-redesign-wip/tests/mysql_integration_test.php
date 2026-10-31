@@ -104,8 +104,37 @@ catch (RuntimeException $ex) {}
 $rolledBack=db_select_one($db,"SELECT COUNT(*) AS n FROM finance_center_settlements WHERE center_id=1 AND period_start='2026-10-24'");
 same((int)$rolledBack['n'],0,'failed settlement fully rolled back');
 $expenseStore=new JomaV2MysqliExpenseStore($db);
-joma_v2_record_expense($expenseStore,array('key'=>'expense_00000000001','date'=>'2026-10-20','category'=>'اجاره','amount_rial'=>10000,'account_id'=>1),$admin);
+$expenseId=joma_v2_record_expense($expenseStore,array('key'=>'expense_00000000001','date'=>'2026-10-20','category'=>'اجاره','amount_rial'=>10000,'account_id'=>1),$admin);
 $report=(new JomaV2MysqliReportStore($db))->build('2000-01-01 00:00:00','2100-01-01 00:00:00','2000-01-01','2100-01-01');
 same($report['cash_received_rial'],3000000,'cash receipts'); same($report['cash_refunded_rial'],500000,'cash refund');
 same($report['session_charge_changes_rial'],4200000,'charge report'); same($report['expenses_rial'],10000,'expense report'); same($report['appointment_due_rial'],1700000,'debt report');
+$change=array('key'=>'expense_edit_0000001','expense_id'=>$expenseId,'expected_revision_id'=>0,'action'=>'CORRECT','date'=>'2026-11-01','category'=>'لوازم','amount_rial'=>15000,'account_id'=>1,'description'=>'changed','reason'=>'correct entry');
+$revision=joma_v2_revise_expense($expenseStore,$change,$admin);
+rejects(function()use($expenseStore,$change,$admin){joma_v2_revise_expense($expenseStore,$change,$admin);},'stale edit');
+$current=$expenseStore->findExpense($expenseId); same((int)$current['revision_id'],$revision,'current revision for edit form');
+same($current['expense_date'],'2026-11-01','display corrected date'); same($current['account_label'],'Primary','display account');
+same(count($expenseStore->listExpenses()),1,'list displays expense');
+same((int)$expenseStore->originalExpense($expenseId)['amount_rial'],10000,'display original history');
+$original=db_select_one($db,'SELECT expense_date,amount_rial FROM finance_v2_expenses WHERE id=?','i',array($expenseId));
+same($original['expense_date'],'2026-10-20','original date preserved'); same((int)$original['amount_rial'],10000,'original amount preserved');
+$all=(new JomaV2MysqliReportStore($db))->build('2000-01-01 00:00:00','2100-01-01 00:00:00','2000-01-01','2100-01-01');
+same($all['expenses_rial'],15000,'corrected report');
+$old=(new JomaV2MysqliReportStore($db))->build('2026-10-01 00:00:00','2026-11-01 00:00:00','2026-10-01','2026-11-01');
+same($old['expenses_rial'],0,'corrected date moves expense out of old period');
+$new=(new JomaV2MysqliReportStore($db))->build('2026-11-01 00:00:00','2026-12-01 00:00:00','2026-11-01','2026-12-01');
+same($new['expenses_rial'],15000,'corrected date moves expense into new period');
+$void=array('key'=>'expense_void_0000001','expense_id'=>$expenseId,'expected_revision_id'=>$revision,'action'=>'VOID','reason'=>'duplicate entry');
+class FailingExpenseStore extends JomaV2MysqliExpenseStore {
+    function insertExpenseRevision($r) { parent::insertExpenseRevision($r); throw new RuntimeException('Simulated failure'); }
+}
+try { joma_v2_revise_expense(new FailingExpenseStore($db),$void,$admin); throw new Exception('Expected failure'); } catch (RuntimeException $e) {}
+$count=db_select_one($db,'SELECT COUNT(*) AS n FROM finance_v2_expense_revisions WHERE expense_id=?','i',array($expenseId)); same((int)$count['n'],1,'failed revision rolled back');
+$vid=joma_v2_revise_expense($expenseStore,$void,$admin);
+$void['key']='expense_void_0000002'; $void['expected_revision_id']=$vid;
+rejects(function()use($expenseStore,$void,$admin){joma_v2_revise_expense($expenseStore,$void,$admin);},'already void');
+$all=(new JomaV2MysqliReportStore($db))->build('2000-01-01 00:00:00','2100-01-01 00:00:00','2000-01-01','2100-01-01');
+same($all['expenses_rial'],0,'void excluded');
+$current=$expenseStore->findExpense($expenseId); same($current['action'],'VOID','void displayed'); same((int)$current['amount_rial'],15000,'void shows last corrected amount');
+$history=$expenseStore->expenseHistory($expenseId);
+same(count($history),2,'two expense revisions saved'); same($history[1]['reason'],'duplicate entry','void reason stored'); same((int)$history[1]['recorded_by_person_id'],2,'actor saved');
 echo "MariaDB/MySQL synthetic integration passed.\n";

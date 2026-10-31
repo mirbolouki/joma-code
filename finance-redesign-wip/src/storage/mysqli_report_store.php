@@ -1,5 +1,5 @@
 <?php
-/* WIP. Consistent read snapshot intended for MySQL; not tested there. */
+/* WIP. Consistent read snapshot tested only with synthetic MySQL. */
 require_once __DIR__ . '/../reporting.php';
 class JomaV2MysqliReportStore
 {
@@ -36,7 +36,15 @@ class JomaV2MysqliReportStore
                     'occurred_at'=>$row['occurred_at'],
                     'to'=>$row['destination_wallet_id'] === null ? null : 'w'.$this->integer($row['destination_wallet_id']));
             }
-            $rows = db_select_all($this->db, 'SELECT id, expense_date, amount_rial FROM finance_v2_expenses WHERE expense_date >= ? AND expense_date < ? ORDER BY id', 'ss', array($start_local, $end_local));
+            // Current corrected values, not a report as-of the period end. Voids
+            // exclude erroneous records; they do not represent cash refunds.
+            $rows = db_select_all($this->db, "SELECT ex.id, COALESCE(rv.expense_date,ex.expense_date) AS expense_date,
+                COALESCE(rv.amount_rial,ex.amount_rial) AS amount_rial
+                FROM finance_v2_expenses ex LEFT JOIN finance_v2_expense_revisions rv
+                  ON rv.id=(SELECT MAX(r2.id) FROM finance_v2_expense_revisions r2 WHERE r2.expense_id=ex.id)
+                WHERE (rv.id IS NULL OR rv.action='CORRECT')
+                  AND COALESCE(rv.expense_date,ex.expense_date) >= ? AND COALESCE(rv.expense_date,ex.expense_date) < ?
+                ORDER BY ex.id", 'ss', array($start_local, $end_local));
             $expenses = array();
             foreach ($rows as $row) $expenses[] = array('id'=>$this->integer($row['id']), 'date'=>$row['expense_date'], 'amount'=>$this->integer($row['amount_rial']));
             $out = joma_v2_report_build($wallets, $events, $expenses, $start_utc, $end_utc, $start_local, $end_local);
