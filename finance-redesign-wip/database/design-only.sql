@@ -78,3 +78,21 @@ CREATE TABLE finance_v2_rate_changes (
     CONSTRAINT fk_fv2_rate_change_rate FOREIGN KEY (rate_id) REFERENCES finance_v2_rates(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_rate_change_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- General operating expense records; no automatic import of historic data.
+-- WIP: editing, corrections and reversals are not yet implemented.
+CREATE TABLE finance_v2_expenses (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    operation_key VARCHAR(100) NOT NULL,
+    expense_date DATE NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    amount_rial DECIMAL(18,0) NOT NULL,
+    account_id BIGINT UNSIGNED NOT NULL,
+    description VARCHAR(255) NULL,
+    recorded_by_person_id BIGINT UNSIGNED NOT NULL,
+    recorded_at DATETIME NOT NULL,
+    UNIQUE KEY uq_fv2_expense_operation (operation_key),
+    KEY idx_fv2_expense_date (expense_date),
+    CONSTRAINT fk_fv2_expense_account FOREIGN KEY (account_id) REFERENCES finance_bank_accounts(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_expense_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
