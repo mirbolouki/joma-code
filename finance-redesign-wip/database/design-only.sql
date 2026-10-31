@@ -141,6 +141,26 @@ CREATE TABLE finance_v2_rate_assignments (
     CONSTRAINT fk_fv2_rate_assignment_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Explicit history of human-verified center attribution for legacy payments.
+-- Each assertion applies only to the immutable fingerprint of the old record.
+-- For each PAID component, NULL means explicitly verified as no center.
+CREATE TABLE finance_v2_legacy_center_reviews (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    payment_id BIGINT UNSIGNED NOT NULL,
+    deposit_center_id BIGINT UNSIGNED NULL,
+    balance_center_id BIGINT UNSIGNED NULL,
+    payment_fingerprint CHAR(64) NOT NULL,
+    payment_snapshot_json TEXT NOT NULL,
+    reason VARCHAR(255) NOT NULL,
+    recorded_by_person_id BIGINT UNSIGNED NOT NULL,
+    recorded_at DATETIME NOT NULL,
+    KEY idx_fv2_legacy_review (payment_id,id),
+    CONSTRAINT fk_fv2_legacy_review_payment FOREIGN KEY (payment_id) REFERENCES finance_session_payments(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_legacy_review_dep_center FOREIGN KEY (deposit_center_id) REFERENCES finance_centers(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_legacy_review_bal_center FOREIGN KEY (balance_center_id) REFERENCES finance_centers(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_legacy_review_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Time basis of each center; absent means not configured, never guessed.
 CREATE TABLE finance_v2_center_basis (
     center_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,

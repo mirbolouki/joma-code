@@ -33,12 +33,15 @@ $events=array(
  array('id'=>13,'type'=>'REFUND','source_kind'=>'APPOINTMENT','amount_rial'=>50,'occurred_at'=>'2026-10-05 10:00:00','center_snapshot_recorded'=>true,'source_center_id'=>2,'destination_center_id'=>null),
  array('id'=>14,'type'=>'TRANSFER','source_kind'=>'APPOINTMENT','destination_kind'=>'APPOINTMENT','amount_rial'=>100,'occurred_at'=>'2026-10-06 10:00:00','center_snapshot_recorded'=>true,'source_center_id'=>2,'destination_center_id'=>3)
 );
-$legacy=array(array('id'=>1,'center_verified'=>true,'has_new_history'=>false,'center_id'=>2,'deposit_status'=>'PAID','deposit_amount_rial'=>400,'deposit_paid_at'=>'2026-10-02 10:00:00','balance_status'=>'PENDING'));
+$legacy=array(array('id'=>1,'center_verified'=>true,'has_new_history'=>false,'deposit_center_id'=>2,'balance_center_id'=>null,'deposit_status'=>'PAID','deposit_amount_rial'=>400,'deposit_paid_at'=>'2026-10-02 10:00:00','balance_status'=>'PENDING'));
 $sources=joma_v2_percentage_sources(2,'2026-10-02 00:00:00','2026-10-07 00:00:00',$events,$legacy);
 $r=joma_v2_center_percentage_exact('10.00',$sources); same($r['gross_rial'],900,'allocated deposit and direct receipt and old deposit, not raw request receipt');
 same(count($r['manual_items']),2,'refund and appointment transfer need review');
 $sources=joma_v2_percentage_sources(2,'2026-10-01 00:00:00','2026-10-03 00:00:00',$events,$legacy);
 $r=joma_v2_center_percentage_exact('10.00',$sources); same($r['gross_rial'],400,'request receipt is not attributed early');
+$split=$legacy; $split[0]['balance_status']='PAID'; $split[0]['balance_center_id']=3; $split[0]['balance_amount_rial']=600; $split[0]['balance_paid_at']='2026-10-02 11:00:00';
+$r=joma_v2_center_percentage_exact('10.00',joma_v2_percentage_sources(2,'2026-10-02 00:00:00','2026-10-03 00:00:00',array(),$split)); same($r['gross_rial'],400,'legacy deposit goes to verified center');
+$r=joma_v2_center_percentage_exact('10.00',joma_v2_percentage_sources(3,'2026-10-02 00:00:00','2026-10-03 00:00:00',array(),$split)); same($r['gross_rial'],600,'legacy balance may have a different verified center');
 $bad=$events; $bad[1]['center_snapshot_recorded']=false;
 rejects(function()use($bad,$legacy){joma_v2_percentage_sources(2,'2026-10-02 00:00:00','2026-10-07 00:00:00',$bad,$legacy);},'unknown event center');
 $bad=$legacy; $bad[0]['center_verified']=false;

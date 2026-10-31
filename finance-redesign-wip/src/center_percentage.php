@@ -79,15 +79,16 @@ function joma_v2_percentage_sources($center,$start_utc,$end_utc,$events,$legacy)
     $seen=array();
     foreach ($legacy as $record) {
         if (!is_array($record) || !isset($record['id'],$record['center_verified'],$record['has_new_history']) ||
-            !is_bool($record['center_verified']) || !is_bool($record['has_new_history']) || !array_key_exists('center_id',$record)) throw new InvalidArgumentException('Invalid legacy record');
+            !is_bool($record['center_verified']) || !is_bool($record['has_new_history']) || !array_key_exists('deposit_center_id',$record) || !array_key_exists('balance_center_id',$record)) throw new InvalidArgumentException('Invalid legacy record');
         joma_v2_positive_id($record['id'],'Legacy payment');
         if (isset($seen[$record['id']])) throw new InvalidArgumentException('Duplicate legacy payment'); $seen[$record['id']]=true;
         if (!$record['center_verified'] || $record['has_new_history']) throw new InvalidArgumentException('Legacy history needs reconciliation');
-        if ($record['center_id']!==null) joma_v2_positive_id($record['center_id'],'Legacy center');
-        if ($record['center_id']!==$center) continue;
         foreach (array('deposit'=>'LEGACY_DEPOSIT','balance'=>'LEGACY_BALANCE') as $field=>$kind) {
             if (!isset($record[$field.'_status']) || !in_array($record[$field.'_status'],array('PAID','PENDING'),true)) throw new InvalidArgumentException('Invalid legacy status');
             if ($record[$field.'_status']!=='PAID') continue;
+            $legacyCenter=$record[$field.'_center_id'];
+            if ($legacyCenter!==null) joma_v2_positive_id($legacyCenter,'Legacy center');
+            if ($legacyCenter!==$center) continue;
             if (!isset($record[$field.'_paid_at'])) throw new InvalidArgumentException('Legacy payment date missing');
             $time=joma_v2_report_time($record[$field.'_paid_at']);
             if ($time < $start_utc || $time >= $end_utc) continue;
