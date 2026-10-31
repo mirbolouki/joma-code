@@ -1,7 +1,7 @@
 <?php
 /* SYNTHETIC TEST DATABASE ONLY. Never use a production database. */
 $dbname = getenv('JOMA_TEST_DATABASE');
-if (!is_string($dbname) || !preg_match('/^joma_v2_test_[a-z0-9_]+$/D', $dbname) || getenv('JOMA_TEST_ALLOW_WRITES') !== 'YES') {
+if (!is_string($dbname) || !preg_match('/^joma_v2_test_[a-z0-9_]+$/D', $dbname) || getenv('JOMA_TEST_ALLOW_WRITES') !== 'YES' || !in_array(getenv('JOMA_TEST_HOST'), array('127.0.0.1','localhost'), true)) {
     throw new Exception('Refusing to run without an explicitly named joma_v2_test_* database');
 }
 $helpers = getenv('JOMA_TEST_DB_HELPERS');
@@ -12,6 +12,8 @@ require __DIR__ . '/../src/expenses.php';
 require __DIR__ . '/../src/request_wallet.php';
 require __DIR__ . '/../src/assign_rate.php';
 require __DIR__ . '/../src/center_basis.php';
+require __DIR__ . '/../src/center_settlement.php';
+require __DIR__ . '/../src/storage/mysqli_center_settlement_store.php';
 require __DIR__ . '/../src/storage/mysqli_center_basis_store.php';
 require __DIR__ . '/../src/storage/mysqli_request_wallet_store.php';
 require __DIR__ . '/../src/storage/mysqli_store.php';
@@ -19,6 +21,11 @@ require __DIR__ . '/../src/storage/mysqli_rate_store.php';
 require __DIR__ . '/../src/storage/mysqli_expense_store.php';
 require __DIR__ . '/../src/storage/mysqli_report_store.php';
 function now_dt() { return gmdate('Y-m-d H:i:s'); }
+function generate_public_id($prefix) { return $prefix . bin2hex(random_bytes(8)); }
+function audit_log_write($db,$actor,$role,$action,$type,$id,$data) { /* synthetic audit stub */ }
+function local_day_bounds_utc($date) { $d=new DateTimeImmutable($date.' 00:00:00',new DateTimeZone('Asia/Tehran')); return array('start'=>$d->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s')); }
+function date_add_days($date,$days) { return (new DateTimeImmutable($date,new DateTimeZone('UTC')))->modify(($days>=0?'+':'').$days.' days')->format('Y-m-d'); }
+
 function same($a,$b,$message) { if ($a !== $b) throw new Exception($message.': '.var_export($a,true)); }
 function rejects($f,$message) { try { $f(); } catch (InvalidArgumentException $e) { return; } throw new Exception('Expected rejection: '.$message); }
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -72,6 +79,30 @@ $basis=db_select_one($db,'SELECT time_basis FROM finance_v2_center_basis WHERE c
 same($basis['time_basis'],'RESERVED','center basis updated');
 $hist=db_select_one($db,'SELECT COUNT(*) AS n FROM finance_v2_center_basis_events WHERE center_id=1');
 same((int)$hist['n'],2,'center basis changes logged once');
+$settlementStore=new JomaV2MysqliCenterSettlementStore($db);
+joma_v2_set_center_basis($centers,1,'ACTUAL',$admin);
+$settled=joma_v2_create_hourly_settlement($settlementStore,1,'2026-10-20','2026-10-20',null,'',$admin);
+same($settled['amount_due_rial'],350000,'actual-minute hourly settlement');
+$detail=db_select_one($db,'SELECT time_basis,total_minutes,exact_remainder FROM finance_v2_center_settlement_details WHERE settlement_id=?','i',array($settled['settlement_id']));
+same($detail['time_basis'],'ACTUAL','basis persisted'); same((int)$detail['total_minutes'],35,'actual minutes persisted');
+$item=db_select_one($db,'SELECT minutes,source_charge_event_id FROM finance_v2_center_settlement_items WHERE settlement_id=?','i',array($settled['settlement_id']));
+same((int)$item['minutes'],35,'item minutes persisted'); if (!$item['source_charge_event_id']) throw new Exception('Missing charge event reference');
+rejects(function()use($settlementStore,$admin){joma_v2_create_hourly_settlement($settlementStore,1,'2026-10-20','2026-10-21',null,'',$admin);},'overlapping settlement');
+rejects(function()use($settlementStore,$admin){joma_v2_create_hourly_settlement($settlementStore,1,'2026-10-21','2026-10-21',null,'',$admin);},'missing actual duration');
+joma_v2_set_center_basis($centers,1,'RESERVED',$admin);
+rejects(function()use($settlementStore,$admin){joma_v2_create_hourly_settlement($settlementStore,1,'2026-10-21','2026-10-21',null,'',$admin);},'fraction needs decision');
+$manual=joma_v2_create_hourly_settlement($settlementStore,1,'2026-10-21','2026-10-21',583330,'agreed amount',$admin);
+same($manual['amount_due_rial'],583330,'manual settlement');
+$detail=db_select_one($db,'SELECT exact_whole_rial,exact_remainder,exact_denominator,manual_reason FROM finance_v2_center_settlement_details WHERE settlement_id=?','i',array($manual['settlement_id']));
+same((int)$detail['exact_whole_rial'],583333,'exact total retained'); same((int)$detail['exact_remainder'],200,'fraction retained'); same((int)$detail['exact_denominator'],600,'denominator retained'); same($detail['manual_reason'],'agreed amount','reason retained');
+db_execute($db,"INSERT INTO appointments VALUES (6,1,1,1,'COMPLETED',NULL,'2026-10-24 09:00:00',1,60)");
+class FailingCenterStore extends JomaV2MysqliCenterSettlementStore {
+    function insertSettlementItem($id,$basis,$row) { parent::insertSettlementItem($id,$basis,$row); throw new RuntimeException('Simulated item failure'); }
+}
+try { joma_v2_create_hourly_settlement(new FailingCenterStore($db),1,'2026-10-24','2026-10-24',null,'',$admin); throw new Exception('Expected failure'); }
+catch (RuntimeException $ex) {}
+$rolledBack=db_select_one($db,"SELECT COUNT(*) AS n FROM finance_center_settlements WHERE center_id=1 AND period_start='2026-10-24'");
+same((int)$rolledBack['n'],0,'failed settlement fully rolled back');
 $expenseStore=new JomaV2MysqliExpenseStore($db);
 joma_v2_record_expense($expenseStore,array('key'=>'expense_00000000001','date'=>'2026-10-20','category'=>'اجاره','amount_rial'=>10000,'account_id'=>1),$admin);
 $report=(new JomaV2MysqliReportStore($db))->build('2000-01-01 00:00:00','2100-01-01 00:00:00','2000-01-01','2100-01-01');

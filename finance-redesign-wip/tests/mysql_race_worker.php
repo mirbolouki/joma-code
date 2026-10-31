@@ -1,7 +1,7 @@
 <?php
 /* Test-only worker. It may only write a joma_v2_test_* database. */
 $name=getenv('JOMA_TEST_DATABASE');
-if (!is_string($name) || !preg_match('/^joma_v2_test_[a-z0-9_]+$/D',$name) || getenv('JOMA_TEST_ALLOW_WRITES') !== 'YES') throw new Exception('Refusing non-test database');
+if (!is_string($name) || !preg_match('/^joma_v2_test_[a-z0-9_]+$/D',$name) || getenv('JOMA_TEST_ALLOW_WRITES') !== 'YES' || !in_array(getenv('JOMA_TEST_HOST'), array('127.0.0.1','localhost'), true)) throw new Exception('Refusing non-test database');
 require getenv('JOMA_TEST_DB_HELPERS');
 require __DIR__ . '/../src/record_event.php';
 require __DIR__ . '/../src/storage/mysqli_store.php';

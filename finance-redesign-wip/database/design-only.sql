@@ -131,3 +131,27 @@ CREATE TABLE finance_v2_center_basis_events (
     CONSTRAINT fk_fv2_basis_event_center FOREIGN KEY (center_id) REFERENCES finance_centers(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_basis_event_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- New hourly settlement audit: retain the actual calculation and source rows.
+CREATE TABLE finance_v2_center_settlement_details (
+    settlement_id BIGINT UNSIGNED NOT NULL PRIMARY KEY,
+    time_basis ENUM('ACTUAL','RESERVED') NOT NULL,
+    exact_whole_rial DECIMAL(18,0) NOT NULL,
+    exact_remainder SMALLINT UNSIGNED NOT NULL,
+    exact_denominator SMALLINT UNSIGNED NOT NULL,
+    total_minutes BIGINT UNSIGNED NOT NULL,
+    manual_reason VARCHAR(255) NULL,
+    CONSTRAINT fk_fv2_settlement_detail FOREIGN KEY (settlement_id) REFERENCES finance_center_settlements(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE finance_v2_center_settlement_items (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    settlement_id BIGINT UNSIGNED NOT NULL,
+    appointment_id BIGINT UNSIGNED NOT NULL,
+    minutes INT UNSIGNED NOT NULL,
+    hourly_rate_toman DECIMAL(12,2) NOT NULL,
+    source_charge_event_id BIGINT UNSIGNED NULL,
+    UNIQUE KEY uq_fv2_settlement_item (settlement_id, appointment_id),
+    CONSTRAINT fk_fv2_item_settlement FOREIGN KEY (settlement_id) REFERENCES finance_center_settlements(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_item_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_item_event FOREIGN KEY (source_charge_event_id) REFERENCES finance_v2_events(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

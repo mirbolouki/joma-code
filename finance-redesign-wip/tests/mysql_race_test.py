@@ -3,7 +3,7 @@ import json, os, re, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 name = os.environ.get('JOMA_TEST_DATABASE', '')
-if not re.fullmatch(r'joma_v2_test_[a-z0-9_]+', name) or os.environ.get('JOMA_TEST_ALLOW_WRITES') != 'YES':
+if not re.fullmatch(r'joma_v2_test_[a-z0-9_]+', name) or os.environ.get('JOMA_TEST_ALLOW_WRITES') != 'YES' or os.environ.get('JOMA_TEST_HOST') not in ('127.0.0.1','localhost'):
     raise SystemExit('Refusing non-test database')
 php = os.environ['JOMA_TEST_PHP']
 here = Path(__file__).resolve().parent

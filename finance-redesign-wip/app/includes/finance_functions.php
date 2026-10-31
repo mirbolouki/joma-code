@@ -985,6 +985,8 @@ function finance_default_period_jalali($settlement_period)
  */
 function finance_center_settlement_compute($db, $center_id, $period_start_g, $period_end_g)
 {
+    if (defined('FINANCE_V2_ACTIVE') && FINANCE_V2_ACTIVE === true) return array('ok'=>false,'error'=>'برای مدل جدید از مسیر ثبت تسویهٔ جدید استفاده کنید.');
+
     $center = finance_center_find($db, (int)$center_id);
     if (!$center || $center['status'] !== 'ACTIVE') {
         return array('ok' => false, 'error' => 'مرکزِ موردنظر یافت نشد یا غیرفعال است.');
@@ -1058,7 +1060,7 @@ function finance_center_settlement_compute($db, $center_id, $period_start_g, $pe
 
 /** ثبتِ تسویهٔ جدید (مبلغِ قابل‌پرداخت به‌صورت خودکار محاسبه می‌شود) */
 function finance_settlement_create($db, $center_id, $period_start_j, $period_end_j,
-                                   $actor_person_id, $actor_role_code)
+                                   $actor_person_id, $actor_role_code, $manual_rial = null, $manual_reason = '')
 {
     $center = finance_center_find($db, (int)$center_id);
     if (!$center || $center['status'] !== 'ACTIVE') {
@@ -1081,6 +1083,22 @@ function finance_settlement_create($db, $center_id, $period_start_j, $period_end
     if ($end_g < $start_g) {
         return array('ok' => false, 'error' => 'تاریخِ پایانِ بازه نباید قبل از تاریخِ شروع باشد.');
     }
+    if (defined('FINANCE_V2_ACTIVE') && FINANCE_V2_ACTIVE === true) {
+        require_once __DIR__ . '/finance_v2/center_settlement.php';
+        require_once __DIR__ . '/finance_v2/storage/mysqli_center_settlement_store.php';
+        try {
+            $result = joma_v2_create_hourly_settlement(new JomaV2MysqliCenterSettlementStore($db), (int)$center_id,
+                $start_g, $end_g, $manual_rial, $manual_reason,
+                array('person_id'=>(int)$actor_person_id, 'role'=>$actor_role_code));
+            return array('ok'=>true, 'settlement_id'=>$result['settlement_id'],
+                'amount_due_rial'=>$result['amount_due_rial'], 'detail'=>'محاسبه با مبنای زمان تنظیم‌شده؛ جزئیات ذخیره شد.');
+        } catch (InvalidArgumentException $ex) {
+            return array('ok'=>false, 'error'=>$ex->getMessage());
+        } catch (OverflowException $ex) {
+            return array('ok'=>false, 'error'=>$ex->getMessage());
+        }
+    }
+
     $existing = db_select_one($db,
         "SELECT id FROM finance_center_settlements
           WHERE center_id = ? AND period_start = ? AND period_end = ?",
