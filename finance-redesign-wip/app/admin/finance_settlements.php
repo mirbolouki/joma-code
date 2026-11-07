@@ -155,7 +155,7 @@ try {
     $accounts = finance_accounts_fetch_active($db);
     $late_events = array();
     if (defined('FINANCE_V2_ACTIVE') && FINANCE_V2_ACTIVE===true && defined('FINANCE_V2_PERCENTAGE_EXPERIMENTAL') && FINANCE_V2_PERCENTAGE_EXPERIMENTAL===true) {
-        $late_events=db_select_all($db,"SELECT s.public_id, c.name AS center_name, ev.id AS event_id, ev.event_type, ev.amount_rial, ev.occurred_at FROM finance_v2_percentage_late_events l JOIN finance_center_settlements s ON s.id=l.settlement_id JOIN finance_centers c ON c.id=s.center_id JOIN finance_v2_events ev ON ev.id=l.event_id ORDER BY l.id DESC LIMIT 100");
+        $late_events=db_select_all($db,"SELECT l.id AS late_event_id,s.public_id, c.name AS center_name, ev.id AS event_id, ev.event_type, ev.amount_rial, ev.occurred_at FROM finance_v2_percentage_late_events l JOIN finance_center_settlements s ON s.id=l.settlement_id JOIN finance_centers c ON c.id=s.center_id JOIN finance_v2_events ev ON ev.id=l.event_id ORDER BY l.id DESC LIMIT 100");
     }
 } catch (Exception $ex) {
     $ref = log_system_error('FINANCE_SETTLEMENTS_LIST', $ex);
@@ -184,8 +184,8 @@ require __DIR__ . '/../templates/header.php';
 </div>
 
 <?php if (count($late_events)>0) { ?>
-<div class="alert alert-warning"><strong>گردش‌های ثبت‌شده پس از تسویه نیازمند بررسی و اصلاح‌اند؛ تسویهٔ بعدی این مراکز تا تعیین تکلیف مسدود است.</strong>
-<ul><?php foreach ($late_events as $late) { ?><li>مرکز <?php echo e($late['center_name']); ?>، تسویه <?php echo e($late['public_id']); ?>، گردش شمارهٔ <?php echo (int)$late['event_id']; ?> (<?php echo e($late['event_type']); ?>)، <?php echo e(finance_v2_settlement_display($late['amount_rial'])); ?>، <?php echo e(jalali_display($late['occurred_at'],'datetime')); ?></li><?php } ?></ul></div>
+<div class="alert alert-warning"><strong>گردش‌های ثبت‌شده پس از تسویه نیازمند بررسی و اصلاح‌اند؛ تسویهٔ بعدی این مراکز مسدود است. این فهرست حداکثر ۱۰۰ گردش اخیر را نشان می‌دهد؛ یادداشت بررسی به‌تنهایی مسدودیت را برنمی‌دارد.</strong>
+<ul><?php foreach ($late_events as $late) { ?><li>مرکز <?php echo e($late['center_name']); ?>، تسویه <?php echo e($late['public_id']); ?>، گردش شمارهٔ <?php echo (int)$late['event_id']; ?> (<?php echo e($late['event_type']); ?>)، <?php echo e(finance_v2_settlement_display($late['amount_rial'])); ?>، <?php echo e(jalali_display($late['occurred_at'],'datetime')); ?> — <a href="finance_late_review_v2.php?id=<?php echo (int)$late['late_event_id']; ?>">مشاهده و ثبت یادداشت بررسی</a></li><?php } ?></ul></div>
 <?php } ?>
 <div class="card">
   <div class="card-header">خلاصهٔ تسویه‌ها</div>

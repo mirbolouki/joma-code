@@ -5,6 +5,7 @@ if (!is_string($name)||!preg_match('/^joma_v2_test_[a-z0-9_]+$/D',$name)||getenv
 require getenv('JOMA_TEST_DB_HELPERS');
 require __DIR__.'/../src/rates.php'; require __DIR__.'/../src/request_wallet.php'; require __DIR__.'/../src/percentage_settlement.php';
 require __DIR__.'/../src/storage/mysqli_rate_store.php'; require __DIR__.'/../src/storage/mysqli_request_wallet_store.php';
+require __DIR__.'/../src/percentage_late_review.php'; require __DIR__.'/../src/storage/mysqli_percentage_late_review_store.php';
 require __DIR__.'/../src/storage/mysqli_store.php'; require __DIR__.'/../src/storage/mysqli_percentage_settlement_store.php';
 function now_dt() { return gmdate('Y-m-d H:i:s'); }
 function generate_public_id($prefix) { return $prefix.bin2hex(random_bytes(8)); }
@@ -54,9 +55,26 @@ same((int)$detail['gross_rial'],300000,'base persisted'); same((int)$detail['exa
 $items=db_select_all($db,'SELECT kind FROM finance_v2_percentage_items WHERE settlement_id=? ORDER BY id','i',array($current['settlement_id'])); same(count($items),3,'source items saved');
 // Subsequent same-day cash must not be rejected or silently omitted.
 $lateId=joma_v2_record_event($events,array('key'=>'pct_late_receipt_001','type'=>'RECEIPT','wallet'=>$wallet,'amount_rial'=>5000,'account_id'=>1,'receipt_kind'=>'PAYMENT'),$secretary);
-$late=db_select_one($db,'SELECT settlement_id,event_id FROM finance_v2_percentage_late_events WHERE event_id=?','i',array($lateId));
+$late=db_select_one($db,'SELECT id,settlement_id,event_id FROM finance_v2_percentage_late_events WHERE event_id=?','i',array($lateId));
 same((int)$late['settlement_id'],$current['settlement_id'],'late same-day event flagged for review');
 rejects(function()use($s,$today,$admin){$next=date_add_days($today,1); joma_v2_create_percentage_settlement($s,1,$next,$next,null,'',$admin);},'unresolved late event blocks future settlement');
+// Evidence-only reviews preserve prior settlement amounts and cannot release the block.
+$lateStore=new JomaV2MysqliPercentageLateReviewStore($db);
+$review=array('late_event_id'=>(int)$late['id'],'expected_review_id'=>0,'kind'=>'AGREEMENT_NOTED','reason'=>'synthetic agreement');
+rejects(function()use($lateStore,$review,$secretary){joma_v2_review_percentage_late($lateStore,$review,$secretary);},'review admin only');
+$first=joma_v2_review_percentage_late($lateStore,$review,$admin);
+rejects(function()use($lateStore,$review,$admin){joma_v2_review_percentage_late($lateStore,$review,$admin);},'stale late review');
+$review['expected_review_id']=$first; $review['kind']='INVESTIGATING'; $review['reason']='further review';
+class FailingLateReviewStore extends JomaV2MysqliPercentageLateReviewStore {
+    function appendReview($id,$kind,$reason,$actor) { parent::appendReview($id,$kind,$reason,$actor); throw new RuntimeException('simulated failure'); }
+}
+try { joma_v2_review_percentage_late(new FailingLateReviewStore($db),$review,$admin); throw new Exception('Expected failure'); } catch (RuntimeException $e) {}
+same(count($lateStore->history((int)$late['id'])),1,'failed late review rolled back');
+joma_v2_review_percentage_late($lateStore,$review,$admin);
+$history=$lateStore->history((int)$late['id']); same(count($history),2,'review history append only'); same($history[0]['reason'],'synthetic agreement','original reason retained');
+$after=db_select_one($db,'SELECT amount_due_rial FROM finance_center_settlements WHERE id=?','i',array($current['settlement_id']));
+same((int)$after['amount_due_rial'],25000,'review does not change old settlement');
+rejects(function()use($s,$today,$admin){$next=date_add_days($today,1); joma_v2_create_percentage_settlement($s,1,$next,$next,null,'',$admin);},'review does not discharge late event');
 // An unclassified legacy settlement also gets a conservative warning.
 db_execute($db,"INSERT INTO finance_centers (id,public_id,name,commission_model,commission_percent,created_at) VALUES (2,'C2','Synthetic legacy','PERCENTAGE',10,NOW())");
 db_execute($db,"INSERT INTO rooms (id,public_id,name,created_at,center_id) VALUES (2,'R2','Old center room',NOW(),2)");

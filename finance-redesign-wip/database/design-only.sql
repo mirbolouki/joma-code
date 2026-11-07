@@ -252,3 +252,18 @@ CREATE TABLE finance_v2_percentage_late_events (
     CONSTRAINT fk_fv2_percentage_late_settle FOREIGN KEY (settlement_id) REFERENCES finance_center_settlements(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_percentage_late_event FOREIGN KEY (event_id) REFERENCES finance_v2_events(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Review notes are evidence only: they do not discharge or modify a debt,
+-- nor do they remove the late-event block. A future financial adjustment must
+-- be designed together with payments, balances and reporting.
+CREATE TABLE finance_v2_percentage_late_reviews (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    late_event_id BIGINT UNSIGNED NOT NULL,
+    review_kind VARCHAR(24) NOT NULL,
+    reason VARCHAR(1000) NOT NULL,
+    recorded_by_person_id BIGINT UNSIGNED NOT NULL,
+    recorded_at DATETIME NOT NULL,
+    KEY idx_fv2_late_review_history (late_event_id,id),
+    CONSTRAINT fk_fv2_late_review_event FOREIGN KEY (late_event_id) REFERENCES finance_v2_percentage_late_events(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_late_review_person FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
