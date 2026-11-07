@@ -54,6 +54,45 @@ $pay['key']='center_return_00002'; $pay['amount_rial']=25000; $r=joma_v2_record_
 $base=db_select_one($db,'SELECT amount_due_rial,amount_paid_rial FROM finance_center_settlements WHERE id=?','i',array($settlement));
 same((int)$base['amount_due_rial'],25000,'original principal untouched'); same($base['amount_paid_rial'],null,'legacy payment field untouched');
 same(count($s->balance($settlement)['payments']),4,'all payment entries retained');
+// An append-only revision replaces the agreed delta after payments have
+// occurred. A resulting receivable remains visible and the old data survive.
+$rev=array('key'=>'center_revision_001','late_event_id'=>$late,'expected_revision_id'=>0,'delta_rial'=>15000,'reason'=>'synthetic corrected agreement');
+class FailingCenterRevisionStore extends JomaV2MysqliCenterBalanceStore {
+ function insertResolutionRevision($id,$key,$delta,$reason,$actor) { parent::insertResolutionRevision($id,$key,$delta,$reason,$actor); throw new RuntimeException('simulated'); }
+}
+try { joma_v2_revise_percentage_resolution(new FailingCenterRevisionStore($db),$rev,$admin); throw new Exception('Expected failure'); } catch (RuntimeException $e) {}
+$version=$s->lockResolutionVersion($late); same($version['revision_id'],0,'revision rolled back');
+$r=joma_v2_revise_percentage_resolution($s,$rev,$admin); same($r['balance']['due_rial'],5000,'corrected delta replaces prior'); same($r['balance']['payable_rial'],10000,'prior cash retained'); $revision=$r['id'];
+rejects(function()use($s,$rev,$admin){joma_v2_revise_percentage_resolution($s,$rev,$admin);},'stale decision version');
+$rev['expected_revision_id']=$revision; rejects(function()use($s,$rev,$admin){joma_v2_revise_percentage_resolution($s,$rev,$admin);},'duplicate revision operation');
+$rev['key']='center_revision_002'; $rev['delta_rial']=0; $rev['reason']='second synthetic revision';
+$r=joma_v2_revise_percentage_resolution($s,$rev,$admin); same($r['balance']['due_rial'],-10000,'zero replaces previous delta'); same($r['balance']['receivable_rial'],5000,'negative balance preserved after revision');
+$history=db_select_all($db,'SELECT delta_rial,reason FROM finance_v2_percentage_resolution_revisions WHERE resolution_id=? ORDER BY id','i',array($version['id']));
+same(count($history),2,'both revisions retained'); same((int)$history[0]['delta_rial'],15000,'first revision retained'); same((int)$history[1]['delta_rial'],0,'second revision retained');
+$original=db_select_one($db,'SELECT delta_rial,reason FROM finance_v2_percentage_late_resolutions WHERE id=?','i',array($version['id']));
+same((int)$original['delta_rial'],5000,'original agreement untouched'); same($original['reason'],'synthetic agreement','original reason retained');
+// Incorrectly entered center cash is revised or voided in an audit trail;
+// VOID is not an actual cash RETURN. Restore is another complete version.
+$event=db_select_one($db,"SELECT id,amount_rial FROM finance_v2_center_payment_events WHERE settlement_id=? AND kind='PAYMENT' ORDER BY id LIMIT 1",'i',array($settlement));
+$cashRev=array('key'=>'center_cash_revision_01','payment_event_id'=>(int)$event['id'],'expected_revision_id'=>0,'action'=>'CORRECT','kind'=>'PAYMENT','amount_rial'=>10000,'account_id'=>1,'reason'=>'synthetic correction');
+class FailingCashRevisionStore extends JomaV2MysqliCenterBalanceStore {
+ function insertPaymentRevision($event,$key,$action,$kind,$amount,$account,$reason,$actor) { parent::insertPaymentRevision($event,$key,$action,$kind,$amount,$account,$reason,$actor); throw new RuntimeException('simulated'); }
+}
+try { joma_v2_revise_center_cash(new FailingCashRevisionStore($db),$cashRev,$admin); throw new Exception('Expected failure'); } catch (RuntimeException $e) {}
+same($s->lockPaymentVersion((int)$event['id'])['revision_id'],0,'cash revision rollback');
+$r=joma_v2_revise_center_cash($s,$cashRev,$admin); same($r['balance']['paid_rial'],-10000,'corrected cash replaces original'); same($r['balance']['balance_rial'],0,'corrected balance'); $cashVersion=$r['id'];
+rejects(function()use($s,$cashRev,$admin){joma_v2_revise_center_cash($s,$cashRev,$admin);},'stale cash revision');
+$void=array('key'=>'center_cash_revision_02','payment_event_id'=>(int)$event['id'],'expected_revision_id'=>$cashVersion,'action'=>'VOID','reason'=>'synthetic entry error');
+$r=joma_v2_revise_center_cash($s,$void,$admin); same($r['balance']['paid_rial'],-20000,'void does not insert return'); same($r['balance']['payable_rial'],10000,'voided entry excluded');
+$cashRev['key']='center_cash_revision_03'; $cashRev['expected_revision_id']=$r['id']; $cashRev['kind']='RETURN'; $cashRev['reason']='synthetic restore';
+// Preserve the same historically recorded account even if now inactive.
+db_execute($db,"UPDATE finance_bank_accounts SET status='INACTIVE' WHERE id=1");
+$r=joma_v2_revise_center_cash($s,$cashRev,$admin);
+db_execute($db,"UPDATE finance_bank_accounts SET status='ACTIVE' WHERE id=1"); same($r['balance']['paid_rial'],-30000,'restored corrected direction'); same($r['balance']['payable_rial'],20000,'restored balance');
+$history=db_select_all($db,'SELECT action,amount_rial,reason FROM finance_v2_center_payment_revisions WHERE payment_event_id=? ORDER BY id','i',array((int)$event['id']));
+same(count($history),3,'all cash revisions retained'); same($history[1]['action'],'VOID','void retained');
+$original=db_select_one($db,'SELECT kind,amount_rial FROM finance_v2_center_payment_events WHERE id=?','i',array((int)$event['id']));
+same($original['kind'],'PAYMENT','original direction untouched'); same((int)$original['amount_rial'],15000,'original cash untouched');
 // Important: V2 settlement guard still remains blocked until the adjusted
 // balances, payment screens and reporting are integrated together.
 echo "Experimental center cash and signed adjustment integration passed (synthetic DB only).\n";

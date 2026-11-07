@@ -303,3 +303,40 @@ CREATE TABLE finance_v2_center_payment_events (
     CONSTRAINT fk_fv2_center_payment_account FOREIGN KEY (account_id) REFERENCES finance_bank_accounts(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_center_payment_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- An agreed late-event effect can itself be corrected without rewriting its
+-- original value or earlier corrections. The latest version replaces (does
+-- not add to) the preceding agreed delta for that same resolution.
+CREATE TABLE finance_v2_percentage_resolution_revisions (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    resolution_id BIGINT UNSIGNED NOT NULL,
+    operation_key VARCHAR(100) NOT NULL,
+    delta_rial DECIMAL(18,0) NOT NULL,
+    reason VARCHAR(255) NOT NULL,
+    recorded_by_person_id BIGINT UNSIGNED NOT NULL,
+    recorded_at DATETIME NOT NULL,
+    UNIQUE KEY uq_fv2_resolution_revision_operation (operation_key),
+    KEY idx_fv2_resolution_revision_history (resolution_id,id),
+    CONSTRAINT fk_fv2_resolution_revision_parent FOREIGN KEY (resolution_id) REFERENCES finance_v2_percentage_late_resolutions(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_resolution_revision_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Corrections of incorrectly entered cash records are not real repayments.
+-- They append an audited version; VOID only marks the entry as erroneous.
+CREATE TABLE finance_v2_center_payment_revisions (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    payment_event_id BIGINT UNSIGNED NOT NULL,
+    operation_key VARCHAR(100) NOT NULL,
+    action ENUM('CORRECT','VOID') NOT NULL,
+    kind ENUM('PAYMENT','RETURN') NULL,
+    amount_rial DECIMAL(18,0) NULL,
+    account_id BIGINT UNSIGNED NULL,
+    reason VARCHAR(255) NOT NULL,
+    recorded_by_person_id BIGINT UNSIGNED NOT NULL,
+    recorded_at DATETIME NOT NULL,
+    UNIQUE KEY uq_fv2_center_payment_revision_operation (operation_key),
+    KEY idx_fv2_center_payment_revision_history (payment_event_id,id),
+    CONSTRAINT fk_fv2_center_payment_revision_parent FOREIGN KEY (payment_event_id) REFERENCES finance_v2_center_payment_events(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_center_payment_revision_account FOREIGN KEY (account_id) REFERENCES finance_bank_accounts(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_center_payment_revision_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

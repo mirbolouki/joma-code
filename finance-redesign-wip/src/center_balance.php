@@ -52,6 +52,36 @@ function joma_v2_resolve_percentage_late($store,$input,$actor) {
         $store->commit(); return array('id'=>$id,'balance'=>$balance);
     } catch (Throwable $ex) { $store->rollback(); throw $ex; }
 }
+/** Correct the agreed amount by appending a new version, never an extra delta.
+ * expected_revision_id=0 refers to the initial resolution. A correction may
+ * create a payable or receivable even after a prior center payment. */
+function joma_v2_revise_percentage_resolution($store,$input,$actor) {
+    $reason=joma_v2_center_finance_authorize($input,$actor);
+    $late=joma_v2_positive_id(isset($input['late_event_id'])?$input['late_event_id']:null,'Late event');
+    $delta=isset($input['delta_rial'])?$input['delta_rial']:null;
+    if (!is_int($delta) || $delta < -999999999999999999 || $delta > 999999999999999999) throw new InvalidArgumentException('مبلغ اصلاح نامعتبر است.');
+    $expected=isset($input['expected_revision_id'])?$input['expected_revision_id']:null;
+    if (!is_int($expected) || $expected<0) throw new InvalidArgumentException('نسخهٔ اصلاح نامعتبر است.');
+    $store->begin();
+    try {
+        $store->lockLedger();
+        $row=$store->lockLate($late);
+        if (!$row) throw new InvalidArgumentException('گردش دیرهنگام یافت نشد.');
+        $settlement=(int)$row['settlement_id'];
+        $store->lockEligibleSettlement($settlement);
+        $resolution=$store->lockResolutionVersion($late);
+        if (!$resolution) throw new InvalidArgumentException('ابتدا باید تصمیم اصلی ثبت شود.');
+        if ($resolution['revision_id']!==$expected) throw new InvalidArgumentException('تصمیم تغییر کرده است؛ صفحه را دوباره باز کنید.');
+        if ($store->resolutionOperationExists($input['key'])) throw new InvalidArgumentException('عملیات تکراری است.');
+        if ($resolution['delta_rial']===$delta) throw new InvalidArgumentException('مبلغ جدید با نسخهٔ فعلی یکسان است.');
+        $state=$store->balance($settlement); $id=$resolution['id'];
+        if (!array_key_exists($id,$state['adjustments']) || $state['adjustments'][$id]!==$resolution['delta_rial']) throw new UnexpectedValueException('Resolution balance mismatch');
+        $state['adjustments'][$id]=$delta;
+        $balance=joma_v2_center_balance($state['principal'],$state['adjustments'],$state['payments']);
+        $revision=$store->insertResolutionRevision($id,$input['key'],$delta,$reason,$actor['person_id']);
+        $store->commit(); return array('id'=>$revision,'balance'=>$balance);
+    } catch (Throwable $ex) { $store->rollback(); throw $ex; }
+}
 /** A payment/return is a real separate cash entry; unresolved flags for any
  * settlement of the same center block it, including unclassified legacy flags.
  * A negative balance is a receivable and must not be hidden as zero. */
@@ -76,5 +106,49 @@ function joma_v2_record_center_cash($store,$input,$actor) {
         $balance=joma_v2_center_balance($state['principal'],$state['adjustments'],$state['payments']);
         $id=$store->insertPayment($settlement,$input['key'],$kind,$amount,$account,$reason,$actor['person_id']);
         $store->commit(); return array('id'=>$id,'balance'=>$balance);
+    } catch (Throwable $ex) { $store->rollback(); throw $ex; }
+}
+
+/** Correct or void an erroneous entry, without implying money moved. A VOID
+ * can itself be corrected later with a new complete version and a reason. */
+function joma_v2_revise_center_cash($store,$input,$actor) {
+    $reason=joma_v2_center_finance_authorize($input,$actor);
+    $event=joma_v2_positive_id(isset($input['payment_event_id'])?$input['payment_event_id']:null,'Payment event');
+    $expected=isset($input['expected_revision_id'])?$input['expected_revision_id']:null;
+    if (!is_int($expected) || $expected<0) throw new InvalidArgumentException('نسخهٔ پرداخت نامعتبر است.');
+    $action=isset($input['action'])?$input['action']:null;
+    if (!in_array($action,array('CORRECT','VOID'),true)) throw new InvalidArgumentException('نوع اصلاح نامعتبر است.');
+    $kind=null; $amount=null; $account=null;
+    if ($action==='CORRECT') {
+        $kind=isset($input['kind'])?$input['kind']:null;
+        if (!in_array($kind,array('PAYMENT','RETURN'),true)) throw new InvalidArgumentException('نوع گردش نامعتبر است.');
+        $amount=isset($input['amount_rial'])?$input['amount_rial']:null; joma_v2_rial($amount);
+        $account=joma_v2_positive_id(isset($input['account_id'])?$input['account_id']:null,'Account');
+    }
+    $store->begin();
+    try {
+        $store->lockLedger();
+        $row=$store->lockPaymentVersion($event);
+        if (!$row) throw new InvalidArgumentException('گردش پرداخت یافت نشد.');
+        $settlement=$row['settlement_id'];
+        $store->lockEligibleSettlement($settlement);
+        if ($row['revision_id']!==$expected) throw new InvalidArgumentException('پرداخت تغییر کرده است؛ صفحه را دوباره باز کنید.');
+        if ($store->paymentOperationExists($input['key'])) throw new InvalidArgumentException('عملیات تکراری است.');
+        if ($action==='VOID' && $row['action']==='VOID') throw new InvalidArgumentException('این ثبت قبلاً باطل شده است.');
+        if ($action==='CORRECT') {
+            // Keeping the previously recorded account is valid even if it has
+            // since been deactivated; changing to another account requires an
+            // active account. This also applies when restoring a voided entry.
+            if ($account!==$row['account_id'] && !$store->accountActive($account)) throw new InvalidArgumentException('حساب فعال نیست.');
+            if ($row['action']!=='VOID' && $row['kind']===$kind && $row['amount_rial']===$amount && $row['account_id']===$account) throw new InvalidArgumentException('این اصلاح تغییری ایجاد نمی‌کند.');
+        }
+        $state=$store->balance($settlement);
+        if ($row['action']!=='VOID' && !array_key_exists($event,$state['payments'])) throw new UnexpectedValueException('Payment balance mismatch');
+        if ($row['action']==='VOID' && array_key_exists($event,$state['payments'])) throw new UnexpectedValueException('Void payment balance mismatch');
+        if ($action==='VOID') unset($state['payments'][$event]);
+        else $state['payments'][$event]=array('kind'=>$kind,'amount_rial'=>$amount);
+        $balance=joma_v2_center_balance($state['principal'],$state['adjustments'],$state['payments']);
+        $revision=$store->insertPaymentRevision($event,$input['key'],$action,$kind,$amount,$account,$reason,$actor['person_id']);
+        $store->commit(); return array('id'=>$revision,'balance'=>$balance);
     } catch (Throwable $ex) { $store->rollback(); throw $ex; }
 }
