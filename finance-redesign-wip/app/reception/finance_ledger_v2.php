@@ -1,14 +1,15 @@
 <?php
 /* DRAFT ONLY: Requires migration, integration and a complete security review. */
 require_once __DIR__ . '/../includes/bootstrap.php';
+$db = $GLOBALS['db'];
+auth_require_active_session($db);
+require_role(array(ROLE_SECRETARY, ROLE_ADMIN));
+if (!defined('FINANCE_V2_ACTIVE') || FINANCE_V2_ACTIVE!==true) { http_response_code(404); exit; }
 require_once __DIR__ . '/../includes/finance_v2/money.php';
 require_once __DIR__ . '/../includes/finance_v2/record_event.php';
 require_once __DIR__ . '/../includes/finance_v2/request_wallet.php';
 require_once __DIR__ . '/../includes/finance_v2/storage/mysqli_store.php';
 require_once __DIR__ . '/../includes/finance_v2/storage/mysqli_request_wallet_store.php';
-$db = $GLOBALS['db'];
-auth_require_active_session($db);
-require_role(array(ROLE_SECRETARY, ROLE_ADMIN));
 function ledger_v2_id($value) {
     if (!is_string($value) || !preg_match('/^[1-9][0-9]{0,17}$/D', $value)) throw new InvalidArgumentException('Invalid identifier');
     return (int)$value;

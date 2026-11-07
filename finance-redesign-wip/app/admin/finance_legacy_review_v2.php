@@ -1,11 +1,11 @@
 <?php
 /* DRAFT ONLY: not installed. Center choices require independent evidence. */
 require_once __DIR__.'/../includes/bootstrap.php';
+$db=$GLOBALS['db']; auth_require_active_session($db); require_role(array(ROLE_ADMIN));
+if (!defined('FINANCE_V2_ACTIVE') || FINANCE_V2_ACTIVE!==true) { http_response_code(404); exit; }
 require_once __DIR__.'/../includes/finance_v2/money.php';
 require_once __DIR__.'/../includes/finance_v2/legacy_center_review.php';
 require_once __DIR__.'/../includes/finance_v2/storage/mysqli_legacy_center_review_store.php';
-$db=$GLOBALS['db']; auth_require_active_session($db); require_role(array(ROLE_ADMIN));
-if (!defined('FINANCE_V2_ACTIVE') || FINANCE_V2_ACTIVE!==true) { http_response_code(404); exit; }
 function legacy_review_id($v,$zero=false) {
     if (!is_string($v) || !preg_match($zero?'/^(0|[1-9][0-9]{0,17})$/D':'/^[1-9][0-9]{0,17}$/D',$v)) throw new InvalidArgumentException('Invalid identifier');
     return (int)$v;

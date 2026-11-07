@@ -23,6 +23,23 @@ function joma_v2_report_add($current, $delta)
     return $current + $delta;
 }
 
+/** Sum a set of expense versions against local dates. The caller decides
+ * which version was known at the cutoff; a void is omitted by the caller. */
+function joma_v2_report_expenses($expenses,$start_local,$end_local) {
+    joma_v2_report_time($start_local,true); joma_v2_report_time($end_local,true);
+    if ($start_local >= $end_local) throw new InvalidArgumentException('Invalid expense report range');
+    $total=0; $ids=array();
+    foreach ($expenses as $expense) {
+        if (!is_array($expense) || !isset($expense['id'], $expense['date'], $expense['amount']) ||
+            !is_int($expense['id']) || $expense['id'] <= 0 || isset($ids[$expense['id']]) ||
+            !is_int($expense['amount']) || $expense['amount'] <= 0) throw new InvalidArgumentException('Invalid report expense');
+        $ids[$expense['id']]=true;
+        $date=joma_v2_report_time($expense['date'],true);
+        if ($date >= $start_local && $date < $end_local) $total=joma_v2_report_add($total,$expense['amount']);
+    }
+    return $total;
+}
+
 /**
  * Inputs: wallets keyed by string ('w1'), each with kind REQUEST/APPOINTMENT;
  * events in (occurred_at,id) order, fields id, type, wallet, amount, occurred_at,
@@ -93,15 +110,7 @@ function joma_v2_report_build($wallets, $events, $expenses, $start_utc, $end_utc
             if ($in_period) $result['session_charge_changes_rial'] = joma_v2_report_add($result['session_charge_changes_rial'], $amount - $old);
         }
     }
-    $expense_ids = array();
-    foreach ($expenses as $expense) {
-        if (!is_array($expense) || !isset($expense['id'], $expense['date'], $expense['amount']) ||
-            !is_int($expense['id']) || $expense['id'] <= 0 || isset($expense_ids[$expense['id']]) ||
-            !is_int($expense['amount']) || $expense['amount'] <= 0) throw new InvalidArgumentException('Invalid report expense');
-        $expense_ids[$expense['id']] = true;
-        $date = joma_v2_report_time($expense['date'], true);
-        if ($date >= $start_local && $date < $end_local) $result['expenses_rial'] = joma_v2_report_add($result['expenses_rial'], $expense['amount']);
-    }
+    $result['expenses_rial'] = joma_v2_report_expenses($expenses,$start_local,$end_local);
     $result['net_cash_rial'] = joma_v2_report_add($result['cash_received_rial'], -$result['cash_refunded_rial']);
     foreach ($balances as $balance) {
         $charge = $balance['charge'] === null ? 0 : $balance['charge'];

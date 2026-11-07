@@ -50,4 +50,7 @@ same($r['undated_invoiced_count'],1,'missing scheduled date is flagged');
 same($r['undated_actual_session_count'],1,'missing actual date flagged without guessing');
 rejects(function(){joma_v2_report_add(PHP_INT_MAX,1);},'positive overflow');
 rejects(function(){joma_v2_report_add(PHP_INT_MIN,-1);},'negative overflow');
+same(joma_v2_report_expenses($expenses,'2026-02-01','2026-03-01'),500,'standalone expense sum');
+rejects(function()use($expenses){joma_v2_report_expenses(array($expenses[0],$expenses[0]),'2026-02-01','2026-03-01');},'duplicate expense versions');
+rejects(function()use($expenses){joma_v2_report_expenses($expenses,'2026-03-01','2026-02-01');},'invalid expense range');
 echo "Financial report calculation tests passed (new-ledger only).\n";

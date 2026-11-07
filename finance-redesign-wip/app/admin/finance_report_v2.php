@@ -1,11 +1,12 @@
 <?php
 /* DRAFT ONLY. Requires integration, migration and MySQL/browser tests. */
 require_once __DIR__ . '/../includes/bootstrap.php';
-require_once __DIR__ . '/../includes/finance_v2/money.php';
-require_once __DIR__ . '/../includes/finance_v2/storage/mysqli_report_store.php';
 $db = $GLOBALS['db'];
 auth_require_active_session($db);
 require_role(array(ROLE_ADMIN));
+if (!defined('FINANCE_V2_ACTIVE') || FINANCE_V2_ACTIVE!==true) { http_response_code(404); exit; }
+require_once __DIR__ . '/../includes/finance_v2/money.php';
+require_once __DIR__ . '/../includes/finance_v2/storage/mysqli_report_store.php';
 $default = finance_default_period_jalali('MONTHLY');
 $from_j = $default['start_j']; $to_j = $default['end_j'];
 $warning = '';
@@ -44,7 +45,8 @@ require __DIR__ . '/../templates/header.php';
 <div class="item-card">استردادها: <strong><?php echo e(report_v2_money($report['cash_refunded_rial'])); ?></strong></div>
 <div class="item-card">دریافت خالص پیش از هزینه‌ها: <strong><?php echo e(report_v2_money($report['net_cash_rial'])); ?></strong></div>
 <div class="item-card">تغییر خالص صورتحساب‌های ثبت یا اصلاح‌شده در بازه: <strong><?php echo e(report_v2_money($report['session_charge_changes_rial'])); ?></strong></div>
-<div class="item-card">هزینه‌های عمومی بر اساس تاریخ هزینه: <strong><?php echo e(report_v2_money($report['expenses_rial'])); ?></strong></div>
+<div class="item-card">هزینه‌های عمومی بازه با آخرین اصلاحات موجود: <strong><?php echo e(report_v2_money($report['expenses_rial'])); ?></strong></div>
+<div class="item-card">هزینه‌های عمومی بازه طبق اطلاعات ثبت‌شده تا پایان بازه: <strong><?php echo e(report_v2_money($report['expenses_as_of_end_rial'])); ?></strong></div>
 </div></div></div>
 <div class="card"><div class="card-header">جلسات و مانده‌ها تا پایان بازه</div><div class="card-body"><div class="item-list">
 <div class="item-card">صورتحساب‌های ثبت‌شده تا پایان بازه برای جلسات با <strong>تاریخ واقعی ثبت‌شده</strong> در بازه: <strong><?php echo e(report_v2_money($report['actual_session_charges_rial'])); ?></strong></div>
@@ -52,7 +54,7 @@ require __DIR__ . '/../templates/header.php';
 <div class="item-card">اعتبار درخواست‌ها: <strong><?php echo e(report_v2_money($report['request_credit_rial'])); ?></strong></div>
 <div class="item-card">اعتبار نوبت‌ها: <strong><?php echo e(report_v2_money($report['appointment_credit_rial'])); ?></strong></div>
 <div class="item-card">بدهی نوبت‌های صورتحساب‌شده: <strong><?php echo e(report_v2_money($report['appointment_due_rial'])); ?></strong></div>
-</div><p>تاریخ برنامه‌ریزی‌شده لزوماً تاریخ واقعی برگزاری نیست. صورتحساب‌های ثبت‌شده بعد از پایان بازه در مبلغ فوق لحاظ نمی‌شوند؛ هزینه‌های عمومی بر اساس تاریخ واردشده و آخرین اصلاح‌های موجود گزارش می‌شوند؛ حتی اگر اصلاح بعد از پایان بازه ثبت شده باشد. هزینه‌های ابطال‌شده در جمع نیستند.</p>
+</div><p>تاریخ برنامه‌ریزی‌شده لزوماً تاریخ واقعی برگزاری نیست. صورتحساب‌های ثبت‌شده بعد از پایان بازه در مبلغ فوق لحاظ نمی‌شوند؛ برای هزینه‌ها دو جمع جدا نمایش داده می‌شود: اولی آخرین اصلاح‌های موجود را در نظر می‌گیرد؛ دومی فقط ثبت‌ها و اصلاح‌های پیش از پایان بازه را، بر اساس زمان ثبت سیستم، نشان می‌دهد. تاریخ هزینه در هر دو جمع ملاک تعلق به بازه است. ابطالِ ثبت اشتباه در زمان مؤثر خود از جمع مربوط حذف می‌شود و استرداد واقعی وجه نیست. این تصویر تاریخی مبتنی بر ساعت سیستم است، نه زمان قطعی ثبت تراکنش در پایگاه‌داده.</p>
 <?php if ($report['undated_actual_session_count'] > 0) { ?><p class="alert alert-warning">تعداد <?php echo e(to_persian_digits($report['undated_actual_session_count'])); ?> صورتحساب تاریخ واقعی ثبت‌شده ندارند و در جمع جلسات واقعی لحاظ نشده‌اند.</p><?php } ?>
 <?php if ($report['undated_invoiced_count'] > 0) { ?><p class="alert alert-warning">تعداد <?php echo e(to_persian_digits($report['undated_invoiced_count'])); ?> صورتحساب فاقد تاریخ نوبت در جمع جلسات قرار نگرفته است.</p><?php } ?>
 </div></div>

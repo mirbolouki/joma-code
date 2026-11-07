@@ -1,9 +1,10 @@
 <?php
 /* DRAFT ONLY: does not update old settlement calculations. */
 require_once __DIR__ . '/../includes/bootstrap.php';
+$db=$GLOBALS['db']; auth_require_active_session($db); require_role(array(ROLE_ADMIN));
+if (!defined('FINANCE_V2_ACTIVE') || FINANCE_V2_ACTIVE!==true) { http_response_code(404); exit; }
 require_once __DIR__ . '/../includes/finance_v2/center_basis.php';
 require_once __DIR__ . '/../includes/finance_v2/storage/mysqli_center_basis_store.php';
-$db=$GLOBALS['db']; auth_require_active_session($db); require_role(array(ROLE_ADMIN));
 $error='';
 if ($_SERVER['REQUEST_METHOD']==='POST') {
     csrf_check();
