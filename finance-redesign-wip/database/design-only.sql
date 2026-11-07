@@ -267,3 +267,39 @@ CREATE TABLE finance_v2_percentage_late_reviews (
     CONSTRAINT fk_fv2_late_review_event FOREIGN KEY (late_event_id) REFERENCES finance_v2_percentage_late_events(id) ON DELETE RESTRICT,
     CONSTRAINT fk_fv2_late_review_person FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Experimental financial resolution of late percentage events. The manually
+-- agreed signed delta belongs to the original new percentage settlement;
+-- old settlement records are never rewritten. This is not an installer.
+CREATE TABLE finance_v2_percentage_late_resolutions (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    late_event_id BIGINT UNSIGNED NOT NULL,
+    operation_key VARCHAR(100) NOT NULL,
+    delta_rial DECIMAL(18,0) NOT NULL,
+    reason VARCHAR(255) NOT NULL,
+    recorded_by_person_id BIGINT UNSIGNED NOT NULL,
+    recorded_at DATETIME NOT NULL,
+    UNIQUE KEY uq_fv2_late_resolution_event (late_event_id),
+    UNIQUE KEY uq_fv2_late_resolution_operation (operation_key),
+    CONSTRAINT fk_fv2_late_resolution_event FOREIGN KEY (late_event_id) REFERENCES finance_v2_percentage_late_events(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_late_resolution_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Cash movements with a center are separate entries, not overwrites of the
+-- legacy amount_paid_rial field. RETURN means money received from the center.
+CREATE TABLE finance_v2_center_payment_events (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    settlement_id BIGINT UNSIGNED NOT NULL,
+    operation_key VARCHAR(100) NOT NULL,
+    kind ENUM('PAYMENT','RETURN') NOT NULL,
+    amount_rial DECIMAL(18,0) NOT NULL,
+    account_id BIGINT UNSIGNED NOT NULL,
+    reason VARCHAR(255) NOT NULL,
+    recorded_by_person_id BIGINT UNSIGNED NOT NULL,
+    recorded_at DATETIME NOT NULL,
+    UNIQUE KEY uq_fv2_center_payment_operation (operation_key),
+    KEY idx_fv2_center_payment_settlement (settlement_id,id),
+    CONSTRAINT fk_fv2_center_payment_settlement FOREIGN KEY (settlement_id) REFERENCES finance_center_settlements(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_center_payment_account FOREIGN KEY (account_id) REFERENCES finance_bank_accounts(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_fv2_center_payment_actor FOREIGN KEY (recorded_by_person_id) REFERENCES persons(id) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

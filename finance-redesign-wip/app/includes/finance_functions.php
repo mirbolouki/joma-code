@@ -1184,6 +1184,12 @@ function finance_settlement_validate_payment($form, $amount_due_rial)
 function finance_settlement_update_payment($db, $settlement_id, $data,
                                            $actor_person_id, $actor_role_code)
 {
+    // The legacy form overwrites a single amount and cannot represent signed
+    // adjustments or payment history. Never use it while V2 is active; the
+    // replacement is not yet wired and must not be bypassed by a direct POST.
+    if (defined('FINANCE_V2_ACTIVE') && FINANCE_V2_ACTIVE === true) {
+        return array('ok'=>false, 'error'=>'ثبت پرداخت تسویه در مدل جدید هنوز فعال نیست؛ تغییر اطلاعات قبلی مسدود است.');
+    }
     $existing = finance_settlement_find($db, (int)$settlement_id);
     if (!$existing) {
         return array('ok' => false, 'error' => 'تسویهٔ موردنظر یافت نشد.');

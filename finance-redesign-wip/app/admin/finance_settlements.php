@@ -66,7 +66,7 @@ if ($default_center_id > 0) {
     $form['period_end'] = $def_period['end_j'];
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['edit'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['edit']) && !(defined('FINANCE_V2_ACTIVE') && FINANCE_V2_ACTIVE === true)) {
     try {
         $edit_settlement = finance_settlement_find($db, $_GET['edit']);
     } catch (Exception $ex) {
@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $check = finance_settlement_validate_payment($_POST, $target['amount_due_rial']);
             if (!$check['ok']) {
                 $errors = $check['errors'];
-                $edit_settlement = $target;
+                if (!(defined('FINANCE_V2_ACTIVE') && FINANCE_V2_ACTIVE === true)) $edit_settlement = $target;
             } else {
                 $result = finance_settlement_update_payment($db, (int)$target['id'], $check,
                     $actor_person_id, $actor_role_code);
@@ -174,7 +174,7 @@ require __DIR__ . '/../templates/header.php';
 
 <div class="alert alert-info">
   <?php if (defined('FINANCE_V2_ACTIVE') && FINANCE_V2_ACTIVE === true) { ?>
-  تسویهٔ ساعتی بر اساس مبنای واقعی یا رزروشدهٔ هر مرکز حساب می‌شود و زمان نامشخص حدس زده نمی‌شود. <?php if (defined('FINANCE_V2_PERCENTAGE_EXPERIMENTAL') && FINANCE_V2_PERCENTAGE_EXPERIMENTAL===true) { ?>تسویهٔ درصدی صرفاً به‌صورت آزمایشی فعال است؛ استرداد و انتقال بین نوبت‌ها به تصمیم دستی نیاز دارند.<?php } else { ?>تسویهٔ درصدی جدید هنوز برای استفاده فعال نشده است.<?php } ?>
+  تسویهٔ ساعتی بر اساس مبنای واقعی یا رزروشدهٔ هر مرکز حساب می‌شود و زمان نامشخص حدس زده نمی‌شود. ثبت پرداخت مرکز در مدل جدید هنوز فعال نیست و فرم بازنویسی پرداخت قدیمی مسدود است. <?php if (defined('FINANCE_V2_PERCENTAGE_EXPERIMENTAL') && FINANCE_V2_PERCENTAGE_EXPERIMENTAL===true) { ?>تسویهٔ درصدی صرفاً به‌صورت آزمایشی فعال است؛ استرداد و انتقال بین نوبت‌ها به تصمیم دستی نیاز دارند.<?php } else { ?>تسویهٔ درصدی جدید هنوز برای استفاده فعال نشده است.<?php } ?>
   <?php } else { ?>
   مبلغِ قابل‌پرداخت به هر مرکز <strong>خودکار</strong> محاسبه می‌شود:
   مرکزِ <strong>درصدی</strong> → درصد × مجموعِ پرداخت‌های «پرداخت‌شده»ِ جلساتِ اتاق‌های آن مرکز در بازه،
@@ -345,8 +345,10 @@ require __DIR__ . '/../templates/header.php';
                 <span class="badge <?php echo $st['class']; ?>"><?php echo $st['label']; ?></span>
               </td>
               <td data-label="عملیات">
+                <?php if (!(defined('FINANCE_V2_ACTIVE') && FINANCE_V2_ACTIVE === true)) { ?>
                 <a class="btn btn-sm btn-secondary"
                    href="finance_settlements.php?edit=<?php echo e($s['public_id']); ?>">💰 ثبت پرداخت</a>
+                <?php } else { ?>فعلاً غیرفعال<?php } ?>
               </td>
             </tr>
           <?php } ?>
