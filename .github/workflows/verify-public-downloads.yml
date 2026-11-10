@@ -1,0 +1,29 @@
+name: Verify public handoff downloads
+on:
+  push:
+    branches:
+      - arena/c1bf60e0-joma-code
+    paths:
+      - .github/workflows/verify-public-downloads.yml
+permissions: {}
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download public URLs without credentials and verify SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://github.com/mirbolouki/joma-code/raw/38aba795fa9e162d9f80ccb7d34612b690f3e44b'
+          check() {
+            local path="$1" digest="$2" dest
+            dest="$(mktemp)"
+            curl --fail --location --silent --show-error --retry 2 "$base/$path" --output "$dest"
+            echo "$digest  $dest" | sha256sum --check
+            rm -f "$dest"
+          }
+          check release/joma-owl-assets-v2.0.0.zip cf6ef0c69898ed938a55ec3e0de2b38d593a60aeb66ef2002eedd0455a0586e9
+          check release/joma-owl-test2-integration-v2.1.0.zip 9d01d7ea5bf8cdf256b8268aef02ef5904978af1f886b48bf5373b1f91b7ae66
+          check release/joma-owl-documentation-v2.1.0.zip 217ce99a65d756c31135ad7f10ef86f10e2349e93cfb425ce853308eea09b9c8
+          check release/SHA256SUMS-v2.1.0 a9f4610ce741a5740a88648d2552f0dc3da78acc5077e607f074fe3a04f64a0b
+          check docs/integration-status-v2.1-fa.md a47813a159ab28926ee383189a7c206de679109df56e5dff9706e08dd38d7042
