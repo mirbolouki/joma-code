@@ -35,3 +35,5 @@ jobs:
           check release/joma-guide-conversation-v3.zip 558d1b040561745295880881c0f6ce0e4c756ff20f8eac00266d22b9d7b47680
           base='https://github.com/mirbolouki/joma-code/raw/06208d0b878619e446d56658bfc753c73bc48c53'
           check release/joma-guide-experience-v4.1.zip 8b88e3947c0d143a378188aa00d96d36b87ebe71c2c212b1e0c8b5459170f4ca
+          base='https://github.com/mirbolouki/joma-code/raw/6c71ff0d04b8d2c5f4272406a364bf084a86e12a'
+          check release/joma-site-readiness-report-v1.0.zip f88a27f3326aca81a0a2edc14e7bea3ff4f2f239ba0d67426e80127aad090e9e
