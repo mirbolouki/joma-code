@@ -27,3 +27,5 @@ jobs:
           check release/joma-owl-documentation-v2.1.0.zip 217ce99a65d756c31135ad7f10ef86f10e2349e93cfb425ce853308eea09b9c8
           check release/SHA256SUMS-v2.1.0 a9f4610ce741a5740a88648d2552f0dc3da78acc5077e607f074fe3a04f64a0b
           check docs/integration-status-v2.1-fa.md a47813a159ab28926ee383189a7c206de679109df56e5dff9706e08dd38d7042
+          base='https://github.com/mirbolouki/joma-code/raw/6b23076181e8a084a2ded3b8d7dca665cbce57d6'
+          check release/joma-guide-mvp-preview.zip 694dfd0bce33396a0835492b39c2809372b35d2361ac7d1d5ddcb52326ab5fb0
