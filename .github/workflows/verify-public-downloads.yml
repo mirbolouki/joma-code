@@ -29,3 +29,5 @@ jobs:
           check docs/integration-status-v2.1-fa.md a47813a159ab28926ee383189a7c206de679109df56e5dff9706e08dd38d7042
           base='https://github.com/mirbolouki/joma-code/raw/6b23076181e8a084a2ded3b8d7dca665cbce57d6'
           check release/joma-guide-mvp-preview.zip 694dfd0bce33396a0835492b39c2809372b35d2361ac7d1d5ddcb52326ab5fb0
+          base='https://github.com/mirbolouki/joma-code/raw/2f60ddd956dfbef582e247e215a0ea3ef61c3a4f'
+          check release/joma-guide-mvp-interactive-v2.zip 3cfab6fe02111d13937e2847cd01529ec9453f3b1eec333f2c25b162a940fc0a
