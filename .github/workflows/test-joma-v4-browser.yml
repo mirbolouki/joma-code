@@ -19,8 +19,8 @@ jobs:
       - name: Install isolated browser test dependencies
         run: |
           mkdir -p /tmp/joma-browser-test
-          npm install --prefix /tmp/joma-browser-test playwright@1.56.1
-          /tmp/joma-browser-test/node_modules/.bin/playwright install --with-deps chromium
+          npm install --prefix /tmp/joma-browser-test playwright-core@1.56.1 > /tmp/joma-npm.log 2>&1 || { echo "::error::npm setup failed: $(tail -c 500 /tmp/joma-npm.log | tr '\n' ' ')"; exit 1; }
+          test -x /usr/bin/google-chrome || { echo "::error::Chrome not found"; exit 1; }
       - name: Test desktop, mobile viewport and reduced motion
         shell: bash
         run: |
