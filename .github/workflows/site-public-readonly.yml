@@ -1,0 +1,35 @@
+name: Read-only public homepage fingerprint
+on:
+  push:
+    branches: [arena/c1bf60e0-joma-code]
+    paths: [.github/workflows/site-public-readonly.yml]
+permissions: {}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read public homepage only and report non-sensitive metadata
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import urllib.request,re,html
+          try:
+              request=urllib.request.Request('https://mirbolouki.com/',headers={'User-Agent':'Mozilla/5.0 (compatible; public homepage review)'})
+              with urllib.request.urlopen(request,timeout=20) as r:
+                  data=r.read(2000000).decode('utf-8','replace')
+                  print('::notice::Public homepage HTTP '+str(r.status))
+                  print('::notice::X-Powered-By disclosed: '+('yes' if r.headers.get('X-Powered-By') else 'no'))
+                  print('::notice::CSP header present: '+('yes' if r.headers.get('Content-Security-Policy') else 'no'))
+                  patterns=[r'/sites/(?:all|default)/themes/([A-Za-z0-9_-]+)/',r'/themes/([A-Za-z0-9_-]+)/']
+                  found=sorted(set(x for pattern in patterns for x in re.findall(pattern,data,re.I)))
+                  print('::notice::Public theme asset names: '+(', '.join(found[:8]) if found else 'not observed'))
+                  generator=re.findall(r'<meta\s+[^>]*name=["\x27]generator["\x27][^>]*>',data,re.I)
+                  if generator:
+                      content=re.search(r'content=["\x27]([^"\x27]{1,120})',generator[0],re.I)
+                      value=html.unescape(content.group(1)) if content else 'unavailable'
+                      print('::notice::Public generator meta: '+re.sub(r'[^A-Za-z0-9 ._/-]','?',value))
+                  else:print('::notice::Public generator meta: not observed')
+          except Exception as e:
+              print('::warning::Public homepage check failed: '+type(e).__name__)
+              raise
+          PY
