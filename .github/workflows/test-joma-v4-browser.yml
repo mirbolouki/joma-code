@@ -1,0 +1,38 @@
+name: Test independent owl guide in Chromium
+on:
+  push:
+    branches: [arena/c1bf60e0-joma-code]
+    paths:
+      - joma-guide-v4/**
+      - .github/workflows/test-joma-v4-browser.yml
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated browser test dependencies
+        run: |
+          mkdir -p /tmp/joma-browser-test
+          npm install --prefix /tmp/joma-browser-test playwright@1.56.1
+          /tmp/joma-browser-test/node_modules/.bin/playwright install --with-deps chromium
+      - name: Test desktop, mobile viewport and reduced motion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8134 --bind 127.0.0.1 --directory joma-guide-v4 >/tmp/joma-server.log 2>&1 &
+          server=$!
+          trap 'kill $server' EXIT
+          NODE_PATH=/tmp/joma-browser-test/node_modules node joma-guide-v4/tests/browser.cjs
+      - name: Save synthetic preview screenshots
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: joma-acts-chromium-screenshots
+          path: /tmp/joma-acts-*.png
+          retention-days: 14
