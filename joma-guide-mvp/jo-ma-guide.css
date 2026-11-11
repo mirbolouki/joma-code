@@ -13,3 +13,4 @@
 #joma-guide-root .jg-tools{display:flex;flex-wrap:wrap;border-top:1px solid #eef2ed;margin-top:14px;padding-top:5px}
 #joma-guide-root .jg-tools .jg-link{width:auto;flex:1 1 40%;margin:0}
 @media(prefers-reduced-motion:no-preference){#joma-guide-root .jg-react{animation:jg-react .34s ease-out}@keyframes jg-react{0%{transform:translateY(2px) rotate(-2deg);opacity:.8}100%{transform:none;opacity:1}}}
+#joma-guide-root .jg-option[aria-pressed=true]{border-color:#5d9979;background:#eaf5ed;font-weight:bold}
