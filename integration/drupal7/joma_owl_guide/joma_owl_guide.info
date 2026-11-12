@@ -1,0 +1,6 @@
+name = JoMa Owl Guide
+ description = Independent front-page owl guide. Staging validation and clinical approval required.
+core = 7.x
+package = Custom
+version = 7.x-1.0.0-rc1
+php = 5.3

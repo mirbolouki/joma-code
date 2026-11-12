@@ -1,0 +1,44 @@
+name: Test Drupal 7 owl module on synthetic site
+on:
+  push:
+    branches: [arena/c1bf60e0-joma-code]
+    paths:
+      - integration/drupal7/**
+      - .github/workflows/test-joma-drupal7.yml
+permissions:
+  contents: read
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: mbstring, gd, pdo_sqlite, xml
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Setup synthetic Drupal
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/joma-drupal7
+          curl -sSL --fail https://codeload.github.com/drupal/drupal/tar.gz/refs/tags/7.101 | tar xz --strip-components=1 -C /tmp/joma-drupal7
+          mkdir -p /tmp/joma-drupal7/sites/default/files /tmp/joma-drupal7/sites/all/modules/custom
+          cp /tmp/joma-drupal7/sites/default/default.settings.php /tmp/joma-drupal7/sites/default/settings.php
+          printf '\n$databases["default"]["default"] = array("driver" => "sqlite", "database" => "/tmp/joma-drupal7/sites/default/files/staging.sqlite", "prefix" => "");\n' >> /tmp/joma-drupal7/sites/default/settings.php
+          cp -R integration/drupal7/joma_owl_guide /tmp/joma-drupal7/sites/all/modules/custom/
+          php integration/drupal7/tests/staging-install.php >/tmp/drupal-install.log 2>&1 || { echo "::error::Drupal install failed: $(tail -c 1500 /tmp/drupal-install.log | tr '\n' ' ')"; exit 1; }
+          JOMA_OWL_STAGING_HOST=127.0.0.1 php integration/drupal7/tests/staging-enable.php >/tmp/drupal-enable.log 2>&1 || { echo "::error::Drupal enable failed: $(tail -c 1500 /tmp/drupal-enable.log | tr '\n' ' ')"; exit 1; }
+      - name: Test in Chrome against synthetic Drupal
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --prefix /tmp/joma-d7-browser playwright-core@1.56.1 >/dev/null 2>&1
+          JOMA_OWL_STAGING_HOST=127.0.0.1 php -S 127.0.0.1:8135 -t /tmp/joma-drupal7 >/tmp/joma-d7-server.log 2>&1 &
+          server=$!
+          trap 'kill $server' EXIT
+          NODE_PATH=/tmp/joma-d7-browser/node_modules node integration/drupal7/tests/staging-browser.cjs >/tmp/d7-test.log 2>&1 || { echo "::error::Browser test failed: $(tail -c 1300 /tmp/d7-test.log | tr '\n' ' ')"; exit 1; }

@@ -1,0 +1,26 @@
+<?php
+/**
+ * @file
+ * Attach the independent guide only to the root front page of the main site.
+ * A separate, explicitly configured staging hostname may be used for testing.
+ */
+function joma_owl_guide_page_build(&$page) {
+  if (!drupal_is_front_page() || !isset($_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'])) {
+    return;
+  }
+  $host = strtolower(preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST']));
+  $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+  $staging_host = getenv('JOMA_OWL_STAGING_HOST');
+  $staging_ok = is_string($staging_host) && preg_match('/\A[a-z0-9.-]+\z/i', $staging_host) && $host === strtolower($staging_host) && $host !== 'mirbolouki.com' && !in_array($host, array('joma.mirbolouki.com', 'my.mirbolouki.com', 'test.mirbolouki.com'), TRUE);
+  if ($path !== '/' || ($host !== 'mirbolouki.com' && !$staging_ok)) {
+    return;
+  }
+  $base = drupal_get_path('module', 'joma_owl_guide') . '/assets/';
+  // Page-specific JS must not be merged: currentScript resolves assets beside it.
+  $options = array('scope' => 'footer', 'group' => JS_DEFAULT, 'preprocess' => FALSE, 'every_page' => FALSE, 'weight' => 50);
+  drupal_add_js($base . 'guide-tree.js', $options);
+  $options['weight'] = 51;
+  drupal_add_js($base . 'owl-acts.js', $options);
+  $options['weight'] = 52;
+  drupal_add_js($base . 'jo-ma-guide.js', $options);
+}

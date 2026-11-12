@@ -1,0 +1,24 @@
+:host{all:initial;direction:rtl;display:block}
+#joma-guide-root{font-family:Tahoma,"Segoe UI",sans-serif;direction:rtl;color:#294c41;font-size:13px}#joma-guide-root *{box-sizing:border-box}#joma-guide-root button,#joma-guide-root a{font:inherit}#joma-guide-root button{cursor:pointer}#joma-guide-root button:focus-visible,#joma-guide-root a:focus-visible{outline:3px solid #e3b359;outline-offset:2px}.jg-launcher{position:fixed;z-index:9998;left:22px;bottom:22px;border:1px solid #e2eee5;background:white;border-radius:40px;display:flex;align-items:center;gap:5px;padding:5px 8px 5px 16px;box-shadow:0 8px 30px #244a3b24;color:#476f5d;font-size:11px!important}.jg-launcher img{object-fit:contain}.jg-panel{position:fixed;z-index:9999;left:22px;bottom:100px;width:min(370px,calc(100vw - 32px));max-height:min(620px,calc(100dvh - 120px));overflow:auto;background:#fff;border:1px solid #dfebe2;border-radius:20px;box-shadow:0 18px 55px #21433730}.jg-panel[hidden]{display:none}.jg-head{display:flex;align-items:center;gap:10px;padding:15px 17px;background:#eff6ef;border-bottom:1px solid #e0ece1}.jg-head img{object-fit:contain}.jg-head h2{font-size:14px;margin:0 0 7px}.jg-head p{font-size:10px;color:#829a89;margin:0}.jg-close{margin-right:auto;border:0;background:transparent;color:#6b8d7c;font-size:24px!important;line-height:1;padding:4px}.jg-body{padding:20px}.jg-lead,.jg-question{line-height:2.1;margin:0 0 16px;color:#446558;font-size:12px}.jg-question{font-weight:bold}.jg-note{background:#f6f8f4;border-radius:9px;color:#819388;font-size:10px;line-height:2;padding:10px;margin:12px 0}.jg-progress{color:#9aab9e;font-size:10px;margin-bottom:14px}.jg-option,.jg-main,.jg-sub,.jg-link{display:block;width:100%;text-align:center;border-radius:9px;margin:8px 0;padding:12px;text-decoration:none}.jg-option{background:white;border:1px solid #dceae0;color:#416d59;text-align:right}.jg-option:hover,.jg-sub:hover{background:#f1f7f1}.jg-main{border:1px solid #246c55;background:#246c55;color:white}.jg-sub{border:1px solid #dce9df;background:#fff;color:#507d66}.jg-link{border:0;background:transparent;color:#719786;font-size:11px!important;padding:9px}.jg-panel a{line-height:1.5}@media(max-width:480px){.jg-launcher{left:12px;bottom:12px}.jg-panel{left:16px;bottom:90px;max-height:calc(100dvh - 105px)}}@media(prefers-reduced-motion:reduce){#joma-guide-root *{animation:none!important;transition:none!important}}
+/* Conversation bubbles and event-driven character reactions; no continuous motion. */
+#joma-guide-root .jg-head{position:sticky;top:0;z-index:1;min-height:96px}
+#joma-guide-root .jg-character{width:70px;height:82px;object-fit:contain;flex:none}
+#joma-guide-root .jg-settings{margin-right:auto;border:0;background:transparent;color:#6b8d7c;font-size:18px;padding:8px}
+#joma-guide-root .jg-close{margin-right:0}
+#joma-guide-root .jg-message{background:#eef6ef;color:#345c4c;border-radius:15px 15px 3px 15px;padding:13px 14px;line-height:2.05;margin:10px 0;font-size:12px}
+#joma-guide-root .jg-answer{background:#e9f0f8;color:#526b81;border-radius:15px 15px 15px 3px;padding:11px 14px;line-height:1.9;margin:10px 18% 12px 0;font-size:12px}
+#joma-guide-root .jg-option{text-align:right;padding:13px 14px;border-radius:12px;line-height:1.8}
+#joma-guide-root .jg-option:after{content:'←';float:left;color:#9cbaaa}
+#joma-guide-root .jg-consent{display:flex;align-items:flex-start;gap:8px;font-size:10px;color:#667e70;line-height:2;margin:14px 0}
+#joma-guide-root .jg-consent input{margin-top:5px;flex:none}
+#joma-guide-root .jg-tools{display:flex;flex-wrap:wrap;border-top:1px solid #eef2ed;margin-top:14px;padding-top:5px}
+#joma-guide-root .jg-tools .jg-link{width:auto;flex:1 1 40%;margin:0}
+@media(prefers-reduced-motion:no-preference){#joma-guide-root .jg-react{animation:jg-react .34s ease-out}@keyframes jg-react{0%{transform:translateY(2px) rotate(-2deg);opacity:.8}100%{transform:none;opacity:1}}}
+#joma-guide-root .jg-option[aria-pressed=true]{border-color:#5d9979;background:#eaf5ed;font-weight:bold}
+#joma-guide-root .jg-stage{width:100px;flex:none}
+#joma-guide-root .jg-head{min-height:125px;padding:8px 12px;gap:7px}
+#joma-guide-root .jg-header-text{min-width:0}
+#joma-guide-root .jg-panel{max-height:min(690px,calc(100dvh - 105px));width:min(410px,calc(100vw - 24px))}
+#joma-guide-root .jg-insight{background:#fff8e9;border-right:3px solid #d3ae6c;border-radius:10px;padding:12px 14px;color:#685e48;font-size:12px;line-height:2;margin:10px 0}
+#joma-guide-root .jg-service-note{font-size:10px;color:#7b9183;line-height:2}
+@media(max-width:480px){#joma-guide-root .jg-stage{width:80px}#joma-guide-root .jg-head{min-height:104px}#joma-guide-root .jg-panel{left:12px;bottom:88px;max-height:calc(100dvh - 100px)}}

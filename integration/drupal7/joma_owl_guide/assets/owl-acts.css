@@ -1,0 +1,23 @@
+.oa-stage{direction:ltr;position:relative;width:100%;aspect-ratio:912/1136;flex:none;transform-origin:50% 90%}.oa-image,.oa-eyes{display:block;width:100%;height:100%;object-fit:contain;position:absolute;inset:0}.oa-eyes{pointer-events:none;opacity:0}.oa-master .oa-eyes{opacity:1}.oa-eyes .pupil{transform-box:fill-box;transform-origin:center;transition:transform .2s ease}.oa-blink{opacity:0}.oa-master.oa-wink .oa-blink{animation:oa-blink .42s ease}.oa-playing[data-act=welcome] .oa-blink{animation:oa-blink .5s ease .8s}.oa-playing[data-act=insight] .oa-blink{animation:oa-blink .5s ease 1.3s}
+@media(prefers-reduced-motion:no-preference){
+.oa-playing[data-act=welcome]{animation:oa-welcome 3s ease-in-out}
+.oa-playing[data-act=listen]{animation:oa-listen 2.4s ease-in-out}
+.oa-playing[data-act=curious]{animation:oa-curious 2.5s ease-in-out}
+.oa-playing[data-act=think]{animation:oa-think 3.2s ease-in-out}
+.oa-playing[data-act=insight]{animation:oa-insight 2.4s ease-in-out}
+.oa-playing[data-act=guide]{animation:oa-guide 2.8s ease-in-out}
+.oa-playing[data-act=finish]{animation:oa-finish 2.4s ease-in-out}
+.oa-playing[data-act=welcome] .pupil{animation:oa-glance 3s ease-in-out}
+.oa-playing[data-act=insight] .pupil{animation:oa-look 2.4s ease-in-out}
+@keyframes oa-welcome{0%,100%{transform:rotate(0)}30%{transform:rotate(-4deg) translateY(-3px)}65%{transform:rotate(2deg)}}
+@keyframes oa-listen{0%,100%{transform:rotate(0)}40%,65%{transform:rotate(4deg) translateY(1px)}}
+@keyframes oa-curious{0%,100%{transform:rotate(0)}35%{transform:rotate(-5deg)}65%{transform:rotate(-2deg)}}
+@keyframes oa-think{0%,100%{transform:rotate(0)}30%,65%{transform:rotate(3deg) translateY(-3px)}}
+@keyframes oa-insight{0%,100%{transform:rotate(0)}40%{transform:rotate(-3deg) translateY(-4px)}70%{transform:rotate(1deg)}}
+@keyframes oa-guide{0%,100%{transform:rotate(0)}30%{transform:rotate(2deg)}65%{transform:rotate(-2deg)}}
+@keyframes oa-finish{0%,100%{transform:rotate(0)}40%{transform:translateY(-4px) rotate(2deg)}}
+@keyframes oa-glance{0%,100%{transform:translate(0,0)}35%,65%{transform:translate(-6px,2px)}}
+@keyframes oa-look{0%,100%{transform:translate(0,0)}35%,70%{transform:translate(0,-5px)}}
+@keyframes oa-blink{0%,30%,75%,100%{opacity:0}42%,62%{opacity:1}}
+}
+@media(prefers-reduced-motion:reduce){.oa-stage,.oa-stage *, .oa-master.oa-wink .oa-blink{animation:none!important;transition:none!important}}
