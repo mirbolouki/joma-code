@@ -3,4 +3,4 @@ name = JoMa Owl Guide
 core = 7.x
 package = Custom
 version = 7.x-1.0.0-rc1
-php = 5.3
+php = 5.6
