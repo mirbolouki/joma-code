@@ -39,3 +39,6 @@ jobs:
           check release/joma-site-readiness-report-v1.0.zip f88a27f3326aca81a0a2edc14e7bea3ff4f2f239ba0d67426e80127aad090e9e
           base='https://github.com/mirbolouki/joma-code/raw/81aabe53b55b383e91bf952c486a016911fe2b80'
           check release/joma-safe-path-report-v1.1.zip 6dc1a07ef37a76289990f48608073942cdb1b69bec4e67a8eaaa06fe798b373a
+          base='https://github.com/mirbolouki/joma-code/raw/646a862e53b9e86fe405e1ac773b73d500709dc2'
+          check release/joma-owl-drupal7-1.0.0-rc1-module.zip 65a0ca6b019bcb11e81b905810d39ffd885b690fd2f51f840c1fc6bd4c506c44
+          check release/joma-owl-drupal7-1.0.0-rc1-hosting.zip e3fa86605e9a9b1839e699f4be8ea5c3333dda6054d43790408e47675254c223
