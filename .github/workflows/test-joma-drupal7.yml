@@ -32,6 +32,7 @@ jobs:
           printf '\n$databases["default"]["default"] = array("driver" => "sqlite", "database" => "/tmp/joma-drupal7/sites/default/files/staging.sqlite", "prefix" => "");\n' >> /tmp/joma-drupal7/sites/default/settings.php
           cp -R integration/drupal7/joma_owl_guide /tmp/joma-drupal7/sites/all/modules/custom/
           php integration/drupal7/tests/staging-install.php >/tmp/drupal-install.log 2>&1 || { echo "::error::Drupal install failed: $(tail -c 1500 /tmp/drupal-install.log | tr '\n' ' ')"; exit 1; }
+          echo "::notice::Install diagnostics: $(tail -c 1800 /tmp/drupal-install.log | tr '\n' ' ')"
           JOMA_OWL_STAGING_HOST=127.0.0.1 php integration/drupal7/tests/staging-enable.php >/tmp/drupal-enable.log 2>&1 || { echo "::error::Drupal enable failed: $(tail -c 1500 /tmp/drupal-enable.log | tr '\n' ' ')"; exit 1; }
       - name: Test in Chrome against synthetic Drupal
         shell: bash
