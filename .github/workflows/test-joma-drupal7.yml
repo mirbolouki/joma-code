@@ -43,3 +43,8 @@ jobs:
           server=$!
           trap 'kill $server' EXIT
           NODE_PATH=/tmp/joma-d7-browser/node_modules node integration/drupal7/tests/staging-browser.cjs >/tmp/d7-test.log 2>&1 || { echo "::error::Browser test failed: $(tail -c 1300 /tmp/d7-test.log | tr '\n' ' ')"; exit 1; }
+
+          JOMA_OWL_STAGING_HOST=127.0.0.1 php integration/drupal7/tests/staging-disable.php >/tmp/drupal-disable.log 2>&1 || { echo "::error::Synthetic disable failed"; exit 1; }
+          curl --fail --silent http://127.0.0.1:8135/ > /tmp/d7-disabled.html
+          if grep -q 'jo-ma-guide.js' /tmp/d7-disabled.html; then echo "::error::Module still attached after disable"; exit 1; fi
+          echo "::notice::Disabled module: no guide script in synthetic home HTML"
